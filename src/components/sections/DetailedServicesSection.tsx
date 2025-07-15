@@ -9,11 +9,20 @@ import {
   Settings,
   Trash2,
   Cloud,
-  Shield
+  Shield,
+  Zap,
+  Package
 } from 'lucide-react';
 
 const DetailedServicesSection = () => {
   const services = [
+    {
+      icon: Zap,
+      title: "Business Intelligence Plug&Play",
+      description: "Modelli di BI pronti all'uso, professionali e personalizzabili per implementazioni rapide. Suite completa per tutte le aree aziendali: Vendite, Finance, Operations, HR, Marketing e molto altro.",
+      features: ["Implementazione rapida", "Modelli pre-configurati", "Copertura completa", "Prodotti verticali"],
+      isPlugPlay: true
+    },
     {
       icon: Database,
       title: "Raccolta, Analisi e Interpretazione dei Dati Aziendali",
@@ -94,16 +103,31 @@ const DetailedServicesSection = () => {
           {services.map((service, index) => (
             <Card 
               key={index} 
-              className="border-0 shadow-card hover:shadow-elegant transition-all duration-300 bg-gradient-card group"
+              className={`border-0 shadow-card hover:shadow-elegant transition-all duration-300 bg-gradient-card group ${
+                service.isPlugPlay ? 'ring-2 ring-brand-red/30 bg-gradient-to-br from-brand-red/5 to-white' : ''
+              }`}
             >
               <CardHeader className="pb-4">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-tech-blue/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-tech-blue/20 transition-all duration-300">
-                    <service.icon className="w-6 h-6 text-tech-blue" />
+                  <div className={`w-12 h-12 ${
+                    service.isPlugPlay 
+                      ? 'bg-brand-red/10 group-hover:bg-brand-red/20' 
+                      : 'bg-brand-red/10 group-hover:bg-brand-red/20'
+                  } rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300`}>
+                    <service.icon className={`w-6 h-6 ${
+                      service.isPlugPlay ? 'text-brand-red' : 'text-brand-red'
+                    }`} />
                   </div>
                   <div className="flex-1">
-                    <CardTitle className="text-lg font-bold text-foreground leading-tight">
+                    <CardTitle className={`text-lg font-bold leading-tight ${
+                      service.isPlugPlay ? 'text-brand-red' : 'text-foreground'
+                    }`}>
                       {service.title}
+                      {service.isPlugPlay && (
+                        <span className="ml-2 text-xs bg-brand-red text-white px-2 py-1 rounded-full font-normal">
+                          NUOVO
+                        </span>
+                      )}
                     </CardTitle>
                   </div>
                 </div>
@@ -117,7 +141,9 @@ const DetailedServicesSection = () => {
                 <div className="grid grid-cols-2 gap-2">
                   {service.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center text-sm text-muted-foreground">
-                      <div className="w-2 h-2 rounded-full bg-tech-blue mr-2 flex-shrink-0"></div>
+                      <div className={`w-2 h-2 rounded-full ${
+                        service.isPlugPlay ? 'bg-brand-red' : 'bg-brand-red'
+                      } mr-2 flex-shrink-0`}></div>
                       <span className="truncate">{feature}</span>
                     </div>
                   ))}
@@ -125,6 +151,43 @@ const DetailedServicesSection = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Plug&Play Highlight Section */}
+        <div className="mt-16 mb-16 bg-gradient-to-br from-brand-red/10 to-brand-red/5 p-8 md:p-12 rounded-2xl shadow-elegant border border-brand-red/20">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="flex items-center justify-center mb-6">
+              <Zap className="w-8 h-8 text-brand-red mr-3" />
+              <h3 className="text-3xl font-bold text-brand-red">BI Plug&Play - La Novità DataWisePartners</h3>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8 max-w-3xl mx-auto">
+              Implementazione rapida in pochi giorni, prezzo accessibile, modularità per crescere nel tempo. 
+              I nostri modelli coprono tutte le aree aziendali con prodotti sia orizzontali che verticali per settori specifici.
+            </p>
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-brand-red/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package className="w-8 h-8 text-brand-red" />
+                </div>
+                <h4 className="font-semibold text-foreground mb-2">Prodotti Orizzontali</h4>
+                <p className="text-sm text-muted-foreground">Vendite, Finance, HR, Marketing, Operations per qualsiasi azienda</p>
+              </div>
+              <div className="text-center">
+                <div className="w-16 h-16 bg-brand-red/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Settings className="w-8 h-8 text-brand-red" />
+                </div>
+                <h4 className="font-semibold text-foreground mb-2">Prodotti Verticali</h4>
+                <p className="text-sm text-muted-foreground">Food & Beverage, Banking, Sanità, Meccanica, Telecomunicazioni</p>
+              </div>
+              <div className="text-center">
+                <div className="w-16 h-16 bg-brand-red/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Zap className="w-8 h-8 text-brand-red" />
+                </div>
+                <h4 className="font-semibold text-foreground mb-2">Implementazione Rapida</h4>
+                <p className="text-sm text-muted-foreground">Attivazione in pochi giorni con demo e PoC disponibili</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* CTA Section */}
@@ -137,11 +200,11 @@ const DetailedServicesSection = () => {
             Possiamo supportarti con servizi specifici o diventare la tua Business Intelligence completa in outsourcing.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-tech-blue px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300">
+            <button className="bg-white text-brand-red px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300">
               Richiedi una Consulenza Gratuita
             </button>
             <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-all duration-300">
-              Scopri il BI Outsourcing
+              Scopri il BI Plug&Play
             </button>
           </div>
         </div>
