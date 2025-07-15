@@ -14,7 +14,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroImage})` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-tech-blue/90 via-data-purple/80 to-tech-blue-dark/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-red/90 via-brand-red-dark/80 to-brand-black/90"></div>
       </div>
 
       {/* Floating Elements */}
@@ -39,7 +39,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
               Dati
             </span>{' '}
             in{' '}
-            <span className="bg-gradient-to-r from-insight-orange to-white bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-brand-red-light to-white bg-clip-text text-transparent">
               Decisioni
             </span>
           </h1>
@@ -78,7 +78,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
               <div className="text-white/80">Anni di Esperienza</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-              <div className="text-3xl font-bold text-insight-orange mb-2">100+</div>
+              <div className="text-3xl font-bold text-brand-red-light mb-2">100+</div>
               <div className="text-white/80">Progetti Completati</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">

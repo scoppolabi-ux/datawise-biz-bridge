@@ -29,15 +29,14 @@ const Header = ({ onNavigate, activeSection }: HeaderProps) => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div 
-            className="flex items-center space-x-2 cursor-pointer"
+            className="flex items-center space-x-3 cursor-pointer"
             onClick={() => onNavigate('home')}
           >
-            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              DataWisePartners
-            </span>
+            <img 
+              src="/lovable-uploads/e9335dde-b8de-4d9f-85fd-e2bef795f9b6.png" 
+              alt="DataWisePartners Logo"
+              className="h-10 w-auto"
+            />
           </div>
 
           {/* Desktop Navigation */}
