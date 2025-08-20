@@ -35,7 +35,7 @@ const Header = ({ onNavigate, activeSection }: HeaderProps) => {
             <img 
               src="/lovable-uploads/e9335dde-b8de-4d9f-85fd-e2bef795f9b6.png" 
               alt="DataWisePartners Logo"
-              className="h-10 w-auto"
+              className="h-8 w-auto opacity-90"
             />
           </div>
 
