@@ -48,7 +48,7 @@ const BIStepsSection = () => {
       number: "06",
       title: "Data Visualization - Visualizzazione dei Dati",
       icon: Eye,
-      description: "La trasformazione dei dati in rappresentazioni visali come grafici o mappe facilita ai decision-maker la comprensione di informazioni complesse."
+      description: "La trasformazione dei dati in rappresentazioni visuali come grafici o mappe facilita ai decision-maker la comprensione di informazioni complesse."
     },
     {
       number: "07",
