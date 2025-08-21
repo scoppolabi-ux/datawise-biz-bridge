@@ -38,7 +38,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             <img 
               src="/lovable-uploads/1eabf32b-5b7b-4f4f-a577-b132f69da638.png" 
               alt="DataWisePartners Logo"
-              className="h-48 md:h-64 lg:h-72 w-auto mx-auto mb-8 drop-shadow-2xl"
+              className="h-96 md:h-[32rem] lg:h-[36rem] w-auto mx-auto mb-8 drop-shadow-2xl"
             />
           </div>
           
