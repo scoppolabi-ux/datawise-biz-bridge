@@ -1,5 +1,4 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Database, Warehouse, BarChart3, Target, Activity, Eye, FileText, Search, Shield, GraduationCap } from 'lucide-react';
 const BIStepsSection = () => {
   const steps = [{
@@ -95,9 +94,7 @@ const BIStepsSection = () => {
               La nostra metodologia in 10 step garantisce risultati misurabili e duraturi
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="hero" size="lg" className="text-lg px-8 py-4 h-auto">
-                Richiedi Consulenza GRATUITA
-              </Button>
+              
               <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-all duration-300">Richiedi una Consulenza GRATUITA</button>
             </div>
           </div>
