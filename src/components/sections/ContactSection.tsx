@@ -24,7 +24,7 @@ const ContactSection = () => {
     {
       icon: Phone,
       title: "Telefono",
-      details: ["+39 02 1234 5678", "+39 348 987 6543", "Lun-Ven 9:00-18:00"],
+      details: ["+39 3287048437", "Lun-Ven 9:00-18:00"],
       color: "data-purple"
     },
     {
