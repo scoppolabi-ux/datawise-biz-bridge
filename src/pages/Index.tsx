@@ -72,7 +72,7 @@ const Index = () => {
         </div>
         
         <AboutSection />
-        <BIStepsSection />
+        <BIStepsSection onNavigate={handleNavigate} />
         <ServicesSection onNavigate={handleNavigate} />
         <TeamSection />
         <MissionVisionSection />

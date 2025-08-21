@@ -1,6 +1,11 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Database, Warehouse, BarChart3, Target, Activity, Eye, FileText, Search, Shield, GraduationCap } from 'lucide-react';
-const BIStepsSection = () => {
+
+interface BIStepsSectionProps {
+  onNavigate: (section: string) => void;
+}
+
+const BIStepsSection = ({ onNavigate }: BIStepsSectionProps) => {
   const steps = [{
     number: "01",
     title: "Raccolta e Integrazione dei Dati",
@@ -95,7 +100,12 @@ const BIStepsSection = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               
-              <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-all duration-300">Richiedi una Consulenza GRATUITA</button>
+              <button 
+                onClick={() => onNavigate('contact')}
+                className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-all duration-300"
+              >
+                Richiedi una Consulenza GRATUITA
+              </button>
             </div>
           </div>
         </div>
