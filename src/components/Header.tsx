@@ -33,7 +33,7 @@ const Header = ({ onNavigate, activeSection }: HeaderProps) => {
             onClick={() => onNavigate('home')}
           >
             <img 
-              src="/lovable-uploads/e9335dde-b8de-4d9f-85fd-e2bef795f9b6.png" 
+              src="/lovable-uploads/1eabf32b-5b7b-4f4f-a577-b132f69da638.png" 
               alt="DataWisePartners Logo"
               className="h-8 w-auto opacity-90"
             />
