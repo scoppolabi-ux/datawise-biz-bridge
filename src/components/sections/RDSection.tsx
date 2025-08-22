@@ -1,63 +1,41 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-  Lightbulb, 
-  Users, 
-  Zap, 
-  Cpu, 
-  Brain, 
-  Eye,
-  ArrowRight,
-  Sparkles
-} from 'lucide-react';
-
+import { Lightbulb, Users, Zap, Cpu, Brain, Eye, ArrowRight, Sparkles } from 'lucide-react';
 const RDSection = () => {
-  const innovations = [
-    {
-      icon: Brain,
-      title: "Machine Learning & AI",
-      description: "Sviluppiamo algoritmi avanzati di machine learning per predire tendenze e automatizzare l'analisi dei dati",
-      color: "tech-blue"
-    },
-    {
-      icon: Eye,
-      title: "Realtà Aumentata",
-      description: "Pionieri nell'applicazione della realtà aumentata per la visualizzazione immersiva dei dati aziendali",
-      color: "data-purple"
-    },
-    {
-      icon: Cpu,
-      title: "Edge Computing", 
-      description: "Soluzioni di elaborazione dati in tempo reale per decisioni istantanee e performanti",
-      color: "insight-orange"
-    },
-    {
-      icon: Sparkles,
-      title: "Data Visualization 3D",
-      description: "Nuove metodologie di visualizzazione tridimensionale per rappresentare dati complessi",
-      color: "tech-blue-light"
-    }
-  ];
-
-  const collaborations = [
-    {
-      type: "Università",
-      description: "Partnership con atenei per ricerca applicata in Data Science",
-      icon: "🎓"
-    },
-    {
-      type: "Tech Companies",
-      description: "Collaborazioni con aziende tecnologiche per sviluppo congiunto",
-      icon: "🚀"
-    },
-    {
-      type: "Research Centers",
-      description: "Progetti di ricerca con centri specializzati in AI e ML",
-      icon: "🔬"
-    }
-  ];
-
-  return (
-    <section id="rd" className="py-24 bg-gradient-to-br from-background to-muted/30">
+  const innovations = [{
+    icon: Brain,
+    title: "Machine Learning & AI",
+    description: "Sviluppiamo algoritmi avanzati di machine learning per predire tendenze e automatizzare l'analisi dei dati",
+    color: "tech-blue"
+  }, {
+    icon: Eye,
+    title: "Realtà Aumentata",
+    description: "Pionieri nell'applicazione della realtà aumentata per la visualizzazione immersiva dei dati aziendali",
+    color: "data-purple"
+  }, {
+    icon: Cpu,
+    title: "Edge Computing",
+    description: "Soluzioni di elaborazione dati in tempo reale per decisioni istantanee e performanti",
+    color: "insight-orange"
+  }, {
+    icon: Sparkles,
+    title: "Data Visualization 3D",
+    description: "Nuove metodologie di visualizzazione tridimensionale per rappresentare dati complessi",
+    color: "tech-blue-light"
+  }];
+  const collaborations = [{
+    type: "Università",
+    description: "Partnership con atenei per ricerca applicata in Data Science",
+    icon: "🎓"
+  }, {
+    type: "Tech Companies",
+    description: "Collaborazioni con aziende tecnologiche per sviluppo congiunto",
+    icon: "🚀"
+  }, {
+    type: "Research Centers",
+    description: "Progetti di ricerca con centri specializzati in AI e ML",
+    icon: "🔬"
+  }];
+  return <section id="rd" className="py-24 bg-gradient-to-br from-background to-muted/30">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-primary bg-clip-text text-transparent">
@@ -105,15 +83,9 @@ const RDSection = () => {
 
         {/* Current Innovations */}
         <div className="mb-16">
-          <h3 className="text-3xl font-bold text-center mb-12 text-foreground">
-            Le Nostre Innovazioni Attuali
-          </h3>
+          <h3 className="text-3xl font-bold text-center mb-12 text-foreground">Le Nostre  Sfide Attuali</h3>
           <div className="grid md:grid-cols-2 gap-8">
-            {innovations.map((innovation, index) => (
-              <Card 
-                key={index} 
-                className="border-0 shadow-card hover:shadow-elegant transition-all duration-300 bg-gradient-card group"
-              >
+            {innovations.map((innovation, index) => <Card key={index} className="border-0 shadow-card hover:shadow-elegant transition-all duration-300 bg-gradient-card group">
                 <CardContent className="p-8">
                   <div className="flex items-start space-x-4">
                     <div className={`w-16 h-16 bg-${innovation.color}/10 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-${innovation.color}/20 transition-all duration-300`}>
@@ -125,8 +97,7 @@ const RDSection = () => {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
 
@@ -136,16 +107,11 @@ const RDSection = () => {
             Le Nostre Collaborazioni
           </h3>
           <div className="grid md:grid-cols-3 gap-6">
-            {collaborations.map((collab, index) => (
-              <div 
-                key={index}
-                className="text-center p-6 bg-gradient-card rounded-xl shadow-card hover:shadow-elegant transition-all duration-300"
-              >
+            {collaborations.map((collab, index) => <div key={index} className="text-center p-6 bg-gradient-card rounded-xl shadow-card hover:shadow-elegant transition-all duration-300">
                 <div className="text-4xl mb-4">{collab.icon}</div>
                 <h4 className="text-xl font-bold text-foreground mb-3">{collab.type}</h4>
                 <p className="text-muted-foreground">{collab.description}</p>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
 
@@ -191,8 +157,6 @@ const RDSection = () => {
           </button>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default RDSection;
