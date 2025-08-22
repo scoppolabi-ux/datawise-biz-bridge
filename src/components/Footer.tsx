@@ -134,10 +134,7 @@ const Footer = ({
               <button className="text-white/60 hover:text-white transition-colors">
                 Privacy Policy
               </button>
-              <button 
-                onClick={() => window.location.href = '/cookie-policy'}
-                className="text-white/60 hover:text-white transition-colors"
-              >
+              <button className="text-white/60 hover:text-white transition-colors">
                 Cookie Policy
               </button>
               <button className="text-white/60 hover:text-white transition-colors">
