@@ -131,13 +131,13 @@ const Footer = ({
             </div>
             
             <div className="flex space-x-6 text-sm">
-              <button 
-                onClick={() => window.open('/privacy-policy', '_blank')}
-                className="text-white/60 hover:text-white transition-colors"
-              >
+              <button className="text-white/60 hover:text-white transition-colors">
                 Privacy Policy
               </button>
-              <button className="text-white/60 hover:text-white transition-colors">
+              <button 
+                onClick={() => window.location.href = '/cookie-policy'}
+                className="text-white/60 hover:text-white transition-colors"
+              >
                 Cookie Policy
               </button>
               <button className="text-white/60 hover:text-white transition-colors">
