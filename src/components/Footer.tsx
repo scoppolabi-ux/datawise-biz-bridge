@@ -1,28 +1,41 @@
 import { BarChart3, Mail, Phone, MapPin, LinkedinIcon } from 'lucide-react';
-
 interface FooterProps {
   onNavigate: (section: string) => void;
 }
-
-const Footer = ({ onNavigate }: FooterProps) => {
-  const navigationLinks = [
-    { id: 'home', label: 'Home' },
-    { id: 'about', label: 'Chi Siamo' },
-    { id: 'services', label: 'Cosa Facciamo' },
-    { id: 'approach', label: 'Approccio' },
-    { id: 'team', label: 'Il Team' }
-  ];
-
-  const serviceLinks = [
-    { id: 'detailed-services', label: 'Servizi Dettagliati' },
-    { id: 'mission', label: 'Mission & Vision' },
-    { id: 'rd', label: 'Ricerca & Sviluppo' },
-    { id: 'contact', label: 'Contatti' }
-  ];
-
-  return (
-    <footer className="bg-gradient-to-br from-tech-blue-dark to-data-purple text-white">
-      <div className="container mx-auto px-4 py-16">
+const Footer = ({
+  onNavigate
+}: FooterProps) => {
+  const navigationLinks = [{
+    id: 'home',
+    label: 'Home'
+  }, {
+    id: 'about',
+    label: 'Chi Siamo'
+  }, {
+    id: 'services',
+    label: 'Cosa Facciamo'
+  }, {
+    id: 'approach',
+    label: 'Approccio'
+  }, {
+    id: 'team',
+    label: 'Il Team'
+  }];
+  const serviceLinks = [{
+    id: 'detailed-services',
+    label: 'Servizi Dettagliati'
+  }, {
+    id: 'mission',
+    label: 'Mission & Vision'
+  }, {
+    id: 'rd',
+    label: 'Ricerca & Sviluppo'
+  }, {
+    id: 'contact',
+    label: 'Contatti'
+  }];
+  return <footer className="bg-gradient-to-br from-tech-blue-dark to-data-purple text-white">
+      <div className="container mx-auto px-4 py-16 bg-[#080808]">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           
           {/* Company Info */}
@@ -59,16 +72,11 @@ const Footer = ({ onNavigate }: FooterProps) => {
           <div>
             <h3 className="text-lg font-semibold mb-6">Navigazione</h3>
             <ul className="space-y-3">
-              {navigationLinks.map((link) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => onNavigate(link.id)}
-                    className="text-white/80 hover:text-white transition-colors text-sm"
-                  >
+              {navigationLinks.map(link => <li key={link.id}>
+                  <button onClick={() => onNavigate(link.id)} className="text-white/80 hover:text-white transition-colors text-sm">
                     {link.label}
                   </button>
-                </li>
-              ))}
+                </li>)}
             </ul>
           </div>
 
@@ -76,16 +84,11 @@ const Footer = ({ onNavigate }: FooterProps) => {
           <div>
             <h3 className="text-lg font-semibold mb-6">Servizi</h3>
             <ul className="space-y-3">
-              {serviceLinks.map((link) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => onNavigate(link.id)}
-                    className="text-white/80 hover:text-white transition-colors text-sm"
-                  >
+              {serviceLinks.map(link => <li key={link.id}>
+                  <button onClick={() => onNavigate(link.id)} className="text-white/80 hover:text-white transition-colors text-sm">
                     {link.label}
                   </button>
-                </li>
-              ))}
+                </li>)}
             </ul>
           </div>
 
@@ -111,11 +114,7 @@ const Footer = ({ onNavigate }: FooterProps) => {
                 Iscriviti per ricevere insights e novità BI
               </p>
               <div className="flex">
-                <input 
-                  type="email" 
-                  placeholder="La tua email"
-                  className="flex-1 px-3 py-2 bg-white/20 border border-white/30 rounded-l-md text-white placeholder-white/60 text-sm focus:outline-none focus:bg-white/30"
-                />
+                <input type="email" placeholder="La tua email" className="flex-1 px-3 py-2 bg-white/20 border border-white/30 rounded-l-md text-white placeholder-white/60 text-sm focus:outline-none focus:bg-white/30" />
                 <button className="px-4 py-2 bg-white text-tech-blue rounded-r-md hover:bg-white/90 transition-colors">
                   <Mail className="w-4 h-4" />
                 </button>
@@ -149,8 +148,6 @@ const Footer = ({ onNavigate }: FooterProps) => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
