@@ -1,6 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Database, Users, Wrench, GraduationCap, BarChart3, FileText, Settings, Trash2, Cloud, Shield, Zap, Package } from 'lucide-react';
-const DetailedServicesSection = () => {
+
+interface DetailedServicesSectionProps {
+  onNavigate: (section: string) => void;
+}
+
+const DetailedServicesSection = ({ onNavigate }: DetailedServicesSectionProps) => {
   const services = [{
     icon: Zap,
     title: "Business Intelligence Plug&Play",
@@ -151,7 +156,10 @@ const DetailedServicesSection = () => {
             Possiamo supportarti con servizi specifici o diventare la tua Business Intelligence completa in outsourcing.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-brand-red px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300">
+            <button 
+              onClick={() => onNavigate('contact')}
+              className="bg-white text-brand-red px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
+            >
               Richiedi una Consulenza Gratuita
             </button>
             <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-all duration-300">Scopri la nostra Suite BI Plug&amp;Play</button>

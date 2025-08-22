@@ -76,7 +76,7 @@ const Index = () => {
         <ServicesSection onNavigate={handleNavigate} />
         <TeamSection />
         <MissionVisionSection />
-        <DetailedServicesSection />
+        <DetailedServicesSection onNavigate={handleNavigate} />
         <RDSection />
         <ContactSection />
       </main>
