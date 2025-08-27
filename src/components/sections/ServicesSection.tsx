@@ -77,7 +77,7 @@ const ServicesSection = ({ onNavigate }: ServicesSectionProps) => {
           {mainServices.map((service, index) => (
             <Card 
               key={index} 
-              id={service.title === "Approccio" ? "approccio-card" : undefined}
+              id={service.title === "Approccio" ? "approccio-card" : service.title === "Business Model" ? "business-model-card" : undefined}
               className="border-0 shadow-card hover:shadow-elegant transition-all duration-300 bg-gradient-card group cursor-pointer"
               onClick={() => onNavigate(service.title.toLowerCase().replace(' ', '-'))}
             >
