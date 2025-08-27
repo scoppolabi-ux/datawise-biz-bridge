@@ -6,7 +6,7 @@ const TeamSection = () => {
     {
       name: "Stefano Coppola",
       role: "CEO e Founder",
-      description: "Con oltre 20 anni di esperienza nel guidare start-up e aziende consolidate verso il successo attraverso strategie innovative e un approccio centrato sui dati. Esperto nell'implementazione di soluzioni di business intelligence e nell'ottimizzazione dei processi aziendali per massimizzare l'efficienza e la crescita.",
+      description: "Con oltre 20 anni di esperienza nel creare e guidare start-up e aziende attraverso strategie innovative e un approccio centrato sui dati. Esperto nell'implementazione di soluzioni di business intelligence e nell'ottimizzazione dei processi aziendali per massimizzare l'efficienza e la crescita.",
       expertise: ["Business Intelligence", "Leadership Innovativa", "Strategie Data-Driven", "Ottimizzazione Processi"],
       image: "/api/placeholder/200/200"
     },
