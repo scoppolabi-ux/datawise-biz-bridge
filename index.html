@@ -18,6 +18,16 @@
   </head>
 
   <body>
+    <script>
+  (function () {
+    // riprende il path salvato da 404.html e ripristina l'URL
+    var r = sessionStorage.getItem('gh:redirect');
+    if (r) {
+      sessionStorage.removeItem('gh:redirect');
+      history.replaceState(null, '', r);
+    }
+  })();
+</script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
