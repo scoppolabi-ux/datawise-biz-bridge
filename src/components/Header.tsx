@@ -18,7 +18,7 @@ const Header = ({ onNavigate, activeSection }: HeaderProps) => {
     { id: 'business-model', label: 'Business Model' },
     { id: 'team', label: 'Il Team' },
     { id: 'mission', label: 'Mission & Vision' },
-    { id: 'detailed-services', label: 'Servizi' },
+    { id: 'services', label: 'Servizi' },
     { id: 'rd', label: 'R&D' },
     { id: 'contact', label: 'Contatti' }
   ];
