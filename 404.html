@@ -1,8 +1,0 @@
-<!doctype html>
-<meta charset="utf-8">
-<script>
-  // redirect SPA: manda qualsiasi 404 alla root mantenendo il path
-  const redirect = '/' + (location.pathname + location.search + location.hash).replace(/^\//,'');
-  sessionStorage.setItem('gh:redirect', redirect);
-  location.replace('/');
-</script>
