@@ -4,6 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DataWisePartners - Business Intelligence Solutions</title>
+    <script>
+  (function() {
+    var l = window.location;
+    if (l.search && l.search.indexOf('?/') === 1) {
+      var decoded = l.search.slice(3).split('&').join('?').replace(/~and~/g, '&');
+      var newUrl = l.protocol + '//' + l.host + '/' + decoded + l.hash;
+      window.history.replaceState(null, null, newUrl);
+    }
+  })();
+</script>
+
     <meta name="description" content="Trasformiamo i dati aziendali in decisioni strategiche vincenti. Soluzioni innovative di Business Intelligence, consulenza e formazione personalizzata." />
     <meta name="author" content="Lovable" />
 
