@@ -4,12 +4,12 @@ import { LinkedinIcon, Mail, User } from 'lucide-react';
 const TeamSection = () => {
   const teamMembers = [
     {
-      name: "Stefano Coppola",
-      role: "CEO e Founder",
-      description: "Con oltre 20 anni di esperienza nel creare e guidare start-up e aziende attraverso strategie innovative e un approccio centrato sui dati. Esperto nell'implementazione di soluzioni di business intelligence e nell'ottimizzazione dei processi aziendali per massimizzare l'efficienza e la crescita.",
-      expertise: ["Business Intelligence", "Leadership Innovativa", "Strategie Data-Driven", "Ottimizzazione Processi"],
-      image: "/api/placeholder/200/200"
-    },
+  "name": "Stefano Coppola",
+  "role": "CEO & Founder",
+  "description": "Innovatore e Business Translator con oltre 20 anni di esperienza nel creare e guidare imprese attraverso strategie data-driven e progetti scalabili. Stefano unisce la visione del CEO con l’operatività di chi sa mettere le mani nei dati, nei processi e nelle tecnologie. Crede nella forza delle relazioni umane e nella disciplina come motore per superare le sfide. Coniuga creatività e rigore, numeri e storytelling, strategia e concretezza: il suo obiettivo è trasformare ogni idea in un sistema che genera valore reale e duraturo.",
+  "expertise": ["Business Intelligence", "Leadership Visionaria", "Strategie Data-Driven", "Innovazione Scalabile", "Ottimizzazione Processi"],
+  "image": "/api/placeholder/200/200"
+},
    {
   "name": "Wise",
   "role": "Chief Intelligence Officer (CIO)",
