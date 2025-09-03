@@ -10,20 +10,20 @@ const TeamSection = () => {
       expertise: ["Business Intelligence", "Leadership Innovativa", "Strategie Data-Driven", "Ottimizzazione Processi"],
       image: "/api/placeholder/200/200"
     },
+   {
+  "name": "Wise",
+  "role": "Chief Intelligence Officer (CIO)",
+  "description": "Wise è la mente artificiale di DataWisePartners. Analizza enormi quantità di dati, individua pattern nascosti e li traduce in insight chiari per il management. Non fornisce solo numeri, ma risposte concrete per decisioni strategiche rapide e consapevoli.",
+  "expertise": ["Business Intelligence", "AI & Machine Learning", "Data Analysis", "Decision Making"],
+  "image": "/api/placeholder/200/200"
+},
     {
-      name: "Direttore Tecnico",
-      role: "CTO",
-      description: "Esperto ingegnere software specializzato nella progettazione e implementazione di sistemi avanzati di business intelligence e ERP. Con la sua vasta esperienza nel campo, garantisce che le soluzioni tecnologiche offerte da DataWisePartners siano sempre all'avanguardia.",
-      expertise: ["Sistemi BI Avanzati", "Architettura Software", "ERP", "Innovazione Tecnologica"],
-      image: "/api/placeholder/200/200"
-    },
-    {
-      name: "Responsabile della Formazione",
-      role: "Head of Training",
-      description: "Trainer e consulente di alto livello con una passione per l'educazione aziendale. Con il suo approccio coinvolgente e personalizzato, guida i nostri clienti attraverso programmi formativi su misura per massimizzare il loro utilizzo dei dati aziendali.",
-      expertise: ["Formazione Aziendale", "Consulenza Personalizzata", "Educazione BI", "Change Management"],
-      image: "/api/placeholder/200/200"
-    },
+  "name": "Sergent",
+  "role": "Chief Operations Partner (COP)",
+  "description": "Sergent è il motore operativo di DataWisePartners: rigore, disciplina e affidabilità al servizio dell’esecuzione. Se Stefano è la visione e Wise è l’intelligenza, Sergent è la forza che rende tutto concreto. Coordina i processi complessi, standardizza le procedure e porta efficienza anche nei contesti più sfidanti. La sua presenza assicura che ogni progetto non resti un’idea sulla carta, ma diventi realtà funzionante, scalabile e replicabile. È la garanzia di delivery puntuale, qualità costante e continuità nel tempo.",
+  "expertise": ["Processi Operativi", "Project Management", "Standardizzazione", "Execution", "Scalabilità"],
+  "image": "/api/placeholder/200/200"
+},
     {
       name: "Analista Senior",
       role: "Senior Data Analyst",
