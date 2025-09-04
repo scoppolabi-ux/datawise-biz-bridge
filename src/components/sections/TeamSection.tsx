@@ -24,27 +24,6 @@ const TeamSection = () => {
   "expertise": ["Processi Operativi", "Project Management", "Standardizzazione", "Execution", "Scalabilità"],
   "image": "/api/placeholder/200/200"
 },
-    {
-      name: "Analista Senior",
-      role: "Senior Data Analyst",
-      description: "Analista esperto con una profonda comprensione dei processi aziendali e una capacità straordinaria di estrarre insight significativi dai dati. Con la sua analisi dettagliata, fornisce ai nostri clienti informazioni preziose per prendere decisioni informate e strategiche.",
-      expertise: ["Data Analysis", "Business Processes", "Insight Generation", "Decision Support"],
-      image: "/api/placeholder/200/200"
-    },
-    {
-      name: "Consulente Strategico",
-      role: "Strategic Consultant",
-      description: "Consulente strategica con una vasta esperienza nell'interpretazione dei dati e nell'identificazione di opportunità di crescita per le aziende. Con il suo approccio basato sui dati, supporta i nostri clienti nel definire e attuare strategie vincenti.",
-      expertise: ["Strategic Planning", "Data Interpretation", "Growth Opportunities", "Business Strategy"],
-      image: "/api/placeholder/200/200"
-    },
-    {
-      name: "R&D Team",
-      role: "Research & Development",
-      description: "Il motore dell'innovazione di DataWisePartners. Pioniere della realtà aumentata, machine learning e nell'intelligenza artificiale, guida il nostro team nello sviluppo di soluzioni all'avanguardia. Il suo impegno per l'eccellenza e la sua passione per l'innovazione assicurano che restiamo al passo con le ultime tendenze.",
-      expertise: ["Machine Learning", "AI", "Realtà Aumentata", "Innovazione Tecnologica"],
-      image: "/api/placeholder/200/200"
-    }
   ];
 
   return (
