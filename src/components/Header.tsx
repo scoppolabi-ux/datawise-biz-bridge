@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, BarChart3 } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface HeaderProps {
   onNavigate: (section: string) => void;
@@ -9,6 +10,7 @@ interface HeaderProps {
 
 const Header = ({ onNavigate, activeSection }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   const menuItems = [
     { id: 'home', label: 'Home' },
@@ -22,6 +24,8 @@ const Header = ({ onNavigate, activeSection }: HeaderProps) => {
     { id: 'rd', label: 'R&D' },
     { id: 'contact', label: 'Contatti' }
   ];
+
+  const isOnHomePage = location.pathname === '/';
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border shadow-card">
@@ -41,7 +45,7 @@ const Header = ({ onNavigate, activeSection }: HeaderProps) => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1">
-            {menuItems.map((item) => (
+            {isOnHomePage && menuItems.map((item) => (
               <Button
                 key={item.id}
                 variant={activeSection === item.id ? "tech" : "ghost"}
@@ -52,6 +56,24 @@ const Header = ({ onNavigate, activeSection }: HeaderProps) => {
                 {item.label}
               </Button>
             ))}
+            {!isOnHomePage && (
+              <Button
+                variant="ghost"
+                size="sm"
+                asChild
+                className="text-sm"
+              >
+                <Link to="/">Home</Link>
+              </Button>
+            )}
+            <Button
+              variant={location.pathname === '/ai-commerce-lab' ? "tech" : "ghost"}
+              size="sm"
+              asChild
+              className="text-sm"
+            >
+              <Link to="/ai-commerce-lab">AI Commerce Lab</Link>
+            </Button>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -69,7 +91,7 @@ const Header = ({ onNavigate, activeSection }: HeaderProps) => {
         {isMenuOpen && (
           <div className="lg:hidden py-4 border-t border-border">
             <nav className="flex flex-col space-y-2">
-              {menuItems.map((item) => (
+              {isOnHomePage && menuItems.map((item) => (
                 <Button
                   key={item.id}
                   variant={activeSection === item.id ? "tech" : "ghost"}
@@ -82,6 +104,24 @@ const Header = ({ onNavigate, activeSection }: HeaderProps) => {
                   {item.label}
                 </Button>
               ))}
+              {!isOnHomePage && (
+                <Button
+                  variant="ghost"
+                  className="justify-start text-sm"
+                  asChild
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Link to="/">Home</Link>
+                </Button>
+              )}
+              <Button
+                variant={location.pathname === '/ai-commerce-lab' ? "tech" : "ghost"}
+                className="justify-start text-sm"
+                asChild
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Link to="/ai-commerce-lab">AI Commerce Lab</Link>
+              </Button>
             </nav>
           </div>
         )}
