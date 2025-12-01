@@ -19,6 +19,7 @@ import {
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 const AICommerceLabPage = () => {
   const navigate = useNavigate();
@@ -56,6 +57,26 @@ const AICommerceLabPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>AI Commerce Lab – DataWisePartners</title>
+        <meta name="description" content="Il laboratorio DataWisePartners dedicato agli esperimenti di AI applicata al commercio e ai prodotti digitali." />
+        
+        {/* Open Graph / WhatsApp */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.datawisepartners.it/ai-commerce-lab" />
+        <meta property="og:title" content="AI Commerce Lab – DataWisePartners" />
+        <meta property="og:description" content="Il laboratorio DataWisePartners dedicato agli esperimenti di AI applicata al commercio e ai prodotti digitali." />
+        <meta property="og:image" content="https://www.datawisepartners.it/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="AI Commerce Lab – DataWisePartners" />
+        <meta name="twitter:description" content="Il laboratorio DataWisePartners dedicato agli esperimenti di AI applicata al commercio e ai prodotti digitali." />
+        <meta name="twitter:image" content="https://www.datawisepartners.it/og-image.png" />
+      </Helmet>
+      
       <Header onNavigate={handleNavigate} activeSection="" />
       
       <main className="pt-16">
