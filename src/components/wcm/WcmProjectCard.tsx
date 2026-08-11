@@ -112,12 +112,9 @@ const WcmProjectCard = ({ project }: { project: WcmProjectStatus }) => {
           <Field
             icon={Activity}
             label="Last material activity"
-            value={
-              project.last_material_activity
-                ? `${project.last_material_activity}\n`
-                : null
-            }
+            value={project.last_material_activity}
           />
+
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
