@@ -1,10 +1,7 @@
 import { Helmet } from 'react-helmet-async';
-import { Loader2, LogOut, RefreshCw, ShieldAlert } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useWcmAuth } from '@/hooks/useWcmAuth';
 import { useWcmProjects } from '@/hooks/useWcmProjects';
-import WcmLogin from '@/components/wcm/WcmLogin';
 import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 
 const Shell = ({ children }: { children: React.ReactNode }) => (
