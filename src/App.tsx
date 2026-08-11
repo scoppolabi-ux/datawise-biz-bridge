@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import CookiePolicy from "./pages/CookiePolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AICommerceLabPage from "./pages/AICommerceLabPage";
+import WcmMissionControl from "./pages/WcmMissionControl";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
