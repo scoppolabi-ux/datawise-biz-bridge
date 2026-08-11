@@ -14,16 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wcm_project_status: {
+        Row: {
+          blocker: string | null
+          board_gate_action_requested: string | null
+          board_gate_reason: string | null
+          created_at: string
+          current_focus: string | null
+          heartbeat_cadence: string | null
+          heartbeat_last_outcome: string | null
+          heartbeat_last_run_at: string | null
+          id: string
+          last_material_activity: string | null
+          last_material_activity_at: string | null
+          needs_stefano: boolean
+          next_action: string | null
+          notes: string | null
+          phase: string | null
+          project_id: string
+          project_name: string
+          source: string | null
+          status: string
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          blocker?: string | null
+          board_gate_action_requested?: string | null
+          board_gate_reason?: string | null
+          created_at?: string
+          current_focus?: string | null
+          heartbeat_cadence?: string | null
+          heartbeat_last_outcome?: string | null
+          heartbeat_last_run_at?: string | null
+          id?: string
+          last_material_activity?: string | null
+          last_material_activity_at?: string | null
+          needs_stefano?: boolean
+          next_action?: string | null
+          notes?: string | null
+          phase?: string | null
+          project_id: string
+          project_name: string
+          source?: string | null
+          status: string
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          blocker?: string | null
+          board_gate_action_requested?: string | null
+          board_gate_reason?: string | null
+          created_at?: string
+          current_focus?: string | null
+          heartbeat_cadence?: string | null
+          heartbeat_last_outcome?: string | null
+          heartbeat_last_run_at?: string | null
+          id?: string
+          last_material_activity?: string | null
+          last_material_activity_at?: string | null
+          needs_stefano?: boolean
+          next_action?: string | null
+          notes?: string | null
+          phase?: string | null
+          project_id?: string
+          project_name?: string
+          source?: string | null
+          status?: string
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "owner" | "admin" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +248,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["owner", "admin", "viewer"],
+    },
   },
 } as const
