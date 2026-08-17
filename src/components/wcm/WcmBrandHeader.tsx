@@ -24,9 +24,18 @@ const WcmBrandHeader = ({
         <Link
           to="/wcm"
           aria-label="WCM Mission Control — DataWisePartners"
-          className="wcm-logo-plate shrink-0 rounded-md px-2.5 py-2 transition-colors hover:border-wcm-accent"
+          className="wcm-logo-plate shrink-0 rounded-md px-3 py-2.5 transition-colors hover:border-wcm-accent"
         >
-          <img src={LOGO_SRC} alt="DataWisePartners" className="h-7 w-auto sm:h-8" />
+          {/* The source asset is a white mark on a large transparent square:
+              the wrapper crops it to the mark's bounding box, unaltered. */}
+          <span className="relative block h-[30px] w-[105px] overflow-hidden">
+            <img
+              src={LOGO_SRC}
+              alt="DataWisePartners"
+              className="absolute max-w-none"
+              style={{ width: 132, left: -13.5, top: -50.4 }}
+            />
+          </span>
         </Link>
         <div className="min-w-0">
           {eyebrow && (

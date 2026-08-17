@@ -169,8 +169,10 @@ All colors MUST be HSL.
   }
 
   /* Contrast plate so the DWP logo stays legible on the dark console */
+  /* The DWP mark is white on transparent: a dark plate keeps it legible
+     and coherent with the console, without altering the asset. */
   .wcm-logo-plate {
-    background-color: hsl(0 0% 100% / 0.94);
+    background-color: hsl(var(--wcm-surface));
     border: 1px solid hsl(var(--wcm-line-strong));
   }
 }
