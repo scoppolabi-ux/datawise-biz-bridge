@@ -35,13 +35,164 @@ export type Database = {
         }
         Relationships: []
       }
+      wcm_project_activity: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_id: string
+          event_type: string | null
+          id: string
+          occurred_at: string | null
+          project_id: string
+          sort_order: number
+          source_path: string | null
+          source_sha: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_id: string
+          event_type?: string | null
+          id?: string
+          occurred_at?: string | null
+          project_id: string
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_id?: string
+          event_type?: string | null
+          id?: string
+          occurred_at?: string | null
+          project_id?: string
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wcm_project_documents: {
+        Row: {
+          category: string | null
+          content_markdown: string | null
+          created_at: string
+          document_id: string
+          id: string
+          project_id: string
+          requires_stefano: boolean
+          sort_order: number
+          source_path: string | null
+          source_sha: string | null
+          source_url: string | null
+          status: string | null
+          title: string
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          category?: string | null
+          content_markdown?: string | null
+          created_at?: string
+          document_id: string
+          id?: string
+          project_id: string
+          requires_stefano?: boolean
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          source_url?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          category?: string | null
+          content_markdown?: string | null
+          created_at?: string
+          document_id?: string
+          id?: string
+          project_id?: string
+          requires_stefano?: boolean
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          source_url?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
+      wcm_project_roadmap: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          item_type: string | null
+          label: string
+          notes: string | null
+          parent_id: string | null
+          project_id: string
+          related_document_id: string | null
+          sequence: number
+          source_path: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          item_type?: string | null
+          label: string
+          notes?: string | null
+          parent_id?: string | null
+          project_id: string
+          related_document_id?: string | null
+          sequence?: number
+          source_path?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          item_type?: string | null
+          label?: string
+          notes?: string | null
+          parent_id?: string | null
+          project_id?: string
+          related_document_id?: string | null
+          sequence?: number
+          source_path?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wcm_project_status: {
         Row: {
           blocker: string | null
           board_gate_action_requested: string | null
           board_gate_reason: string | null
+          board_narrative_mass: string | null
+          board_review_summary: string | null
+          board_verdict: string | null
           created_at: string
           current_focus: string | null
+          documents_to_read_count: number
           heartbeat_cadence: string | null
           heartbeat_last_outcome: string | null
           heartbeat_last_run_at: string | null
@@ -52,8 +203,10 @@ export type Database = {
           next_action: string | null
           notes: string | null
           phase: string | null
+          progress_summary: string | null
           project_id: string
           project_name: string
+          repo_url: string | null
           source: string | null
           status: string
           summary: string | null
@@ -63,8 +216,12 @@ export type Database = {
           blocker?: string | null
           board_gate_action_requested?: string | null
           board_gate_reason?: string | null
+          board_narrative_mass?: string | null
+          board_review_summary?: string | null
+          board_verdict?: string | null
           created_at?: string
           current_focus?: string | null
+          documents_to_read_count?: number
           heartbeat_cadence?: string | null
           heartbeat_last_outcome?: string | null
           heartbeat_last_run_at?: string | null
@@ -75,8 +232,10 @@ export type Database = {
           next_action?: string | null
           notes?: string | null
           phase?: string | null
+          progress_summary?: string | null
           project_id: string
           project_name: string
+          repo_url?: string | null
           source?: string | null
           status: string
           summary?: string | null
@@ -86,8 +245,12 @@ export type Database = {
           blocker?: string | null
           board_gate_action_requested?: string | null
           board_gate_reason?: string | null
+          board_narrative_mass?: string | null
+          board_review_summary?: string | null
+          board_verdict?: string | null
           created_at?: string
           current_focus?: string | null
+          documents_to_read_count?: number
           heartbeat_cadence?: string | null
           heartbeat_last_outcome?: string | null
           heartbeat_last_run_at?: string | null
@@ -98,8 +261,10 @@ export type Database = {
           next_action?: string | null
           notes?: string | null
           phase?: string | null
+          progress_summary?: string | null
           project_id?: string
           project_name?: string
+          repo_url?: string | null
           source?: string | null
           status?: string
           summary?: string | null
