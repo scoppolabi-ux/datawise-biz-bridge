@@ -133,7 +133,7 @@ const WcmProjectDetail = () => {
 
         {project && (
           <Tabs value={tab} onValueChange={setTab}>
-            <TabsList className="flex w-full flex-wrap justify-start gap-1 rounded-lg border border-wcm-line bg-wcm-surface/70 p-1">
+            <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 rounded-lg border border-wcm-line bg-wcm-surface/70 p-1">
               {[
                 ['overview', 'Overview'],
                 ['documents', 'Documents'],
