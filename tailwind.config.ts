@@ -67,7 +67,22 @@ export default {
 				'brand-red-light': 'hsl(var(--brand-red-light))',
 				'brand-red-dark': 'hsl(var(--brand-red-dark))',
 				'brand-black': 'hsl(var(--brand-black))',
-				'brand-gray': 'hsl(var(--brand-gray))'
+				'brand-gray': 'hsl(var(--brand-gray))',
+				wcm: {
+					bg: 'hsl(var(--wcm-bg))',
+					surface: 'hsl(var(--wcm-surface))',
+					panel: 'hsl(var(--wcm-panel))',
+					line: 'hsl(var(--wcm-line))',
+					'line-strong': 'hsl(var(--wcm-line-strong))',
+					strong: 'hsl(var(--wcm-strong))',
+					text: 'hsl(var(--wcm-text))',
+					muted: 'hsl(var(--wcm-muted))',
+					dim: 'hsl(var(--wcm-dim))',
+					accent: 'hsl(var(--wcm-accent))',
+					'accent-deep': 'hsl(var(--wcm-accent-deep))',
+					alert: 'hsl(var(--wcm-alert))',
+					'alert-fg': 'hsl(var(--wcm-alert-fg))'
+				}
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
