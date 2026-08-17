@@ -17,6 +17,7 @@ import WcmDocumentsTab from '@/components/wcm/WcmDocumentsTab';
 import WcmBoardTab from '@/components/wcm/WcmBoardTab';
 import WcmActivityTab from '@/components/wcm/WcmActivityTab';
 import WcmRoadmapTab from '@/components/wcm/WcmRoadmapTab';
+import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 
 const WcmProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -132,7 +133,7 @@ const WcmProjectDetail = () => {
 
         {project && (
           <Tabs value={tab} onValueChange={setTab}>
-            <TabsList className="flex w-full flex-wrap justify-start gap-1 bg-wcm-surface/60 p-1">
+            <TabsList className="flex w-full flex-wrap justify-start gap-1 rounded-lg border border-wcm-line bg-wcm-surface/70 p-1">
               {[
                 ['overview', 'Overview'],
                 ['documents', 'Documents'],
@@ -143,7 +144,7 @@ const WcmProjectDetail = () => {
                 <TabsTrigger
                   key={value}
                   value={value}
-                  className="text-xs text-wcm-muted data-[state=active]:bg-wcm-panel data-[state=active]:text-wcm-strong sm:text-sm"
+                  className="rounded-md text-xs uppercase tracking-[0.12em] text-wcm-muted transition-colors data-[state=active]:border data-[state=active]:border-wcm-accent/40 data-[state=active]:bg-wcm-panel data-[state=active]:text-wcm-strong data-[state=active]:shadow-none sm:text-[13px]"
                 >
                   {label}
                 </TabsTrigger>
