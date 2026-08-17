@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ChevronRight, ExternalLink, FileText } from 'lucide-react';
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
 import WcmDocumentReader from './WcmDocumentReader';
@@ -45,12 +44,19 @@ const DocRow = ({
   </li>
 );
 
-const WcmDocumentsTab = ({ documents }: { documents: WcmProjectDocument[] }) => {
-  const [openId, setOpenId] = useState<string | null>(null);
-  const openDoc = documents.find((d) => d.id === openId);
+const WcmDocumentsTab = ({
+  documents,
+  openDocumentId,
+  onOpenDocument,
+}: {
+  documents: WcmProjectDocument[];
+  openDocumentId: string | null;
+  onOpenDocument: (documentId: string | null) => void;
+}) => {
+  const openDoc = documents.find((d) => d.document_id === openDocumentId);
 
   if (openDoc) {
-    return <WcmDocumentReader doc={openDoc} onBack={() => setOpenId(null)} />;
+    return <WcmDocumentReader doc={openDoc} onBack={() => onOpenDocument(null)} />;
   }
 
   if (documents.length === 0) {
@@ -77,7 +83,7 @@ const WcmDocumentsTab = ({ documents }: { documents: WcmProjectDocument[] }) => 
             </h3>
             <ul>
               {items.map((doc) => (
-                <DocRow key={doc.id} doc={doc} onOpen={() => setOpenId(doc.id)} />
+                <DocRow key={doc.id} doc={doc} onOpen={() => onOpenDocument(doc.document_id)} />
               ))}
             </ul>
           </section>
