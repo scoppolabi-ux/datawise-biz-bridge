@@ -27,6 +27,8 @@ const App = () => (
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/ai-commerce-lab" element={<AICommerceLabPage />} />
             <Route path="/wcm" element={<WcmMissionControl />} />
+            <Route path="/wcm/:projectId" element={<WcmProjectDetail />} />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
