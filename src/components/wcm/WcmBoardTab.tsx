@@ -10,12 +10,12 @@ const Block = ({
   title: string;
   children: React.ReactNode;
 }) => (
-  <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 sm:p-6">
-    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+  <section className="rounded-xl border border-wcm-line bg-wcm-surface/60 p-4 sm:p-6">
+    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
       <Icon className="h-3.5 w-3.5" />
       {title}
     </div>
-    <div className="mt-3 text-sm leading-relaxed text-slate-300">{children}</div>
+    <div className="mt-3 text-sm leading-relaxed text-wcm-text">{children}</div>
   </section>
 );
 
@@ -32,7 +32,7 @@ const WcmBoardTab = ({
 
   if (!project.needs_stefano) {
     return (
-      <p className="rounded-xl border border-slate-800 bg-slate-900/60 p-6 text-sm text-slate-400">
+      <p className="rounded-xl border border-wcm-line bg-wcm-surface/60 p-6 text-sm text-wcm-muted">
         Nessun Board Gate aperto: il progetto non richiede al momento una decisione di Stefano.
       </p>
     );
@@ -40,47 +40,47 @@ const WcmBoardTab = ({
 
   return (
     <div className="space-y-4">
-      <section className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 sm:p-6">
-        <div className="flex items-center gap-2 text-red-300">
+      <section className="rounded-xl border border-wcm-alert/30 bg-wcm-alert/10 p-4 sm:p-6">
+        <div className="flex items-center gap-2 text-wcm-alert-fg">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           <h2 className="text-sm font-bold uppercase tracking-[0.18em]">
             Needs Stefano — Board Package
           </h2>
         </div>
         {project.board_gate_action_requested && (
-          <p className="mt-3 text-base font-medium leading-relaxed text-red-50">
+          <p className="mt-3 text-base font-medium leading-relaxed text-wcm-strong">
             {project.board_gate_action_requested}
           </p>
         )}
         {project.board_gate_reason && (
-          <p className="mt-3 text-sm leading-relaxed text-red-200/80">
+          <p className="mt-3 text-sm leading-relaxed text-wcm-alert-fg/80">
             {project.board_gate_reason}
           </p>
         )}
       </section>
 
-      <section className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60">
-        <h3 className="flex items-center justify-between border-b border-slate-800 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+      <section className="overflow-hidden rounded-xl border border-wcm-line bg-wcm-surface/60">
+        <h3 className="flex items-center justify-between border-b border-wcm-line px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
           Documenti da leggere
-          <span className="font-mono text-slate-600">{toRead.length}</span>
+          <span className="font-mono text-wcm-dim">{toRead.length}</span>
         </h3>
         {toRead.length === 0 ? (
-          <p className="p-4 text-sm text-slate-400">
+          <p className="p-4 text-sm text-wcm-muted">
             Nessun documento marcato come da leggere nel read-model.
           </p>
         ) : (
           <ul>
             {toRead.map((doc) => (
-              <li key={doc.id} className="border-b border-slate-800/70 last:border-0">
+              <li key={doc.id} className="border-b border-wcm-line/70 last:border-0">
                 <button
                   type="button"
                   onClick={() => onOpenDocument(doc.document_id)}
-                  className="flex w-full items-start gap-3 p-4 text-left transition-colors hover:bg-slate-800/40"
+                  className="flex w-full items-start gap-3 p-4 text-left transition-colors hover:bg-wcm-panel/40"
                 >
-                  <FileText className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
+                  <FileText className="mt-0.5 h-4 w-4 shrink-0 text-wcm-dim" />
                   <span className="min-w-0">
-                    <span className="block text-sm font-medium text-slate-100">{doc.title}</span>
-                    <span className="mt-1 block truncate font-mono text-[11px] text-slate-500">
+                    <span className="block text-sm font-medium text-wcm-strong">{doc.title}</span>
+                    <span className="mt-1 block truncate font-mono text-[11px] text-wcm-dim">
                       {[doc.category, doc.status, doc.version && `v${doc.version}`]
                         .filter(Boolean)
                         .join(' · ') || doc.document_id}
@@ -109,7 +109,7 @@ const WcmBoardTab = ({
         </Block>
       )}
 
-      <p className="px-1 text-xs text-slate-600">
+      <p className="px-1 text-xs text-wcm-dim">
         Mission Control è read-only: le decisioni di board restano su GitHub, source of truth.
       </p>
     </div>

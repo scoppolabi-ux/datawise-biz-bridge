@@ -7,10 +7,10 @@ const Meta = ({ label, value }: { label: string; value: string | null }) => {
   if (!value) return null;
   return (
     <div className="min-w-0">
-      <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+      <span className="text-[10px] font-semibold uppercase tracking-wider text-wcm-dim">
         {label}
       </span>
-      <p className="truncate font-mono text-xs text-slate-300" title={value}>
+      <p className="truncate font-mono text-xs text-wcm-text" title={value}>
         {value}
       </p>
     </div>
@@ -24,13 +24,13 @@ const WcmDocumentReader = ({
   doc: WcmProjectDocument;
   onBack: () => void;
 }) => (
-  <div className="rounded-xl border border-slate-800 bg-slate-900/60">
-    <header className="space-y-4 border-b border-slate-800 p-4 sm:p-6">
+  <div className="rounded-xl border border-wcm-line bg-wcm-surface/60">
+    <header className="space-y-4 border-b border-wcm-line p-4 sm:p-6">
       <Button
         variant="ghost"
         size="sm"
         onClick={onBack}
-        className="-ml-2 h-8 text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+        className="-ml-2 h-8 text-wcm-muted hover:bg-wcm-panel hover:text-wcm-strong"
       >
         <ArrowLeft className="mr-2 h-3.5 w-3.5" />
         Torna ai documenti
@@ -38,10 +38,10 @@ const WcmDocumentReader = ({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
-          <FileText className="mt-1 h-4 w-4 shrink-0 text-slate-500" />
+          <FileText className="mt-1 h-4 w-4 shrink-0 text-wcm-dim" />
           <div className="min-w-0">
-            <h2 className="text-lg font-semibold text-slate-50 sm:text-xl">{doc.title}</h2>
-            <p className="mt-1 font-mono text-xs text-slate-500">{doc.document_id}</p>
+            <h2 className="text-lg font-semibold text-wcm-strong sm:text-xl">{doc.title}</h2>
+            <p className="mt-1 font-mono text-xs text-wcm-dim">{doc.document_id}</p>
           </div>
         </div>
         {doc.source_url && (
@@ -49,7 +49,7 @@ const WcmDocumentReader = ({
             href={doc.source_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-2 rounded-md border border-slate-700 px-3 py-1.5 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-slate-100"
+            className="inline-flex shrink-0 items-center gap-2 rounded-md border border-wcm-line-strong px-3 py-1.5 text-xs text-wcm-text transition-colors hover:bg-wcm-panel hover:text-wcm-strong"
           >
             <ExternalLink className="h-3.5 w-3.5" />
             View source on GitHub
@@ -72,7 +72,7 @@ const WcmDocumentReader = ({
       {doc.content_markdown ? (
         <WcmMarkdown content={doc.content_markdown} />
       ) : (
-        <p className="rounded-lg border border-slate-800 bg-slate-950/50 p-4 text-sm text-slate-400">
+        <p className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-4 text-sm text-wcm-muted">
           Contenuto non ancora sincronizzato nel read-model.
           {doc.source_url && ' Usa "View source on GitHub" per leggere l\'originale.'}
         </p>

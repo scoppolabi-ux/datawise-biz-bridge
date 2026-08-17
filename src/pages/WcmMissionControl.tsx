@@ -5,7 +5,7 @@ import { useWcmProjects } from '@/hooks/useWcmProjects';
 import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 
 const Shell = ({ children }: { children: React.ReactNode }) => (
-  <div className="min-h-screen bg-slate-950">
+  <div className="min-h-screen bg-wcm-bg">
     <Helmet>
       <title>WCM Mission Control</title>
       <meta name="robots" content="noindex, nofollow, noarchive" />
@@ -19,20 +19,20 @@ const WcmMissionControl = () => {
 
   return (
     <Shell>
-      <header className="sticky top-0 z-10 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b border-wcm-line bg-wcm-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
-            <h1 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-100">
+            <h1 className="text-sm font-semibold uppercase tracking-[0.22em] text-wcm-strong">
               WCM Mission Control
             </h1>
-            <p className="mt-1 text-xs text-slate-500">Stato operativo progetti</p>
+            <p className="mt-1 text-xs text-wcm-dim">Stato operativo progetti</p>
           </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => refetch()}
-              className="border-slate-700 bg-transparent text-slate-300 hover:bg-slate-900 hover:text-slate-100"
+              className="border-wcm-line-strong bg-transparent text-wcm-text hover:bg-wcm-surface hover:text-wcm-strong"
             >
               <RefreshCw className={`mr-2 h-3.5 w-3.5 ${isFetching ? 'animate-spin' : ''}`} />
               Aggiorna
@@ -45,18 +45,18 @@ const WcmMissionControl = () => {
       <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
         {isLoading && (
           <div className="flex justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-slate-600" />
+            <Loader2 className="h-6 w-6 animate-spin text-wcm-dim" />
           </div>
         )}
 
         {error && (
-          <p className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
+          <p className="rounded-lg border border-wcm-alert/30 bg-wcm-alert/10 p-4 text-sm text-wcm-alert-fg">
             Impossibile caricare lo stato dei progetti.
           </p>
         )}
 
         {projects && projects.length === 0 && (
-          <p className="rounded-lg border border-slate-800 bg-slate-900/50 p-6 text-sm text-slate-400">
+          <p className="rounded-lg border border-wcm-line bg-wcm-surface/50 p-6 text-sm text-wcm-muted">
             Nessun progetto WCM registrato.
           </p>
         )}
