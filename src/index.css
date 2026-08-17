@@ -131,21 +131,22 @@ All colors MUST be HSL.
    ============================================================ */
 @layer base {
   :root {
-    --wcm-bg: 215 47% 7%;
-    --wcm-surface: 214 42% 10%;
-    --wcm-panel: 214 36% 14%;
-    --wcm-line: 213 30% 19%;
-    --wcm-line-strong: 212 28% 29%;
+    --wcm-bg: 0 0% 7%;
+    --wcm-surface: 0 0% 10%;
+    --wcm-panel: 0 0% 14%;
+    --wcm-line: 0 0% 20%;
+    --wcm-line-strong: 0 0% 31%;
     --wcm-strong: 0 0% 100%;
-    --wcm-text: 210 32% 87%;
-    --wcm-muted: 212 20% 68%;
-    --wcm-dim: 212 17% 50%;
-    --wcm-accent: 196 92% 56%;
-    --wcm-accent-deep: 205 90% 44%;
+    --wcm-text: 0 0% 87%;
+    --wcm-muted: 0 0% 68%;
+    --wcm-dim: 0 0% 52%;
+    --wcm-accent: 351 70% 50%;
+    --wcm-accent-deep: 351 70% 35%;
     --wcm-alert: 351 72% 50%;
-    --wcm-alert-fg: 351 88% 80%;
+    --wcm-alert-fg: 351 88% 82%;
   }
 }
+
 
 @layer components {
   /* Subtle technical grid, no glow, no gradients */
