@@ -8,7 +8,7 @@ const ALLOWED_REPO = 'scoppolabi-ux/WCM-LAB'
 const ALLOWED_REF = 'refs/heads/main'
 const ALLOWED_PROJECT_ID = 'prima-di-noi'
 
-const ALLOWED_FIELDS = [
+const STATUS_FIELDS = [
   'project_name',
   'status',
   'phase',
@@ -18,6 +18,12 @@ const ALLOWED_FIELDS = [
   'needs_stefano',
   'board_gate_reason',
   'board_gate_action_requested',
+  'board_verdict',
+  'board_narrative_mass',
+  'board_review_summary',
+  'progress_summary',
+  'documents_to_read_count',
+  'repo_url',
   'blocker',
   'heartbeat_cadence',
   'heartbeat_last_run_at',
@@ -27,6 +33,76 @@ const ALLOWED_FIELDS = [
   'notes',
   'source',
 ] as const
+
+// Board payload is folded into the status row (no extra table).
+const BOARD_FIELDS: Record<string, string> = {
+  needs_stefano: 'needs_stefano',
+  reason: 'board_gate_reason',
+  action_requested: 'board_gate_action_requested',
+  verdict: 'board_verdict',
+  narrative_mass: 'board_narrative_mass',
+  review_summary: 'board_review_summary',
+}
+
+const DOCUMENT_FIELDS = [
+  'document_id',
+  'title',
+  'category',
+  'status',
+  'version',
+  'source_path',
+  'source_url',
+  'source_sha',
+  'content_markdown',
+  'requires_stefano',
+  'sort_order',
+] as const
+
+const ACTIVITY_FIELDS = [
+  'event_id',
+  'occurred_at',
+  'event_type',
+  'title',
+  'description',
+  'source_path',
+  'source_sha',
+  'sort_order',
+] as const
+
+const ROADMAP_FIELDS = [
+  'item_id',
+  'label',
+  'item_type',
+  'status',
+  'sequence',
+  'parent_id',
+  'related_document_id',
+  'source_path',
+  'notes',
+] as const
+
+const COLLECTIONS = {
+  documents: {
+    table: 'wcm_project_documents',
+    key: 'document_id',
+    fields: DOCUMENT_FIELDS as readonly string[],
+    required: ['document_id', 'title'],
+  },
+  activity: {
+    table: 'wcm_project_activity',
+    key: 'event_id',
+    fields: ACTIVITY_FIELDS as readonly string[],
+    required: ['event_id', 'title'],
+  },
+  roadmap: {
+    table: 'wcm_project_roadmap',
+    key: 'item_id',
+    fields: ROADMAP_FIELDS as readonly string[],
+    required: ['item_id', 'label'],
+  },
+} as const
+
+type CollectionName = keyof typeof COLLECTIONS
 
 const JWKS = createRemoteJWKSet(new URL(`${ISSUER}/.well-known/jwks`))
 
@@ -92,22 +168,78 @@ Deno.serve(async (req) => {
     return json({ error: `project_id must be '${ALLOWED_PROJECT_ID}'` }, 400)
   }
 
-  const projection = body?.projection
-  if (!projection || typeof projection !== 'object' || Array.isArray(projection)) {
-    return json({ error: 'projection must be an object' }, 400)
-  }
-
-  const incoming = projection as Record<string, unknown>
-  const unknownKeys = Object.keys(incoming).filter(
-    (k) => !(ALLOWED_FIELDS as readonly string[]).includes(k),
-  )
-  if (unknownKeys.length > 0) {
-    return json({ error: 'Unsupported projection fields', fields: unknownKeys }, 400)
-  }
-
   const sourceStateSha = typeof body?.source_state_sha === 'string' ? body.source_state_sha : null
   const semanticFingerprint =
     typeof body?.semantic_fingerprint === 'string' ? body.semantic_fingerprint : null
+
+  // --- Status projection (+ board block folded in) ---
+  const incoming: Record<string, unknown> = {}
+
+  if (body.projection !== undefined) {
+    const projection = body.projection
+    if (!projection || typeof projection !== 'object' || Array.isArray(projection)) {
+      return json({ error: 'projection must be an object' }, 400)
+    }
+    const p = projection as Record<string, unknown>
+    const unknownKeys = Object.keys(p).filter(
+      (k) => !(STATUS_FIELDS as readonly string[]).includes(k),
+    )
+    if (unknownKeys.length > 0) {
+      return json({ error: 'Unsupported projection fields', fields: unknownKeys }, 400)
+    }
+    Object.assign(incoming, p)
+  }
+
+  if (body.board !== undefined) {
+    const board = body.board
+    if (!board || typeof board !== 'object' || Array.isArray(board)) {
+      return json({ error: 'board must be an object' }, 400)
+    }
+    const b = board as Record<string, unknown>
+    const unknownBoard = Object.keys(b).filter((k) => !(k in BOARD_FIELDS))
+    if (unknownBoard.length > 0) {
+      return json({ error: 'Unsupported board fields', fields: unknownBoard }, 400)
+    }
+    for (const [k, v] of Object.entries(b)) incoming[BOARD_FIELDS[k]] = v
+  }
+
+  // --- Collections validation ---
+  const collectionPayloads: Partial<
+    Record<CollectionName, { rows: Record<string, unknown>[]; snapshot: boolean }>
+  > = {}
+
+  for (const name of Object.keys(COLLECTIONS) as CollectionName[]) {
+    if (body[name] === undefined) continue
+    const raw = body[name]
+    if (!Array.isArray(raw)) return json({ error: `${name} must be an array` }, 400)
+
+    const cfg = COLLECTIONS[name]
+    const rows: Record<string, unknown>[] = []
+    for (const [index, item] of raw.entries()) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) {
+        return json({ error: `${name}[${index}] must be an object` }, 400)
+      }
+      const obj = item as Record<string, unknown>
+      const unknown = Object.keys(obj).filter((k) => !cfg.fields.includes(k))
+      if (unknown.length > 0) {
+        return json({ error: `Unsupported ${name} fields`, index, fields: unknown }, 400)
+      }
+      for (const req of cfg.required) {
+        if (normalize(obj[req]) === null) {
+          return json({ error: `${name}[${index}].${req} is required` }, 400)
+        }
+      }
+      const row: Record<string, unknown> = { project_id: ALLOWED_PROJECT_ID }
+      for (const field of cfg.fields) {
+        if (field in obj) row[field] = normalize(obj[field])
+      }
+      rows.push(row)
+    }
+
+    // A collection is a full snapshot unless explicitly declared partial.
+    const partialFlag = (body[`${name}_partial`] ?? body.partial) === true
+    collectionPayloads[name] = { rows, snapshot: !partialFlag }
+  }
 
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
@@ -124,39 +256,95 @@ Deno.serve(async (req) => {
   if (readError) return json({ error: 'Read failed', detail: readError.message }, 500)
   if (!current) return json({ error: 'Project not found' }, 404)
 
+  // --- Status diff ---
   const updates: Record<string, unknown> = {}
-  for (const field of ALLOWED_FIELDS) {
+  for (const field of STATUS_FIELDS) {
     if (!(field in incoming)) continue
     if (!sameValue(field, incoming[field], (current as Record<string, unknown>)[field])) {
       updates[field] = normalize(incoming[field])
     }
   }
 
-  if (Object.keys(updates).length === 0) {
-    return json({
-      changed: false,
-      project_id: ALLOWED_PROJECT_ID,
-      source_state_sha: sourceStateSha,
-      semantic_fingerprint: semanticFingerprint,
-      row: current,
-    })
+  let statusRow = current as Record<string, unknown>
+  if (Object.keys(updates).length > 0) {
+    const { data: updated, error: updateError } = await supabase
+      .from('wcm_project_status')
+      .update(updates)
+      .eq('project_id', ALLOWED_PROJECT_ID)
+      .select('*')
+      .single()
+    if (updateError) return json({ error: 'Update failed', detail: updateError.message }, 500)
+    statusRow = updated as Record<string, unknown>
   }
 
-  const { data: updated, error: updateError } = await supabase
-    .from('wcm_project_status')
-    .update(updates)
-    .eq('project_id', ALLOWED_PROJECT_ID)
-    .select('*')
-    .single()
+  // --- Collections upsert (idempotent, scoped to this project) ---
+  const collectionResults: Record<
+    string,
+    { upserted: number; changed: number; deleted: number }
+  > = {}
 
-  if (updateError) return json({ error: 'Update failed', detail: updateError.message }, 500)
+  for (const name of Object.keys(collectionPayloads) as CollectionName[]) {
+    const cfg = COLLECTIONS[name]
+    const { rows, snapshot } = collectionPayloads[name]!
+
+    const { data: existing, error: exErr } = await supabase
+      .from(cfg.table)
+      .select('*')
+      .eq('project_id', ALLOWED_PROJECT_ID)
+    if (exErr) return json({ error: `Read ${name} failed`, detail: exErr.message }, 500)
+
+    const byKey = new Map<string, Record<string, unknown>>()
+    for (const row of (existing ?? []) as Record<string, unknown>[]) {
+      byKey.set(String(row[cfg.key]), row)
+    }
+
+    const toUpsert = rows.filter((row) => {
+      const prev = byKey.get(String(row[cfg.key]))
+      if (!prev) return true
+      return cfg.fields.some((field) => field in row && !sameValue(field, row[field], prev[field]))
+    })
+
+    if (toUpsert.length > 0) {
+      const { error: upErr } = await supabase
+        .from(cfg.table)
+        .upsert(toUpsert, { onConflict: `project_id,${cfg.key}` })
+      if (upErr) return json({ error: `Upsert ${name} failed`, detail: upErr.message }, 500)
+    }
+
+    let deleted = 0
+    if (snapshot) {
+      const keep = new Set(rows.map((row) => String(row[cfg.key])))
+      const stale = [...byKey.keys()].filter((k) => !keep.has(k))
+      if (stale.length > 0) {
+        const { error: delErr } = await supabase
+          .from(cfg.table)
+          .delete()
+          .eq('project_id', ALLOWED_PROJECT_ID)
+          .in(cfg.key, stale)
+        if (delErr) return json({ error: `Delete ${name} failed`, detail: delErr.message }, 500)
+        deleted = stale.length
+      }
+    }
+
+    collectionResults[name] = {
+      upserted: toUpsert.length,
+      changed: toUpsert.length,
+      deleted,
+    }
+  }
+
+  const collectionsChanged = Object.values(collectionResults).some(
+    (r) => r.changed > 0 || r.deleted > 0,
+  )
+  const changed = Object.keys(updates).length > 0 || collectionsChanged
 
   return json({
-    changed: true,
+    changed,
     project_id: ALLOWED_PROJECT_ID,
     updated_fields: Object.keys(updates),
+    collections: collectionResults,
     source_state_sha: sourceStateSha,
     semantic_fingerprint: semanticFingerprint,
-    row: updated,
+    row: statusRow,
   })
 })
