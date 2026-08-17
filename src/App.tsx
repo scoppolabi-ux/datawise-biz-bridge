@@ -9,6 +9,7 @@ import CookiePolicy from "./pages/CookiePolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AICommerceLabPage from "./pages/AICommerceLabPage";
 import WcmMissionControl from "./pages/WcmMissionControl";
+import WcmProjectDetail from "./pages/WcmProjectDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
