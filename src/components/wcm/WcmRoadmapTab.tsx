@@ -14,7 +14,7 @@ const WcmRoadmapTab = ({
 }) => {
   if (items.length === 0) {
     return (
-      <p className="rounded-xl border border-slate-800 bg-slate-900/60 p-6 text-sm text-slate-400">
+      <p className="rounded-xl border border-wcm-line bg-wcm-surface/60 p-6 text-sm text-wcm-muted">
         Nessuna milestone sincronizzata nel read-model.
       </p>
     );
@@ -26,12 +26,12 @@ const WcmRoadmapTab = ({
   const renderItem = (item: WcmProjectRoadmapItem, depth = 0) => {
     const doc = documents.find((d) => d.document_id === item.related_document_id);
     return (
-      <li key={item.id} className={cn(depth > 0 && 'ml-4 border-l border-slate-800 pl-4')}>
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+      <li key={item.id} className={cn(depth > 0 && 'ml-4 border-l border-wcm-line pl-4')}>
+        <div className="rounded-xl border border-wcm-line bg-wcm-surface/60 p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="min-w-0">
-              <h3 className="text-sm font-medium text-slate-100">{item.label}</h3>
-              <p className="mt-1 font-mono text-[11px] text-slate-600">
+              <h3 className="text-sm font-medium text-wcm-strong">{item.label}</h3>
+              <p className="mt-1 font-mono text-[11px] text-wcm-dim">
                 {item.item_type ?? 'milestone'} · #{item.sequence}
               </p>
             </div>
@@ -44,12 +44,12 @@ const WcmRoadmapTab = ({
               {ROADMAP_STATUS_LABELS[(item.status ?? '').toUpperCase()] ?? item.status ?? '—'}
             </span>
           </div>
-          {item.notes && <p className="mt-2 text-sm text-slate-400">{item.notes}</p>}
+          {item.notes && <p className="mt-2 text-sm text-wcm-muted">{item.notes}</p>}
           {doc && (
             <button
               type="button"
               onClick={() => onOpenDocument(doc.document_id)}
-              className="mt-3 inline-flex items-center gap-2 rounded-md border border-slate-700 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-slate-100"
+              className="mt-3 inline-flex items-center gap-2 rounded-md border border-wcm-line-strong px-2.5 py-1 text-xs text-wcm-text transition-colors hover:bg-wcm-panel hover:text-wcm-strong"
             >
               <FileText className="h-3.5 w-3.5" />
               {doc.title}

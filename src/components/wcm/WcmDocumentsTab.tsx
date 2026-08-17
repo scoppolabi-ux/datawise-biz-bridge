@@ -12,23 +12,23 @@ const DocRow = ({
   doc: WcmProjectDocument;
   onOpen: () => void;
 }) => (
-  <li className="flex items-center gap-2 border-b border-slate-800/70 last:border-0">
+  <li className="flex items-center gap-2 border-b border-wcm-line/70 last:border-0">
     <button
       type="button"
       onClick={onOpen}
-      className="flex min-w-0 flex-1 items-start gap-3 p-4 text-left transition-colors hover:bg-slate-800/40"
+      className="flex min-w-0 flex-1 items-start gap-3 p-4 text-left transition-colors hover:bg-wcm-panel/40"
     >
-      <FileText className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
+      <FileText className="mt-0.5 h-4 w-4 shrink-0 text-wcm-dim" />
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-medium text-slate-100">{doc.title}</span>
-        <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-500">
+        <span className="block text-sm font-medium text-wcm-strong">{doc.title}</span>
+        <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-wcm-dim">
           {doc.category && <span className="font-mono">{doc.category}</span>}
           {doc.status && <span className="font-mono">· {doc.status}</span>}
           {doc.version && <span className="font-mono">· v{doc.version}</span>}
           {doc.source_path && <span className="truncate font-mono">· {doc.source_path}</span>}
         </span>
       </span>
-      <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-600" />
+      <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-wcm-dim" />
     </button>
     {doc.source_url && (
       <a
@@ -36,7 +36,7 @@ const DocRow = ({
         target="_blank"
         rel="noopener noreferrer"
         title="View source on GitHub"
-        className="mr-3 shrink-0 rounded-md p-2 text-slate-500 transition-colors hover:bg-slate-800 hover:text-slate-200"
+        className="mr-3 shrink-0 rounded-md p-2 text-wcm-dim transition-colors hover:bg-wcm-panel hover:text-wcm-text"
       >
         <ExternalLink className="h-3.5 w-3.5" />
       </a>
@@ -61,7 +61,7 @@ const WcmDocumentsTab = ({
 
   if (documents.length === 0) {
     return (
-      <p className="rounded-xl border border-slate-800 bg-slate-900/60 p-6 text-sm text-slate-400">
+      <p className="rounded-xl border border-wcm-line bg-wcm-surface/60 p-6 text-sm text-wcm-muted">
         Nessun documento sincronizzato nel read-model.
       </p>
     );
@@ -75,11 +75,11 @@ const WcmDocumentsTab = ({
         return (
           <section
             key={bucket}
-            className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60"
+            className="overflow-hidden rounded-xl border border-wcm-line bg-wcm-surface/60"
           >
-            <h3 className="flex items-center justify-between border-b border-slate-800 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+            <h3 className="flex items-center justify-between border-b border-wcm-line px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
               {BUCKET_LABELS[bucket]}
-              <span className="font-mono text-slate-600">{items.length}</span>
+              <span className="font-mono text-wcm-dim">{items.length}</span>
             </h3>
             <ul>
               {items.map((doc) => (

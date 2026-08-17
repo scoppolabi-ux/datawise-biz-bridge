@@ -6,7 +6,7 @@ import remarkGfm from 'remark-gfm';
  * so arbitrary HTML in the source content is escaped, not executed.
  */
 const WcmMarkdown = ({ content }: { content: string }) => (
-  <div className="prose prose-invert prose-sm max-w-none prose-headings:text-slate-100 prose-p:text-slate-300 prose-li:text-slate-300 prose-strong:text-slate-100 prose-a:text-sky-400 prose-code:text-amber-300 prose-hr:border-slate-800 prose-blockquote:border-slate-700 prose-blockquote:text-slate-400">
+  <div className="prose prose-invert prose-sm max-w-none prose-headings:text-wcm-strong prose-p:text-wcm-text prose-li:text-wcm-text prose-strong:text-wcm-strong prose-a:text-wcm-accent prose-code:text-wcm-accent prose-hr:border-wcm-line prose-blockquote:border-wcm-line-strong prose-blockquote:text-wcm-muted">
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{

@@ -17,12 +17,12 @@ const Field = ({
   label: string;
   value: string | null;
 }) => (
-  <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-4">
-    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+  <div className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-4">
+    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-wcm-dim">
       <Icon className="h-3.5 w-3.5" />
       {label}
     </div>
-    <p className="mt-2 text-sm leading-relaxed text-slate-200">{value || '—'}</p>
+    <p className="mt-2 text-sm leading-relaxed text-wcm-text">{value || '—'}</p>
   </div>
 );
 
@@ -35,15 +35,15 @@ const WcmOverviewTab = ({
 }) => (
   <div className="space-y-4">
     {project.needs_stefano && (
-      <section className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 sm:p-6">
-        <div className="flex items-center gap-2 text-red-300">
+      <section className="rounded-xl border border-wcm-alert/30 bg-wcm-alert/10 p-4 sm:p-6">
+        <div className="flex items-center gap-2 text-wcm-alert-fg">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           <h2 className="text-sm font-bold uppercase tracking-[0.18em]">
             Needs Stefano — Board Gate
           </h2>
         </div>
         {project.board_gate_action_requested && (
-          <p className="mt-3 text-base font-medium leading-relaxed text-red-50">
+          <p className="mt-3 text-base font-medium leading-relaxed text-wcm-strong">
             {project.board_gate_action_requested}
           </p>
         )}
@@ -51,7 +51,7 @@ const WcmOverviewTab = ({
     )}
 
     {project.summary && (
-      <p className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-sm leading-relaxed text-slate-300 sm:p-6">
+      <p className="rounded-xl border border-wcm-line bg-wcm-surface/60 p-4 text-sm leading-relaxed text-wcm-text sm:p-6">
         {project.summary}
       </p>
     )}
@@ -68,31 +68,31 @@ const WcmOverviewTab = ({
     </div>
 
     <div className="grid gap-3 sm:grid-cols-2">
-      <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-4">
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+      <div className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-4">
+        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-wcm-dim">
           <Clock className="h-3.5 w-3.5" />
           Heartbeat
         </div>
-        <p className="mt-2 text-sm text-slate-200">
+        <p className="mt-2 text-sm text-wcm-text">
           {formatDateTime(project.heartbeat_last_run_at)}
           {relativeTime(project.heartbeat_last_run_at) && (
-            <span className="text-slate-500"> · {relativeTime(project.heartbeat_last_run_at)}</span>
+            <span className="text-wcm-dim"> · {relativeTime(project.heartbeat_last_run_at)}</span>
           )}
         </p>
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-wcm-muted">
           Cadenza: <span className="font-mono">{project.heartbeat_cadence ?? '—'}</span> · Esito:{' '}
-          <span className="font-mono text-slate-300">{project.heartbeat_last_outcome ?? '—'}</span>
+          <span className="font-mono text-wcm-text">{project.heartbeat_last_outcome ?? '—'}</span>
         </p>
       </div>
-      <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-4">
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+      <div className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-4">
+        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-wcm-dim">
           <Activity className="h-3.5 w-3.5" />
           Ultima attività materiale
         </div>
-        <p className="mt-2 text-sm text-slate-200">
+        <p className="mt-2 text-sm text-wcm-text">
           {formatDateTime(project.last_material_activity_at)}
           {relativeTime(project.last_material_activity_at) && (
-            <span className="text-slate-500">
+            <span className="text-wcm-dim">
               {' '}
               · {relativeTime(project.last_material_activity_at)}
             </span>
@@ -101,24 +101,24 @@ const WcmOverviewTab = ({
       </div>
     </div>
 
-    <section className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60">
-      <h3 className="border-b border-slate-800 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+    <section className="overflow-hidden rounded-xl border border-wcm-line bg-wcm-surface/60">
+      <h3 className="border-b border-wcm-line px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
         Progressione
       </h3>
       <div className="space-y-3 p-4">
         {project.progress_summary && (
-          <p className="text-sm leading-relaxed text-slate-300">{project.progress_summary}</p>
+          <p className="text-sm leading-relaxed text-wcm-text">{project.progress_summary}</p>
         )}
         {roadmap.length === 0 ? (
-          <p className="text-sm text-slate-500">Nessuna milestone nel read-model.</p>
+          <p className="text-sm text-wcm-dim">Nessuna milestone nel read-model.</p>
         ) : (
           <ul className="space-y-2">
             {roadmap.map((item) => (
               <li
                 key={item.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-slate-800 bg-slate-950/50 px-3 py-2"
+                className="flex items-center justify-between gap-3 rounded-lg border border-wcm-line bg-wcm-bg/50 px-3 py-2"
               >
-                <span className="min-w-0 truncate text-sm text-slate-200">{item.label}</span>
+                <span className="min-w-0 truncate text-sm text-wcm-text">{item.label}</span>
                 <span
                   className={cn(
                     'shrink-0 rounded-md border px-2 py-0.5 text-[11px]',

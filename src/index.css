@@ -124,3 +124,55 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+/* ============================================================
+   WCM Mission Control — DataWisePartners console theme
+   Blu notte / antracite, testi bianchi, accent azzurro-ciano DWP.
+   Scoped to the /wcm area only: the public site is untouched.
+   ============================================================ */
+@layer base {
+  :root {
+    --wcm-bg: 215 47% 7%;
+    --wcm-surface: 214 42% 10%;
+    --wcm-panel: 214 36% 14%;
+    --wcm-line: 213 30% 19%;
+    --wcm-line-strong: 212 28% 29%;
+    --wcm-strong: 0 0% 100%;
+    --wcm-text: 210 32% 87%;
+    --wcm-muted: 212 20% 68%;
+    --wcm-dim: 212 17% 50%;
+    --wcm-accent: 196 92% 56%;
+    --wcm-accent-deep: 205 90% 44%;
+    --wcm-alert: 351 72% 50%;
+    --wcm-alert-fg: 351 88% 80%;
+  }
+}
+
+@layer components {
+  /* Subtle technical grid, no glow, no gradients */
+  .wcm-grid {
+    background-color: hsl(var(--wcm-bg));
+    background-image:
+      linear-gradient(to right, hsl(var(--wcm-line) / 0.35) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--wcm-line) / 0.35) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-position: center top;
+  }
+
+  .wcm-rule {
+    height: 2px;
+    background-image: linear-gradient(
+      to right,
+      hsl(var(--wcm-accent) / 0.85),
+      hsl(var(--wcm-accent) / 0.15) 45%,
+      transparent 80%
+    );
+  }
+
+  /* Contrast plate so the DWP logo stays legible on the dark console */
+  /* The DWP mark is white on transparent: a dark plate keeps it legible
+     and coherent with the console, without altering the asset. */
+  .wcm-logo-plate {
+    background-color: hsl(var(--wcm-surface));
+    border: 1px solid hsl(var(--wcm-line-strong));
+  }
+}

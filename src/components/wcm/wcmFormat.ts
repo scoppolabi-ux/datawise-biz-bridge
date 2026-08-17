@@ -11,9 +11,9 @@ export const statusClasses = (status: string) => {
     case 'working':
       return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
     case 'blocked':
-      return 'bg-red-500/15 text-red-300 border-red-500/30';
+      return 'bg-wcm-alert/15 text-wcm-alert-fg border-wcm-alert/30';
     case 'paused':
-      return 'bg-slate-500/15 text-slate-300 border-slate-500/30';
+      return 'bg-wcm-dim/15 text-wcm-text border-slate-500/30';
     default:
       return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
   }
@@ -32,13 +32,13 @@ export const roadmapStatusClasses = (status: string | null) => {
     case 'DONE':
       return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
     case 'ACTIVE':
-      return 'bg-sky-500/15 text-sky-300 border-sky-500/30';
+      return 'bg-wcm-accent/15 text-wcm-accent border-wcm-accent/30';
     case 'BOARD_GATE':
-      return 'bg-red-500/15 text-red-300 border-red-500/30';
+      return 'bg-wcm-alert/15 text-wcm-alert-fg border-wcm-alert/30';
     case 'NOT_ELIGIBLE':
-      return 'bg-slate-700/40 text-slate-400 border-slate-700';
+      return 'bg-wcm-line-strong/40 text-wcm-muted border-wcm-line-strong';
     default:
-      return 'bg-slate-500/15 text-slate-300 border-slate-600/40';
+      return 'bg-wcm-dim/15 text-wcm-text border-wcm-line-strong/40';
   }
 };
 

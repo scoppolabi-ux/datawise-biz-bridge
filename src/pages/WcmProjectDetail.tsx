@@ -17,6 +17,7 @@ import WcmDocumentsTab from '@/components/wcm/WcmDocumentsTab';
 import WcmBoardTab from '@/components/wcm/WcmBoardTab';
 import WcmActivityTab from '@/components/wcm/WcmActivityTab';
 import WcmRoadmapTab from '@/components/wcm/WcmRoadmapTab';
+import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 
 const WcmProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -49,27 +50,31 @@ const WcmProjectDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="wcm-grid min-h-screen">
       <Helmet>
-        <title>{project ? `${project.project_name} · WCM` : 'WCM Mission Control'}</title>
+        <title>
+          {project ? `${project.project_name} · WCM Mission Control` : 'WCM Mission Control'}
+        </title>
         <meta name="robots" content="noindex, nofollow, noarchive" />
       </Helmet>
 
-      <header className="sticky top-0 z-10 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="min-w-0">
-            <Link
-              to="/wcm"
-              className="inline-flex items-center gap-1.5 text-xs text-slate-500 transition-colors hover:text-slate-300"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Mission Control
-            </Link>
-            <h1 className="mt-1 truncate text-base font-semibold text-slate-100 sm:text-lg">
-              {project?.project_name ?? projectId}
-            </h1>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
+      <WcmBrandHeader
+        eyebrow={
+          <Link
+            to="/wcm"
+            className="inline-flex items-center gap-1.5 text-wcm-accent transition-colors hover:text-wcm-strong"
+          >
+            <ArrowLeft className="h-3 w-3" />
+            WCM Mission Control
+          </Link>
+        }
+        title={
+          <h1 className="truncate text-base font-semibold tracking-tight sm:text-lg">
+            {project?.project_name ?? projectId}
+          </h1>
+        }
+        actions={
+          <>
             {project && (
               <span
                 className={cn(
@@ -85,7 +90,7 @@ const WcmProjectDetail = () => {
                 href={project.repo_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-900"
+                className="inline-flex items-center gap-1.5 rounded-md border border-wcm-line-strong px-2.5 py-1 text-xs text-wcm-text transition-colors hover:border-wcm-accent hover:bg-wcm-surface"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 GitHub
@@ -95,37 +100,40 @@ const WcmProjectDetail = () => {
               variant="outline"
               size="sm"
               onClick={refetchAll}
-              className="border-slate-700 bg-transparent text-slate-300 hover:bg-slate-900 hover:text-slate-100"
+              className="border-wcm-line-strong bg-transparent text-wcm-text hover:border-wcm-accent hover:bg-wcm-surface hover:text-wcm-strong"
             >
               <RefreshCw className={cn('mr-2 h-3.5 w-3.5', isFetching && 'animate-spin')} />
               Aggiorna
             </Button>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      >
+        <p className="mt-0.5 truncate font-mono text-[11px] text-wcm-dim">{projectId}</p>
+      </WcmBrandHeader>
+
 
       <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
         {projectQuery.isLoading && (
           <div className="flex justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-slate-600" />
+            <Loader2 className="h-6 w-6 animate-spin text-wcm-dim" />
           </div>
         )}
 
         {projectQuery.error && (
-          <p className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
+          <p className="rounded-lg border border-wcm-alert/30 bg-wcm-alert/10 p-4 text-sm text-wcm-alert-fg">
             Impossibile caricare il progetto.
           </p>
         )}
 
         {!projectQuery.isLoading && !project && (
-          <p className="rounded-lg border border-slate-800 bg-slate-900/50 p-6 text-sm text-slate-400">
+          <p className="rounded-lg border border-wcm-line bg-wcm-surface/50 p-6 text-sm text-wcm-muted">
             Progetto non trovato nel read-model.
           </p>
         )}
 
         {project && (
           <Tabs value={tab} onValueChange={setTab}>
-            <TabsList className="flex w-full flex-wrap justify-start gap-1 bg-slate-900/60 p-1">
+            <TabsList className="flex w-full flex-wrap justify-start gap-1 rounded-lg border border-wcm-line bg-wcm-surface/70 p-1">
               {[
                 ['overview', 'Overview'],
                 ['documents', 'Documents'],
@@ -136,7 +144,7 @@ const WcmProjectDetail = () => {
                 <TabsTrigger
                   key={value}
                   value={value}
-                  className="text-xs text-slate-400 data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 sm:text-sm"
+                  className="rounded-md text-xs uppercase tracking-[0.12em] text-wcm-muted transition-colors data-[state=active]:border data-[state=active]:border-wcm-accent/40 data-[state=active]:bg-wcm-panel data-[state=active]:text-wcm-strong data-[state=active]:shadow-none sm:text-[13px]"
                 >
                   {label}
                 </TabsTrigger>
