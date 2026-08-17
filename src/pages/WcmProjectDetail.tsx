@@ -49,27 +49,31 @@ const WcmProjectDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-wcm-bg">
+    <div className="wcm-grid min-h-screen">
       <Helmet>
-        <title>{project ? `${project.project_name} · WCM` : 'WCM Mission Control'}</title>
+        <title>
+          {project ? `${project.project_name} · WCM Mission Control` : 'WCM Mission Control'}
+        </title>
         <meta name="robots" content="noindex, nofollow, noarchive" />
       </Helmet>
 
-      <header className="sticky top-0 z-10 border-b border-wcm-line bg-wcm-bg/90 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="min-w-0">
-            <Link
-              to="/wcm"
-              className="inline-flex items-center gap-1.5 text-xs text-wcm-dim transition-colors hover:text-wcm-text"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Mission Control
-            </Link>
-            <h1 className="mt-1 truncate text-base font-semibold text-wcm-strong sm:text-lg">
-              {project?.project_name ?? projectId}
-            </h1>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
+      <WcmBrandHeader
+        eyebrow={
+          <Link
+            to="/wcm"
+            className="inline-flex items-center gap-1.5 text-wcm-accent transition-colors hover:text-wcm-strong"
+          >
+            <ArrowLeft className="h-3 w-3" />
+            WCM Mission Control
+          </Link>
+        }
+        title={
+          <h1 className="truncate text-base font-semibold tracking-tight sm:text-lg">
+            {project?.project_name ?? projectId}
+          </h1>
+        }
+        actions={
+          <>
             {project && (
               <span
                 className={cn(
@@ -85,7 +89,7 @@ const WcmProjectDetail = () => {
                 href={project.repo_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-md border border-wcm-line-strong px-2.5 py-1 text-xs text-wcm-text transition-colors hover:bg-wcm-surface"
+                className="inline-flex items-center gap-1.5 rounded-md border border-wcm-line-strong px-2.5 py-1 text-xs text-wcm-text transition-colors hover:border-wcm-accent hover:bg-wcm-surface"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 GitHub
@@ -95,14 +99,17 @@ const WcmProjectDetail = () => {
               variant="outline"
               size="sm"
               onClick={refetchAll}
-              className="border-wcm-line-strong bg-transparent text-wcm-text hover:bg-wcm-surface hover:text-wcm-strong"
+              className="border-wcm-line-strong bg-transparent text-wcm-text hover:border-wcm-accent hover:bg-wcm-surface hover:text-wcm-strong"
             >
               <RefreshCw className={cn('mr-2 h-3.5 w-3.5', isFetching && 'animate-spin')} />
               Aggiorna
             </Button>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      >
+        <p className="mt-0.5 truncate font-mono text-[11px] text-wcm-dim">{projectId}</p>
+      </WcmBrandHeader>
+
 
       <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
         {projectQuery.isLoading && (
