@@ -1,0 +1,84 @@
+import { ArrowLeft, ExternalLink, FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import WcmMarkdown from './WcmMarkdown';
+import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
+
+const Meta = ({ label, value }: { label: string; value: string | null }) => {
+  if (!value) return null;
+  return (
+    <div className="min-w-0">
+      <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+        {label}
+      </span>
+      <p className="truncate font-mono text-xs text-slate-300" title={value}>
+        {value}
+      </p>
+    </div>
+  );
+};
+
+const WcmDocumentReader = ({
+  doc,
+  onBack,
+}: {
+  doc: WcmProjectDocument;
+  onBack: () => void;
+}) => (
+  <div className="rounded-xl border border-slate-800 bg-slate-900/60">
+    <header className="space-y-4 border-b border-slate-800 p-4 sm:p-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onBack}
+        className="-ml-2 h-8 text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+      >
+        <ArrowLeft className="mr-2 h-3.5 w-3.5" />
+        Torna ai documenti
+      </Button>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          <FileText className="mt-1 h-4 w-4 shrink-0 text-slate-500" />
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold text-slate-50 sm:text-xl">{doc.title}</h2>
+            <p className="mt-1 font-mono text-xs text-slate-500">{doc.document_id}</p>
+          </div>
+        </div>
+        {doc.source_url && (
+          <a
+            href={doc.source_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex shrink-0 items-center gap-2 rounded-md border border-slate-700 px-3 py-1.5 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-slate-100"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            View source on GitHub
+          </a>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Meta label="Category" value={doc.category} />
+        <Meta label="Status" value={doc.status} />
+        <Meta label="Version" value={doc.version} />
+        <Meta label="Source SHA" value={doc.source_sha ? doc.source_sha.slice(0, 10) : null} />
+        <div className="col-span-2 sm:col-span-4">
+          <Meta label="Source path" value={doc.source_path} />
+        </div>
+      </div>
+    </header>
+
+    <div className="p-4 sm:p-6">
+      {doc.content_markdown ? (
+        <WcmMarkdown content={doc.content_markdown} />
+      ) : (
+        <p className="rounded-lg border border-slate-800 bg-slate-950/50 p-4 text-sm text-slate-400">
+          Contenuto non ancora sincronizzato nel read-model.
+          {doc.source_url && ' Usa "View source on GitHub" per leggere l\'originale.'}
+        </p>
+      )}
+    </div>
+  </div>
+);
+
+export default WcmDocumentReader;
