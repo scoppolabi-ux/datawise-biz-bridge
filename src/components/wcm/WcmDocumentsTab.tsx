@@ -29,7 +29,10 @@ const DocRow = ({
     >
       <FileText className="mt-0.5 h-4 w-4 shrink-0 text-wcm-dim" />
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-medium text-wcm-strong">{doc.title}</span>
+        <span className="flex flex-wrap items-center gap-2 text-sm font-medium text-wcm-strong">
+          {doc.title}
+          <WcmUnapprovedBadge doc={doc} />
+        </span>
         <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-wcm-dim">
           {doc.category && <span className="font-mono">{doc.category}</span>}
           {doc.status && <span className="font-mono">· {doc.status}</span>}
