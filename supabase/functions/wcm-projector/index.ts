@@ -268,28 +268,65 @@ Deno.serve(async (req) => {
     .maybeSingle()
 
   if (readError) return json({ error: 'Read failed', detail: readError.message }, 500)
-  if (!current) return json({ error: 'Project not found' }, 404)
 
-  // --- Status diff ---
+  let statusRow: Record<string, unknown>
   const updates: Record<string, unknown> = {}
-  for (const field of STATUS_FIELDS) {
-    if (!(field in incoming)) continue
-    if (!sameValue(field, incoming[field], (current as Record<string, unknown>)[field])) {
-      updates[field] = normalize(incoming[field])
+  let created = false
+
+  if (!current) {
+    // Read-model creation: the project appears in the projection but not yet in
+    // the read-model. This is not canonical project admission.
+    for (const required of ['project_name', 'status', 'short_description']) {
+      if (normalize(incoming[required]) === null) {
+        return json(
+          { error: `New project requires a non-empty projection.${required}` },
+          400,
+        )
+      }
+    }
+    const insertRow: Record<string, unknown> = { project_id: projectId }
+    for (const field of STATUS_FIELDS) {
+      if (field in incoming) insertRow[field] = normalize(incoming[field])
+    }
+    if (insertRow.needs_stefano === undefined || insertRow.needs_stefano === null) {
+      insertRow.needs_stefano = false
+    }
+    if (
+      insertRow.documents_to_read_count === undefined ||
+      insertRow.documents_to_read_count === null
+    ) {
+      insertRow.documents_to_read_count = 0
+    }
+    const { data: inserted, error: insertError } = await supabase
+      .from('wcm_project_status')
+      .insert(insertRow)
+      .select('*')
+      .single()
+    if (insertError) return json({ error: 'Insert failed', detail: insertError.message }, 500)
+    statusRow = inserted as Record<string, unknown>
+    created = true
+  } else {
+    // --- Status diff ---
+    for (const field of STATUS_FIELDS) {
+      if (!(field in incoming)) continue
+      if (!sameValue(field, incoming[field], (current as Record<string, unknown>)[field])) {
+        updates[field] = normalize(incoming[field])
+      }
+    }
+
+    statusRow = current as Record<string, unknown>
+    if (Object.keys(updates).length > 0) {
+      const { data: updated, error: updateError } = await supabase
+        .from('wcm_project_status')
+        .update(updates)
+        .eq('project_id', projectId)
+        .select('*')
+        .single()
+      if (updateError) return json({ error: 'Update failed', detail: updateError.message }, 500)
+      statusRow = updated as Record<string, unknown>
     }
   }
 
-  let statusRow = current as Record<string, unknown>
-  if (Object.keys(updates).length > 0) {
-    const { data: updated, error: updateError } = await supabase
-      .from('wcm_project_status')
-      .update(updates)
-      .eq('project_id', projectId)
-      .select('*')
-      .single()
-    if (updateError) return json({ error: 'Update failed', detail: updateError.message }, 500)
-    statusRow = updated as Record<string, unknown>
-  }
 
   // --- Collections upsert (idempotent, scoped to this project) ---
   const collectionResults: Record<
