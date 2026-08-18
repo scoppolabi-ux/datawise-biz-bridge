@@ -6,7 +6,9 @@ export type WcmProjectStatus = {
   project_id: string;
   project_name: string;
   status: string;
+  short_description: string | null;
   phase: string | null;
+
   summary: string | null;
   current_focus: string | null;
   next_action: string | null;
