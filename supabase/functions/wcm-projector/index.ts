@@ -102,6 +102,12 @@ const COLLECTIONS = {
     fields: ROADMAP_FIELDS as readonly string[],
     required: ['item_id', 'label'],
   },
+  needs: {
+    table: 'wcm_project_needs',
+    key: 'need_id',
+    fields: NEED_FIELDS as readonly string[],
+    required: ['need_id', 'title'],
+  },
 } as const
 
 type CollectionName = keyof typeof COLLECTIONS
