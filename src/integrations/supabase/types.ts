@@ -35,6 +35,78 @@ export type Database = {
         }
         Relationships: []
       }
+      wcm_command_requests: {
+        Row: {
+          claimed_at: string | null
+          command_id: string
+          command_type: string
+          created_at: string
+          expected_need_fingerprint: string
+          expected_state_sha: string
+          failure_reason: string | null
+          id: string
+          need_id: string
+          note: string | null
+          project_id: string
+          receipt_path: string | null
+          receipt_sha: string | null
+          recorded_at: string | null
+          requested_by_email: string
+          requested_by_role: string
+          requested_by_user_id: string
+          status: string
+          target_document_id: string | null
+          target_version: string | null
+          updated_at: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          command_id: string
+          command_type: string
+          created_at?: string
+          expected_need_fingerprint: string
+          expected_state_sha: string
+          failure_reason?: string | null
+          id?: string
+          need_id: string
+          note?: string | null
+          project_id: string
+          receipt_path?: string | null
+          receipt_sha?: string | null
+          recorded_at?: string | null
+          requested_by_email: string
+          requested_by_role: string
+          requested_by_user_id: string
+          status?: string
+          target_document_id?: string | null
+          target_version?: string | null
+          updated_at?: string
+        }
+        Update: {
+          claimed_at?: string | null
+          command_id?: string
+          command_type?: string
+          created_at?: string
+          expected_need_fingerprint?: string
+          expected_state_sha?: string
+          failure_reason?: string | null
+          id?: string
+          need_id?: string
+          note?: string | null
+          project_id?: string
+          receipt_path?: string | null
+          receipt_sha?: string | null
+          recorded_at?: string | null
+          requested_by_email?: string
+          requested_by_role?: string
+          requested_by_user_id?: string
+          status?: string
+          target_document_id?: string | null
+          target_version?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wcm_project_activity: {
         Row: {
           created_at: string
@@ -267,8 +339,10 @@ export type Database = {
           project_id: string
           project_name: string
           repo_url: string | null
+          semantic_fingerprint: string | null
           short_description: string | null
           source: string | null
+          source_state_sha: string | null
           status: string
           summary: string | null
           updated_at: string
@@ -297,8 +371,10 @@ export type Database = {
           project_id: string
           project_name: string
           repo_url?: string | null
+          semantic_fingerprint?: string | null
           short_description?: string | null
           source?: string | null
+          source_state_sha?: string | null
           status: string
           summary?: string | null
           updated_at?: string
@@ -327,8 +403,10 @@ export type Database = {
           project_id?: string
           project_name?: string
           repo_url?: string | null
+          semantic_fingerprint?: string | null
           short_description?: string | null
           source?: string | null
+          source_state_sha?: string | null
           status?: string
           summary?: string | null
           updated_at?: string
