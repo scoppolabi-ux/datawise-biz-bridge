@@ -231,11 +231,23 @@ Deno.serve(async (req) => {
           return json({ error: `${name}[${index}].${req} is required` }, 400)
         }
       }
+      const sourcePath = normalize(obj.source_path)
+      if (typeof sourcePath === 'string') {
+        const prefix = `projects/${projectId}/`
+        if (
+          !sourcePath.startsWith(prefix) ||
+          sourcePath.includes('..') ||
+          (name === 'documents' && !sourcePath.endsWith('.md'))
+        ) {
+          return json({ error: `${name}[${index}].source_path is not allowed`, path: sourcePath }, 400)
+        }
+      }
       const row: Record<string, unknown> = { project_id: projectId }
       for (const field of cfg.fields) {
         if (field in obj) row[field] = normalize(obj[field])
       }
       rows.push(row)
+
     }
 
     // A collection is a full snapshot unless explicitly declared partial.
