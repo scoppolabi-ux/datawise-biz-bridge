@@ -207,6 +207,7 @@ export type Database = {
           project_id: string
           project_name: string
           repo_url: string | null
+          short_description: string | null
           source: string | null
           status: string
           summary: string | null
@@ -236,6 +237,7 @@ export type Database = {
           project_id: string
           project_name: string
           repo_url?: string | null
+          short_description?: string | null
           source?: string | null
           status: string
           summary?: string | null
@@ -265,6 +267,7 @@ export type Database = {
           project_id?: string
           project_name?: string
           repo_url?: string | null
+          short_description?: string | null
           source?: string | null
           status?: string
           summary?: string | null

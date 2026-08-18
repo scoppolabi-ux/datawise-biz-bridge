@@ -34,6 +34,17 @@ const WcmOverviewTab = ({
   roadmap: WcmProjectRoadmapItem[];
 }) => (
   <div className="space-y-4">
+    {project.short_description && (
+      <section className="rounded-xl border border-wcm-line bg-wcm-panel/40 p-4 sm:p-5">
+        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-wcm-dim">
+          Identità progetto
+        </h2>
+        <p className="mt-1.5 text-sm leading-relaxed text-wcm-strong">
+          {project.short_description}
+        </p>
+      </section>
+    )}
+
     {project.needs_stefano && (
       <section className="rounded-xl border border-wcm-alert/30 bg-wcm-alert/10 p-4 sm:p-6">
         <div className="flex items-center gap-2 text-wcm-alert-fg">

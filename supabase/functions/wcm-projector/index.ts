@@ -6,10 +6,11 @@ const ISSUER = 'https://token.actions.githubusercontent.com'
 const AUDIENCE = 'wcm-projector'
 const ALLOWED_REPO = 'scoppolabi-ux/WCM-LAB'
 const ALLOWED_REF = 'refs/heads/main'
-const ALLOWED_PROJECT_ID = 'prima-di-noi'
+const PROJECT_ID_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 const STATUS_FIELDS = [
   'project_name',
+  'short_description',
   'status',
   'phase',
   'summary',
@@ -163,10 +164,11 @@ Deno.serve(async (req) => {
     return json({ error: 'Invalid JSON body' }, 400)
   }
 
-  const projectId = body?.project_id
-  if (projectId !== ALLOWED_PROJECT_ID) {
-    return json({ error: `project_id must be '${ALLOWED_PROJECT_ID}'` }, 400)
+  const projectId = typeof body?.project_id === 'string' ? body.project_id.trim() : ''
+  if (!PROJECT_ID_RE.test(projectId)) {
+    return json({ error: 'project_id must be a slug matching ^[a-z0-9]+(?:-[a-z0-9]+)*$' }, 400)
   }
+
 
   const sourceStateSha = typeof body?.source_state_sha === 'string' ? body.source_state_sha : null
   const semanticFingerprint =
@@ -229,11 +231,23 @@ Deno.serve(async (req) => {
           return json({ error: `${name}[${index}].${req} is required` }, 400)
         }
       }
-      const row: Record<string, unknown> = { project_id: ALLOWED_PROJECT_ID }
+      const sourcePath = normalize(obj.source_path)
+      if (typeof sourcePath === 'string') {
+        const prefix = `projects/${projectId}/`
+        if (
+          !sourcePath.startsWith(prefix) ||
+          sourcePath.includes('..') ||
+          (name === 'documents' && !sourcePath.endsWith('.md'))
+        ) {
+          return json({ error: `${name}[${index}].source_path is not allowed`, path: sourcePath }, 400)
+        }
+      }
+      const row: Record<string, unknown> = { project_id: projectId }
       for (const field of cfg.fields) {
         if (field in obj) row[field] = normalize(obj[field])
       }
       rows.push(row)
+
     }
 
     // A collection is a full snapshot unless explicitly declared partial.
@@ -250,32 +264,69 @@ Deno.serve(async (req) => {
   const { data: current, error: readError } = await supabase
     .from('wcm_project_status')
     .select('*')
-    .eq('project_id', ALLOWED_PROJECT_ID)
+    .eq('project_id', projectId)
     .maybeSingle()
 
   if (readError) return json({ error: 'Read failed', detail: readError.message }, 500)
-  if (!current) return json({ error: 'Project not found' }, 404)
 
-  // --- Status diff ---
+  let statusRow: Record<string, unknown>
   const updates: Record<string, unknown> = {}
-  for (const field of STATUS_FIELDS) {
-    if (!(field in incoming)) continue
-    if (!sameValue(field, incoming[field], (current as Record<string, unknown>)[field])) {
-      updates[field] = normalize(incoming[field])
+  let created = false
+
+  if (!current) {
+    // Read-model creation: the project appears in the projection but not yet in
+    // the read-model. This is not canonical project admission.
+    for (const required of ['project_name', 'status', 'short_description']) {
+      if (normalize(incoming[required]) === null) {
+        return json(
+          { error: `New project requires a non-empty projection.${required}` },
+          400,
+        )
+      }
+    }
+    const insertRow: Record<string, unknown> = { project_id: projectId }
+    for (const field of STATUS_FIELDS) {
+      if (field in incoming) insertRow[field] = normalize(incoming[field])
+    }
+    if (insertRow.needs_stefano === undefined || insertRow.needs_stefano === null) {
+      insertRow.needs_stefano = false
+    }
+    if (
+      insertRow.documents_to_read_count === undefined ||
+      insertRow.documents_to_read_count === null
+    ) {
+      insertRow.documents_to_read_count = 0
+    }
+    const { data: inserted, error: insertError } = await supabase
+      .from('wcm_project_status')
+      .insert(insertRow)
+      .select('*')
+      .single()
+    if (insertError) return json({ error: 'Insert failed', detail: insertError.message }, 500)
+    statusRow = inserted as Record<string, unknown>
+    created = true
+  } else {
+    // --- Status diff ---
+    for (const field of STATUS_FIELDS) {
+      if (!(field in incoming)) continue
+      if (!sameValue(field, incoming[field], (current as Record<string, unknown>)[field])) {
+        updates[field] = normalize(incoming[field])
+      }
+    }
+
+    statusRow = current as Record<string, unknown>
+    if (Object.keys(updates).length > 0) {
+      const { data: updated, error: updateError } = await supabase
+        .from('wcm_project_status')
+        .update(updates)
+        .eq('project_id', projectId)
+        .select('*')
+        .single()
+      if (updateError) return json({ error: 'Update failed', detail: updateError.message }, 500)
+      statusRow = updated as Record<string, unknown>
     }
   }
 
-  let statusRow = current as Record<string, unknown>
-  if (Object.keys(updates).length > 0) {
-    const { data: updated, error: updateError } = await supabase
-      .from('wcm_project_status')
-      .update(updates)
-      .eq('project_id', ALLOWED_PROJECT_ID)
-      .select('*')
-      .single()
-    if (updateError) return json({ error: 'Update failed', detail: updateError.message }, 500)
-    statusRow = updated as Record<string, unknown>
-  }
 
   // --- Collections upsert (idempotent, scoped to this project) ---
   const collectionResults: Record<
@@ -290,7 +341,7 @@ Deno.serve(async (req) => {
     const { data: existing, error: exErr } = await supabase
       .from(cfg.table)
       .select('*')
-      .eq('project_id', ALLOWED_PROJECT_ID)
+      .eq('project_id', projectId)
     if (exErr) return json({ error: `Read ${name} failed`, detail: exErr.message }, 500)
 
     const byKey = new Map<string, Record<string, unknown>>()
@@ -319,7 +370,7 @@ Deno.serve(async (req) => {
         const { error: delErr } = await supabase
           .from(cfg.table)
           .delete()
-          .eq('project_id', ALLOWED_PROJECT_ID)
+          .eq('project_id', projectId)
           .in(cfg.key, stale)
         if (delErr) return json({ error: `Delete ${name} failed`, detail: delErr.message }, 500)
         deleted = stale.length
@@ -336,12 +387,14 @@ Deno.serve(async (req) => {
   const collectionsChanged = Object.values(collectionResults).some(
     (r) => r.changed > 0 || r.deleted > 0,
   )
-  const changed = Object.keys(updates).length > 0 || collectionsChanged
+  const changed = created || Object.keys(updates).length > 0 || collectionsChanged
 
   return json({
     changed,
-    project_id: ALLOWED_PROJECT_ID,
+    created,
+    project_id: projectId,
     updated_fields: Object.keys(updates),
+
     collections: collectionResults,
     source_state_sha: sourceStateSha,
     semantic_fingerprint: semanticFingerprint,
