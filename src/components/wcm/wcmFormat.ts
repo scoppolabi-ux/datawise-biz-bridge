@@ -62,24 +62,41 @@ export const relativeTime = (value: string | null) => {
 };
 
 /** Document buckets shown in the Documents tab. */
-export type DocBucket = 'TO_READ' | 'APPROVED_FROZEN' | 'WORKING_EDITORIAL' | 'OTHER';
+export type DocBucket =
+  | 'MANUSCRIPT_APPROVED'
+  | 'APPROVED_BASELINE'
+  | 'TO_READ'
+  | 'WORKING_EDITORIAL'
+  | 'OTHER';
 
+/**
+ * Category (when provided by the Projector) is authoritative; title is never used
+ * to infer manuscript identity. Status strings are only a fallback.
+ */
 export const bucketOf = (doc: {
   requires_stefano: boolean;
   status: string | null;
   category: string | null;
 }): DocBucket => {
+  const category = (doc.category ?? '').trim().toUpperCase();
+  if (category === 'MANUSCRIPT_APPROVED') return 'MANUSCRIPT_APPROVED';
+  if (category === 'APPROVED_BASELINE' || category === 'APPROVED_FROZEN')
+    return 'APPROVED_BASELINE';
   if (doc.requires_stefano) return 'TO_READ';
+  if (category === 'WORKING' || category === 'EDITORIAL' || category === 'WORKING_EDITORIAL')
+    return 'WORKING_EDITORIAL';
+
   const s = (doc.status ?? doc.category ?? '').toLowerCase();
-  if (s.includes('approved') || s.includes('frozen')) return 'APPROVED_FROZEN';
+  if (s.includes('approved') || s.includes('frozen')) return 'APPROVED_BASELINE';
   if (s.includes('working') || s.includes('editorial') || s.includes('draft'))
     return 'WORKING_EDITORIAL';
   return 'OTHER';
 };
 
 export const BUCKET_LABELS: Record<DocBucket, string> = {
-  TO_READ: 'To read',
-  APPROVED_FROZEN: 'Approved / Frozen',
+  MANUSCRIPT_APPROVED: 'Manoscritto approvato',
+  APPROVED_BASELINE: 'Baseline approvate',
+  TO_READ: 'Da leggere / Board',
   WORKING_EDITORIAL: 'Working / Editorial',
   OTHER: 'Altri documenti',
 };
