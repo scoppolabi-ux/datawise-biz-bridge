@@ -18,7 +18,12 @@ export const documentFileName = (doc: {
     .slice(0, 80)
     .replace(/^-|-$/g, '');
   const version = doc.version ? `-v${String(doc.version).replace(/[^\w.-]+/g, '')}` : '';
-  return `${base || 'documento'}${version}.txt`;
+  const approved = isApprovedDocument({
+    status: doc.status ?? null,
+    category: doc.category ?? null,
+  });
+  const marker = approved ? '' : '-UNAPPROVED';
+  return `${base || 'documento'}${version}${marker}.txt`;
 };
 
 export const documentDeepLink = (projectId: string, documentId: string) =>
