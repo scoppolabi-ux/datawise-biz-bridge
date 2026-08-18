@@ -88,7 +88,7 @@ const WcmDocumentsToReadPage = () => {
                     <ArrowRight className="h-3.5 w-3.5" />
                   </span>
                 </Link>
-                <WcmDocumentActions document={doc} projectId={doc.project_id} compact />
+                <WcmDocumentActions doc={doc} projectId={doc.project_id} />
               </div>
             </li>
           );
