@@ -1,8 +1,14 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { AlertTriangle, FileText, Loader2, RefreshCw } from 'lucide-react';
+import { AlertTriangle, ChevronRight, FileText, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useWcmProjects } from '@/hooks/useWcmProjects';
+import {
+  isOpenNeed,
+  needTargetPath,
+  useWcmDocumentsToRead,
+  useWcmNeeds,
+  useWcmProjects,
+} from '@/hooks/useWcmProjects';
 import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 
@@ -16,19 +22,45 @@ const Shell = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const Metric = ({ label, value }: { label: string; value: number | string }) => (
-  <div className="rounded-lg border border-wcm-line bg-wcm-surface/60 px-4 py-3">
-    <p className="text-[10px] font-semibold uppercase tracking-wider text-wcm-dim">{label}</p>
-    <p className="mt-0.5 text-xl font-semibold text-wcm-strong">{value}</p>
-  </div>
+/** KPI card = drill-down entry point into an aggregated view. */
+const Metric = ({
+  label,
+  value,
+  to,
+}: {
+  label: string;
+  value: number | string;
+  to: string;
+}) => (
+  <Link
+    to={to}
+    className="group flex items-center justify-between gap-2 rounded-lg border border-wcm-line bg-wcm-surface/60 px-4 py-3 transition-colors hover:border-wcm-accent/60 hover:bg-wcm-panel/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-wcm-accent"
+  >
+    <span className="min-w-0">
+      <span className="block text-[10px] font-semibold uppercase tracking-wider text-wcm-dim">
+        {label}
+      </span>
+      <span className="mt-0.5 block text-xl font-semibold text-wcm-strong">{value}</span>
+    </span>
+    <ChevronRight className="h-4 w-4 shrink-0 text-wcm-dim transition-colors group-hover:text-wcm-accent" />
+  </Link>
 );
 
 const WcmMissionControl = () => {
   const { data: projects, isLoading, isFetching, error, refetch } = useWcmProjects(true);
+  const { data: needs } = useWcmNeeds();
+  const { data: docsToReadList } = useWcmDocumentsToRead();
 
   const all = projects ?? [];
-  const attention = all.filter((p) => p.needs_stefano);
-  const docsToRead = all.reduce((sum, p) => sum + (p.documents_to_read_count ?? 0), 0);
+  const openNeeds = (needs ?? []).filter(isOpenNeed);
+  const projectById = new Map(all.map((p) => [p.project_id, p]));
+  // Legacy fallback: only until the first need snapshot lands.
+  const legacyAttention = all.filter((p) => p.needs_stefano);
+  const useNeeds = openNeeds.length > 0;
+  const attentionCount = useNeeds ? openNeeds.length : legacyAttention.length;
+  const docsToRead =
+    docsToReadList?.length ??
+    all.reduce((sum, p) => sum + (p.documents_to_read_count ?? 0), 0);
 
   return (
     <Shell>
