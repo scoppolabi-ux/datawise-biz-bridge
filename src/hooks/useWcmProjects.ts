@@ -45,6 +45,7 @@ export type WcmProjectDocument = {
   source_sha: string | null;
   content_markdown: string | null;
   requires_stefano: boolean;
+  distribution_ready: boolean;
   sort_order: number;
   updated_at: string;
 };

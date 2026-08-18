@@ -56,6 +56,7 @@ const DOCUMENT_FIELDS = [
   'source_sha',
   'content_markdown',
   'requires_stefano',
+  'distribution_ready',
   'sort_order',
 ] as const
 

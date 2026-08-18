@@ -1,0 +1,1 @@
+ALTER TABLE public.wcm_project_documents ADD COLUMN IF NOT EXISTS distribution_ready boolean NOT NULL DEFAULT false;

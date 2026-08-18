@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,10 +18,30 @@ import WcmActivityTab from '@/components/wcm/WcmActivityTab';
 import WcmRoadmapTab from '@/components/wcm/WcmRoadmapTab';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 
+const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap'];
+
 const WcmProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
-  const [tab, setTab] = useState('overview');
-  const [openDocumentId, setOpenDocumentId] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const tabParam = searchParams.get('tab');
+  const tab = tabParam && TABS.includes(tabParam) ? tabParam : 'overview';
+  const openDocumentId = searchParams.get('document');
+
+  const setTab = (next: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('tab', next);
+    if (next !== 'documents') params.delete('document');
+    setSearchParams(params, { replace: true });
+  };
+
+  const setOpenDocumentId = (documentId: string | null) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('tab', 'documents');
+    if (documentId) params.set('document', documentId);
+    else params.delete('document');
+    setSearchParams(params, { replace: true });
+  };
 
   const projectQuery = useWcmProject(projectId);
   const documentsQuery = useWcmDocuments(projectId);
@@ -44,10 +63,7 @@ const WcmProjectDetail = () => {
     roadmapQuery.refetch();
   };
 
-  const openDocument = (documentId: string) => {
-    setOpenDocumentId(documentId);
-    setTab('documents');
-  };
+  const openDocument = (documentId: string) => setOpenDocumentId(documentId);
 
   return (
     <div className="wcm-grid min-h-screen">
@@ -161,6 +177,7 @@ const WcmProjectDetail = () => {
             <TabsContent value="documents" className="mt-4">
               <WcmDocumentsTab
                 documents={documents}
+                projectId={projectId!}
                 openDocumentId={openDocumentId}
                 onOpenDocument={setOpenDocumentId}
               />

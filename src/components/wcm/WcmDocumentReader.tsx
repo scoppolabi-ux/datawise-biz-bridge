@@ -1,6 +1,7 @@
 import { ArrowLeft, ExternalLink, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WcmMarkdown from './WcmMarkdown';
+import WcmDocumentActions from './WcmDocumentActions';
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
 
 const Meta = ({ label, value }: { label: string; value: string | null }) => {
@@ -19,9 +20,11 @@ const Meta = ({ label, value }: { label: string; value: string | null }) => {
 
 const WcmDocumentReader = ({
   doc,
+  projectId,
   onBack,
 }: {
   doc: WcmProjectDocument;
+  projectId: string;
   onBack: () => void;
 }) => (
   <div className="rounded-xl border border-wcm-line bg-wcm-surface/60">
@@ -44,17 +47,20 @@ const WcmDocumentReader = ({
             <p className="mt-1 font-mono text-xs text-wcm-dim">{doc.document_id}</p>
           </div>
         </div>
-        {doc.source_url && (
-          <a
-            href={doc.source_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-2 rounded-md border border-wcm-line-strong px-3 py-1.5 text-xs text-wcm-text transition-colors hover:bg-wcm-panel hover:text-wcm-strong"
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
-            View source on GitHub
-          </a>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          <WcmDocumentActions doc={doc} projectId={projectId} variant="reader" />
+          {doc.source_url && (
+            <a
+              href={doc.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center gap-2 rounded-md border border-wcm-line-strong px-3 py-1.5 text-xs text-wcm-text transition-colors hover:bg-wcm-panel hover:text-wcm-strong"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              View source on GitHub
+            </a>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
