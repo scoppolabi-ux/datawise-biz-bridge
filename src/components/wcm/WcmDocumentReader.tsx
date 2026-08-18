@@ -45,6 +45,7 @@ const WcmDocumentReader = ({
           <div className="min-w-0">
             <h2 className="text-lg font-semibold text-wcm-strong sm:text-xl">{doc.title}</h2>
             <p className="mt-1 font-mono text-xs text-wcm-dim">{doc.document_id}</p>
+            <WcmUnapprovedBadge doc={doc} className="mt-2" />
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
