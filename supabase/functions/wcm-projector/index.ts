@@ -6,10 +6,11 @@ const ISSUER = 'https://token.actions.githubusercontent.com'
 const AUDIENCE = 'wcm-projector'
 const ALLOWED_REPO = 'scoppolabi-ux/WCM-LAB'
 const ALLOWED_REF = 'refs/heads/main'
-const ALLOWED_PROJECT_ID = 'prima-di-noi'
+const PROJECT_ID_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 const STATUS_FIELDS = [
   'project_name',
+  'short_description',
   'status',
   'phase',
   'summary',
@@ -164,8 +165,8 @@ Deno.serve(async (req) => {
   }
 
   const projectId = body?.project_id
-  if (projectId !== ALLOWED_PROJECT_ID) {
-    return json({ error: `project_id must be '${ALLOWED_PROJECT_ID}'` }, 400)
+  if (projectId !== projectId) {
+    return json({ error: `project_id must be '${projectId}'` }, 400)
   }
 
   const sourceStateSha = typeof body?.source_state_sha === 'string' ? body.source_state_sha : null
@@ -229,7 +230,7 @@ Deno.serve(async (req) => {
           return json({ error: `${name}[${index}].${req} is required` }, 400)
         }
       }
-      const row: Record<string, unknown> = { project_id: ALLOWED_PROJECT_ID }
+      const row: Record<string, unknown> = { project_id: projectId }
       for (const field of cfg.fields) {
         if (field in obj) row[field] = normalize(obj[field])
       }
@@ -250,7 +251,7 @@ Deno.serve(async (req) => {
   const { data: current, error: readError } = await supabase
     .from('wcm_project_status')
     .select('*')
-    .eq('project_id', ALLOWED_PROJECT_ID)
+    .eq('project_id', projectId)
     .maybeSingle()
 
   if (readError) return json({ error: 'Read failed', detail: readError.message }, 500)
@@ -270,7 +271,7 @@ Deno.serve(async (req) => {
     const { data: updated, error: updateError } = await supabase
       .from('wcm_project_status')
       .update(updates)
-      .eq('project_id', ALLOWED_PROJECT_ID)
+      .eq('project_id', projectId)
       .select('*')
       .single()
     if (updateError) return json({ error: 'Update failed', detail: updateError.message }, 500)
@@ -290,7 +291,7 @@ Deno.serve(async (req) => {
     const { data: existing, error: exErr } = await supabase
       .from(cfg.table)
       .select('*')
-      .eq('project_id', ALLOWED_PROJECT_ID)
+      .eq('project_id', projectId)
     if (exErr) return json({ error: `Read ${name} failed`, detail: exErr.message }, 500)
 
     const byKey = new Map<string, Record<string, unknown>>()
@@ -319,7 +320,7 @@ Deno.serve(async (req) => {
         const { error: delErr } = await supabase
           .from(cfg.table)
           .delete()
-          .eq('project_id', ALLOWED_PROJECT_ID)
+          .eq('project_id', projectId)
           .in(cfg.key, stale)
         if (delErr) return json({ error: `Delete ${name} failed`, detail: delErr.message }, 500)
         deleted = stale.length
@@ -340,7 +341,7 @@ Deno.serve(async (req) => {
 
   return json({
     changed,
-    project_id: ALLOWED_PROJECT_ID,
+    project_id: projectId,
     updated_fields: Object.keys(updates),
     collections: collectionResults,
     source_state_sha: sourceStateSha,
