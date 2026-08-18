@@ -100,3 +100,34 @@ export const BUCKET_LABELS: Record<DocBucket, string> = {
   WORKING_EDITORIAL: 'Working / Editorial',
   OTHER: 'Altri documenti',
 };
+
+/**
+ * Approval/governance state of a document, independent from distribution.
+ * A document is "approved" only when category/status explicitly says so.
+ */
+export const isApprovedDocument = (doc: {
+  status: string | null;
+  category: string | null;
+}): boolean => {
+  const c = (doc.category ?? '').trim().toUpperCase();
+  if (
+    c === 'MANUSCRIPT_APPROVED' ||
+    c === 'APPROVED_BASELINE' ||
+    c === 'APPROVED_FROZEN' ||
+    c === 'LOCKED' ||
+    c === 'PRESERVE'
+  )
+    return true;
+  const s = `${doc.status ?? ''} ${doc.category ?? ''}`.toLowerCase();
+  if (/\b(un ?approved|not[_ -]?approved|candidate|draft|proposal)\b/.test(s)) return false;
+  return /approved|frozen|locked|preserve/.test(s);
+};
+
+/** True when the doc is shareable but its governance state is not approved. */
+export const isUnapprovedDistribution = (doc: {
+  distribution_ready: boolean;
+  status: string | null;
+  category: string | null;
+}): boolean => doc.distribution_ready && !isApprovedDocument(doc);
+
+export const UNAPPROVED_LABEL = 'IN VALUTAZIONE · NON APPROVATO';
