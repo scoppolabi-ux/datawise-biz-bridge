@@ -164,10 +164,11 @@ Deno.serve(async (req) => {
     return json({ error: 'Invalid JSON body' }, 400)
   }
 
-  const projectId = body?.project_id
-  if (projectId !== projectId) {
-    return json({ error: `project_id must be '${projectId}'` }, 400)
+  const projectId = typeof body?.project_id === 'string' ? body.project_id.trim() : ''
+  if (!PROJECT_ID_RE.test(projectId)) {
+    return json({ error: 'project_id must be a slug matching ^[a-z0-9]+(?:-[a-z0-9]+)*$' }, 400)
   }
+
 
   const sourceStateSha = typeof body?.source_state_sha === 'string' ? body.source_state_sha : null
   const semanticFingerprint =
