@@ -77,6 +77,42 @@ export type WcmProjectRoadmapItem = {
   notes: string | null;
 };
 
+export type WcmProjectNeed = {
+  id: string;
+  project_id: string;
+  need_id: string;
+  title: string;
+  need_type: string | null;
+  status: string | null;
+  reason: string | null;
+  action_requested: string | null;
+  related_document_ids: string[];
+  target_tab: string | null;
+  target_document_id: string | null;
+  sort_order: number;
+  source_path: string | null;
+  source_sha: string | null;
+  updated_at: string;
+};
+
+const CLOSED_NEED_STATUSES = ['closed', 'resolved', 'done', 'cancelled', 'canceled'];
+
+export const isOpenNeed = (need: WcmProjectNeed) =>
+  !need.status || !CLOSED_NEED_STATUSES.includes(need.status.toLowerCase());
+
+/** Deep link target for a need, reusing the existing project detail params. */
+export const needTargetPath = (need: WcmProjectNeed) => {
+  if (need.target_document_id) {
+    return `/wcm/${need.project_id}?tab=documents&document=${encodeURIComponent(
+      need.target_document_id,
+    )}`;
+  }
+  const tab = need.target_tab || 'board';
+  return `/wcm/${need.project_id}?tab=${encodeURIComponent(tab)}&need=${encodeURIComponent(
+    need.need_id,
+  )}`;
+};
+
 const REFETCH = 60_000;
 
 /**
@@ -181,3 +217,57 @@ export const useWcmDocumentCounts = (projectId: string | undefined) => {
     total: docs.length,
   };
 };
+
+/** All needs across projects — one query, no N+1. */
+export const useWcmNeeds = () =>
+  useQuery({
+    queryKey: ['wcm-project-needs'],
+    refetchInterval: REFETCH,
+    queryFn: async (): Promise<WcmProjectNeed[]> => {
+      const { data, error } = await supabase
+        .from('wcm_project_needs')
+        .select('*')
+        .order('sort_order', { ascending: true })
+        .order('project_id', { ascending: true })
+        .order('title', { ascending: true });
+
+      if (error) throw error;
+      return (data ?? []) as unknown as WcmProjectNeed[];
+    },
+  });
+
+export const useWcmProjectNeeds = (projectId: string | undefined) =>
+  useQuery({
+    queryKey: ['wcm-project-needs', projectId],
+    enabled: Boolean(projectId),
+    refetchInterval: REFETCH,
+    queryFn: async (): Promise<WcmProjectNeed[]> => {
+      const { data, error } = await supabase
+        .from('wcm_project_needs')
+        .select('*')
+        .eq('project_id', projectId!)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      return (data ?? []) as unknown as WcmProjectNeed[];
+    },
+  });
+
+/** All documents flagged as "to read" across projects — one query. */
+export const useWcmDocumentsToRead = () =>
+  useQuery({
+    queryKey: ['wcm-documents-to-read'],
+    refetchInterval: REFETCH,
+    queryFn: async (): Promise<WcmProjectDocument[]> => {
+      const { data, error } = await supabase
+        .from('wcm_project_documents')
+        .select('*')
+        .eq('requires_stefano', true)
+        .order('project_id', { ascending: true })
+        .order('sort_order', { ascending: true })
+        .order('title', { ascending: true });
+
+      if (error) throw error;
+      return (data ?? []) as unknown as WcmProjectDocument[];
+    },
+  });

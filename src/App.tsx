@@ -9,6 +9,9 @@ import CookiePolicy from "./pages/CookiePolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AICommerceLabPage from "./pages/AICommerceLabPage";
 import WcmMissionControl from "./pages/WcmMissionControl";
+import WcmProjectsPage from "./pages/WcmProjectsPage";
+import WcmNeedsPage from "./pages/WcmNeedsPage";
+import WcmDocumentsToReadPage from "./pages/WcmDocumentsToReadPage";
 import WcmProjectDetail from "./pages/WcmProjectDetail";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +30,9 @@ const App = () => (
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/ai-commerce-lab" element={<AICommerceLabPage />} />
             <Route path="/wcm" element={<WcmMissionControl />} />
+            <Route path="/wcm/projects" element={<WcmProjectsPage />} />
+            <Route path="/wcm/needs" element={<WcmNeedsPage />} />
+            <Route path="/wcm/documents" element={<WcmDocumentsToReadPage />} />
             <Route path="/wcm/:projectId" element={<WcmProjectDetail />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

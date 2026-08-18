@@ -8,6 +8,7 @@ import {
   useWcmActivity,
   useWcmDocuments,
   useWcmProject,
+  useWcmProjectNeeds,
   useWcmRoadmap,
 } from '@/hooks/useWcmProjects';
 import { STATUS_LABELS, statusClasses } from '@/components/wcm/wcmFormat';
@@ -27,11 +28,13 @@ const WcmProjectDetail = () => {
   const tabParam = searchParams.get('tab');
   const tab = tabParam && TABS.includes(tabParam) ? tabParam : 'overview';
   const openDocumentId = searchParams.get('document');
+  const selectedNeedId = searchParams.get('need');
 
   const setTab = (next: string) => {
     const params = new URLSearchParams(searchParams);
     params.set('tab', next);
     if (next !== 'documents') params.delete('document');
+    if (next !== 'board') params.delete('need');
     setSearchParams(params, { replace: true });
   };
 
@@ -47,6 +50,7 @@ const WcmProjectDetail = () => {
   const documentsQuery = useWcmDocuments(projectId);
   const activityQuery = useWcmActivity(projectId);
   const roadmapQuery = useWcmRoadmap(projectId);
+  const needsQuery = useWcmProjectNeeds(projectId);
 
   const project = projectQuery.data;
   const documents = documentsQuery.data ?? [];
@@ -54,13 +58,15 @@ const WcmProjectDetail = () => {
     projectQuery.isFetching ||
     documentsQuery.isFetching ||
     activityQuery.isFetching ||
-    roadmapQuery.isFetching;
+    roadmapQuery.isFetching ||
+    needsQuery.isFetching;
 
   const refetchAll = () => {
     projectQuery.refetch();
     documentsQuery.refetch();
     activityQuery.refetch();
     roadmapQuery.refetch();
+    needsQuery.refetch();
   };
 
   const openDocument = (documentId: string) => setOpenDocumentId(documentId);
@@ -186,6 +192,8 @@ const WcmProjectDetail = () => {
               <WcmBoardTab
                 project={project}
                 documents={documents}
+                needs={needsQuery.data ?? []}
+                selectedNeedId={selectedNeedId}
                 onOpenDocument={openDocument}
               />
             </TabsContent>
