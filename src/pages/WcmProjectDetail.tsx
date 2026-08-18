@@ -177,6 +177,7 @@ const WcmProjectDetail = () => {
             <TabsContent value="documents" className="mt-4">
               <WcmDocumentsTab
                 documents={documents}
+                projectId={projectId!}
                 openDocumentId={openDocumentId}
                 onOpenDocument={setOpenDocumentId}
               />
