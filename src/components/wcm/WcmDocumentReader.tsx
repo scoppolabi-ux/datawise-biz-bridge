@@ -2,6 +2,7 @@ import { ArrowLeft, ExternalLink, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WcmMarkdown from './WcmMarkdown';
 import WcmDocumentActions from './WcmDocumentActions';
+import WcmUnapprovedBadge from './WcmUnapprovedBadge';
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
 
 const Meta = ({ label, value }: { label: string; value: string | null }) => {
