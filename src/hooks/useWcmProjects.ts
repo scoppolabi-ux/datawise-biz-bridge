@@ -217,3 +217,57 @@ export const useWcmDocumentCounts = (projectId: string | undefined) => {
     total: docs.length,
   };
 };
+
+/** All needs across projects — one query, no N+1. */
+export const useWcmNeeds = () =>
+  useQuery({
+    queryKey: ['wcm-project-needs'],
+    refetchInterval: REFETCH,
+    queryFn: async (): Promise<WcmProjectNeed[]> => {
+      const { data, error } = await supabase
+        .from('wcm_project_needs')
+        .select('*')
+        .order('sort_order', { ascending: true })
+        .order('project_id', { ascending: true })
+        .order('title', { ascending: true });
+
+      if (error) throw error;
+      return (data ?? []) as unknown as WcmProjectNeed[];
+    },
+  });
+
+export const useWcmProjectNeeds = (projectId: string | undefined) =>
+  useQuery({
+    queryKey: ['wcm-project-needs', projectId],
+    enabled: Boolean(projectId),
+    refetchInterval: REFETCH,
+    queryFn: async (): Promise<WcmProjectNeed[]> => {
+      const { data, error } = await supabase
+        .from('wcm_project_needs')
+        .select('*')
+        .eq('project_id', projectId!)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      return (data ?? []) as unknown as WcmProjectNeed[];
+    },
+  });
+
+/** All documents flagged as "to read" across projects — one query. */
+export const useWcmDocumentsToRead = () =>
+  useQuery({
+    queryKey: ['wcm-documents-to-read'],
+    refetchInterval: REFETCH,
+    queryFn: async (): Promise<WcmProjectDocument[]> => {
+      const { data, error } = await supabase
+        .from('wcm_project_documents')
+        .select('*')
+        .eq('requires_stefano', true)
+        .order('project_id', { ascending: true })
+        .order('sort_order', { ascending: true })
+        .order('title', { ascending: true });
+
+      if (error) throw error;
+      return (data ?? []) as unknown as WcmProjectDocument[];
+    },
+  });
