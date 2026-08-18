@@ -2,6 +2,7 @@ import { ChevronRight, ExternalLink, FileText } from 'lucide-react';
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
 import WcmDocumentReader from './WcmDocumentReader';
 import WcmDocumentActions from './WcmDocumentActions';
+import WcmUnapprovedBadge from './WcmUnapprovedBadge';
 import { BUCKET_LABELS, bucketOf, type DocBucket } from './wcmFormat';
 
 const ORDER: DocBucket[] = [
