@@ -35,6 +35,10 @@ const STATUS_FIELDS = [
   'source',
 ] as const
 
+// Concurrency baseline persisted from the top-level body (not projection keys).
+const META_FIELDS = ['source_state_sha', 'semantic_fingerprint'] as const
+const ALL_STATUS_FIELDS = [...STATUS_FIELDS, ...META_FIELDS] as readonly string[]
+
 // Board payload is folded into the status row (no extra table).
 const BOARD_FIELDS: Record<string, string> = {
   needs_stefano: 'needs_stefano',
@@ -228,6 +232,9 @@ Deno.serve(async (req) => {
     for (const [k, v] of Object.entries(b)) incoming[BOARD_FIELDS[k]] = v
   }
 
+  if (sourceStateSha !== null) incoming.source_state_sha = sourceStateSha
+  if (semanticFingerprint !== null) incoming.semantic_fingerprint = semanticFingerprint
+
   // --- Collections validation ---
   const collectionPayloads: Partial<
     Record<CollectionName, { rows: Record<string, unknown>[]; snapshot: boolean }>
@@ -308,7 +315,7 @@ Deno.serve(async (req) => {
       }
     }
     const insertRow: Record<string, unknown> = { project_id: projectId }
-    for (const field of STATUS_FIELDS) {
+    for (const field of ALL_STATUS_FIELDS) {
       if (field in incoming) insertRow[field] = normalize(incoming[field])
     }
     if (insertRow.needs_stefano === undefined || insertRow.needs_stefano === null) {
@@ -330,7 +337,7 @@ Deno.serve(async (req) => {
     created = true
   } else {
     // --- Status diff ---
-    for (const field of STATUS_FIELDS) {
+    for (const field of ALL_STATUS_FIELDS) {
       if (!(field in incoming)) continue
       if (!sameValue(field, incoming[field], (current as Record<string, unknown>)[field])) {
         updates[field] = normalize(incoming[field])

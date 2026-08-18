@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
+export type WcmRole = 'owner' | 'admin' | null;
+
 export type WcmAuthState = {
   loading: boolean;
   session: Session | null;
   user: User | null;
+  role: WcmRole;
   isAuthorized: boolean;
   roleChecked: boolean;
+  signOut: () => Promise<void>;
 };
 
 /**
@@ -17,7 +21,7 @@ export type WcmAuthState = {
 export const useWcmAuth = (): WcmAuthState => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [role, setRole] = useState<WcmRole>(null);
   const [roleChecked, setRoleChecked] = useState(false);
 
   useEffect(() => {
@@ -37,7 +41,7 @@ export const useWcmAuth = (): WcmAuthState => {
 
   useEffect(() => {
     if (!session?.user) {
-      setIsAuthorized(false);
+      setRole(null);
       setRoleChecked(true);
       return;
     }
@@ -52,7 +56,8 @@ export const useWcmAuth = (): WcmAuthState => {
         .in('role', ['owner', 'admin']);
 
       if (cancelled) return;
-      setIsAuthorized(!error && !!data && data.length > 0);
+      const roles = (data ?? []).map((r) => r.role as string);
+      setRole(!error && roles.includes('owner') ? 'owner' : roles.includes('admin') ? 'admin' : null);
       setRoleChecked(true);
     };
 
@@ -67,7 +72,11 @@ export const useWcmAuth = (): WcmAuthState => {
     loading,
     session,
     user: session?.user ?? null,
-    isAuthorized,
+    role,
+    isAuthorized: role === 'owner' || role === 'admin',
     roleChecked,
+    signOut: async () => {
+      await supabase.auth.signOut();
+    },
   };
 };

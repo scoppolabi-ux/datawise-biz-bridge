@@ -1,5 +1,6 @@
 import { AlertTriangle, FileText, Gavel, ScrollText } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import WcmCommandSurface from './WcmCommandSurface';
 import { isOpenNeed } from '@/hooks/useWcmProjects';
 import type {
   WcmProjectDocument,
@@ -73,6 +74,7 @@ const NeedCard = ({
       {need.reason && (
         <p className="mt-1.5 text-sm leading-relaxed text-wcm-muted">{need.reason}</p>
       )}
+      <WcmCommandSurface need={need} documents={documents} />
       {related.length > 0 && (
         <ul className="mt-3 space-y-1.5">
           {related.map((doc) => (

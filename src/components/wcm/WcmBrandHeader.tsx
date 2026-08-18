@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
+import { useWcmSession } from './WcmAuthGate';
 
 const LOGO_SRC = '/lovable-uploads/1eabf32b-5b7b-4f4f-a577-b132f69da638.png';
 
@@ -17,7 +19,10 @@ const WcmBrandHeader = ({
   title: React.ReactNode;
   actions?: React.ReactNode;
   children?: React.ReactNode;
-}) => (
+}) => {
+  const auth = useWcmSession();
+
+  return (
   <header className="sticky top-0 z-20 border-b border-wcm-line bg-wcm-bg/95 backdrop-blur">
     <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
       <div className="flex min-w-0 items-center gap-4">
@@ -49,10 +54,30 @@ const WcmBrandHeader = ({
           {children}
         </div>
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      <div className="flex flex-wrap items-center gap-2">
+        {actions}
+        {auth?.user && (
+          <div className="flex min-w-0 items-center gap-2 rounded-md border border-wcm-line-strong px-2.5 py-1">
+            <span className="min-w-0 truncate text-[11px] text-wcm-dim">
+              {auth.user.email}
+              {auth.role ? ` · ${auth.role}` : ''}
+            </span>
+            <button
+              type="button"
+              onClick={() => auth.signOut()}
+              title="Esci"
+              className="shrink-0 text-wcm-dim transition-colors hover:text-wcm-accent"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span className="sr-only">Esci</span>
+            </button>
+          </div>
+        )}
+      </div>
     </div>
     <div className="wcm-rule" />
   </header>
-);
+  );
+};
 
 export default WcmBrandHeader;
