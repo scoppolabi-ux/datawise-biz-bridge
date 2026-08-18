@@ -54,10 +54,30 @@ const WcmBrandHeader = ({
           {children}
         </div>
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      <div className="flex flex-wrap items-center gap-2">
+        {actions}
+        {auth?.user && (
+          <div className="flex min-w-0 items-center gap-2 rounded-md border border-wcm-line-strong px-2.5 py-1">
+            <span className="min-w-0 truncate text-[11px] text-wcm-dim">
+              {auth.user.email}
+              {auth.role ? ` · ${auth.role}` : ''}
+            </span>
+            <button
+              type="button"
+              onClick={() => auth.signOut()}
+              title="Esci"
+              className="shrink-0 text-wcm-dim transition-colors hover:text-wcm-accent"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span className="sr-only">Esci</span>
+            </button>
+          </div>
+        )}
+      </div>
     </div>
     <div className="wcm-rule" />
   </header>
-);
+  );
+};
 
 export default WcmBrandHeader;

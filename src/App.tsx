@@ -13,6 +13,7 @@ import WcmProjectsPage from "./pages/WcmProjectsPage";
 import WcmNeedsPage from "./pages/WcmNeedsPage";
 import WcmDocumentsToReadPage from "./pages/WcmDocumentsToReadPage";
 import WcmProjectDetail from "./pages/WcmProjectDetail";
+import WcmAuthGate from "./components/wcm/WcmAuthGate";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,11 +30,11 @@ const App = () => (
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/ai-commerce-lab" element={<AICommerceLabPage />} />
-            <Route path="/wcm" element={<WcmMissionControl />} />
-            <Route path="/wcm/projects" element={<WcmProjectsPage />} />
-            <Route path="/wcm/needs" element={<WcmNeedsPage />} />
-            <Route path="/wcm/documents" element={<WcmDocumentsToReadPage />} />
-            <Route path="/wcm/:projectId" element={<WcmProjectDetail />} />
+            <Route path="/wcm" element={<WcmAuthGate><WcmMissionControl /></WcmAuthGate>} />
+            <Route path="/wcm/projects" element={<WcmAuthGate><WcmProjectsPage /></WcmAuthGate>} />
+            <Route path="/wcm/needs" element={<WcmAuthGate><WcmNeedsPage /></WcmAuthGate>} />
+            <Route path="/wcm/documents" element={<WcmAuthGate><WcmDocumentsToReadPage /></WcmAuthGate>} />
+            <Route path="/wcm/:projectId" element={<WcmAuthGate><WcmProjectDetail /></WcmAuthGate>} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
