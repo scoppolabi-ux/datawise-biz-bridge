@@ -30,6 +30,9 @@ const App = () => (
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/ai-commerce-lab" element={<AICommerceLabPage />} />
             <Route path="/wcm" element={<WcmMissionControl />} />
+            <Route path="/wcm/projects" element={<WcmProjectsPage />} />
+            <Route path="/wcm/needs" element={<WcmNeedsPage />} />
+            <Route path="/wcm/documents" element={<WcmDocumentsToReadPage />} />
             <Route path="/wcm/:projectId" element={<WcmProjectDetail />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
