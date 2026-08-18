@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, FileText, Loader2 } from 'lucide-react';
 import WcmPageShell from '@/components/wcm/WcmPageShell';
 import WcmDocumentActions from '@/components/wcm/WcmDocumentActions';
+import WcmUnapprovedBadge from '@/components/wcm/WcmUnapprovedBadge';
 import {
   isOpenNeed,
   useWcmDocumentsToRead,
