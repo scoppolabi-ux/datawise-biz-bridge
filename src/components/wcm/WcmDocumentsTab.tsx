@@ -1,15 +1,24 @@
 import { ChevronRight, ExternalLink, FileText } from 'lucide-react';
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
 import WcmDocumentReader from './WcmDocumentReader';
+import WcmDocumentActions from './WcmDocumentActions';
 import { BUCKET_LABELS, bucketOf, type DocBucket } from './wcmFormat';
 
-const ORDER: DocBucket[] = ['TO_READ', 'APPROVED_FROZEN', 'WORKING_EDITORIAL', 'OTHER'];
+const ORDER: DocBucket[] = [
+  'TO_READ',
+  'MANUSCRIPT_APPROVED',
+  'APPROVED_BASELINE',
+  'WORKING_EDITORIAL',
+  'OTHER',
+];
 
 const DocRow = ({
   doc,
+  projectId,
   onOpen,
 }: {
   doc: WcmProjectDocument;
+  projectId: string;
   onOpen: () => void;
 }) => (
   <li className="flex items-center gap-2 border-b border-wcm-line/70 last:border-0">
@@ -30,33 +39,44 @@ const DocRow = ({
       </span>
       <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-wcm-dim" />
     </button>
-    {doc.source_url && (
-      <a
-        href={doc.source_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        title="View source on GitHub"
-        className="mr-3 shrink-0 rounded-md p-2 text-wcm-dim transition-colors hover:bg-wcm-panel hover:text-wcm-text"
-      >
-        <ExternalLink className="h-3.5 w-3.5" />
-      </a>
-    )}
+    <div className="mr-3 flex shrink-0 items-center gap-1.5">
+      <WcmDocumentActions doc={doc} projectId={projectId} />
+      {doc.source_url && (
+        <a
+          href={doc.source_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="View source on GitHub"
+          className="shrink-0 rounded-md p-2 text-wcm-dim transition-colors hover:bg-wcm-panel hover:text-wcm-text"
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+        </a>
+      )}
+    </div>
   </li>
 );
 
 const WcmDocumentsTab = ({
   documents,
+  projectId,
   openDocumentId,
   onOpenDocument,
 }: {
   documents: WcmProjectDocument[];
+  projectId: string;
   openDocumentId: string | null;
   onOpenDocument: (documentId: string | null) => void;
 }) => {
   const openDoc = documents.find((d) => d.document_id === openDocumentId);
 
   if (openDoc) {
-    return <WcmDocumentReader doc={openDoc} onBack={() => onOpenDocument(null)} />;
+    return (
+      <WcmDocumentReader
+        doc={openDoc}
+        projectId={projectId}
+        onBack={() => onOpenDocument(null)}
+      />
+    );
   }
 
   if (documents.length === 0) {
@@ -70,7 +90,9 @@ const WcmDocumentsTab = ({
   return (
     <div className="space-y-6">
       {ORDER.map((bucket) => {
-        const items = documents.filter((d) => bucketOf(d) === bucket);
+        const items = documents
+          .filter((d) => bucketOf(d) === bucket)
+          .sort((a, b) => Number(b.requires_stefano) - Number(a.requires_stefano));
         if (items.length === 0) return null;
         return (
           <section
@@ -83,7 +105,12 @@ const WcmDocumentsTab = ({
             </h3>
             <ul>
               {items.map((doc) => (
-                <DocRow key={doc.id} doc={doc} onOpen={() => onOpenDocument(doc.document_id)} />
+                <DocRow
+                  key={doc.id}
+                  doc={doc}
+                  projectId={projectId}
+                  onOpen={() => onOpenDocument(doc.document_id)}
+                />
               ))}
             </ul>
           </section>
