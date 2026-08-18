@@ -387,12 +387,14 @@ Deno.serve(async (req) => {
   const collectionsChanged = Object.values(collectionResults).some(
     (r) => r.changed > 0 || r.deleted > 0,
   )
-  const changed = Object.keys(updates).length > 0 || collectionsChanged
+  const changed = created || Object.keys(updates).length > 0 || collectionsChanged
 
   return json({
     changed,
+    created,
     project_id: projectId,
     updated_fields: Object.keys(updates),
+
     collections: collectionResults,
     source_state_sha: sourceStateSha,
     semantic_fingerprint: semanticFingerprint,
