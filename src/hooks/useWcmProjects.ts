@@ -77,6 +77,42 @@ export type WcmProjectRoadmapItem = {
   notes: string | null;
 };
 
+export type WcmProjectNeed = {
+  id: string;
+  project_id: string;
+  need_id: string;
+  title: string;
+  need_type: string | null;
+  status: string | null;
+  reason: string | null;
+  action_requested: string | null;
+  related_document_ids: string[];
+  target_tab: string | null;
+  target_document_id: string | null;
+  sort_order: number;
+  source_path: string | null;
+  source_sha: string | null;
+  updated_at: string;
+};
+
+const CLOSED_NEED_STATUSES = ['closed', 'resolved', 'done', 'cancelled', 'canceled'];
+
+export const isOpenNeed = (need: WcmProjectNeed) =>
+  !need.status || !CLOSED_NEED_STATUSES.includes(need.status.toLowerCase());
+
+/** Deep link target for a need, reusing the existing project detail params. */
+export const needTargetPath = (need: WcmProjectNeed) => {
+  if (need.target_document_id) {
+    return `/wcm/${need.project_id}?tab=documents&document=${encodeURIComponent(
+      need.target_document_id,
+    )}`;
+  }
+  const tab = need.target_tab || 'board';
+  return `/wcm/${need.project_id}?tab=${encodeURIComponent(tab)}&need=${encodeURIComponent(
+    need.need_id,
+  )}`;
+};
+
 const REFETCH = 60_000;
 
 /**
