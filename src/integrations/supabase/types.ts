@@ -137,6 +137,63 @@ export type Database = {
         }
         Relationships: []
       }
+      wcm_project_needs: {
+        Row: {
+          action_requested: string | null
+          created_at: string
+          id: string
+          need_id: string
+          need_type: string | null
+          project_id: string
+          reason: string | null
+          related_document_ids: string[]
+          sort_order: number
+          source_path: string | null
+          source_sha: string | null
+          status: string | null
+          target_document_id: string | null
+          target_tab: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          action_requested?: string | null
+          created_at?: string
+          id?: string
+          need_id: string
+          need_type?: string | null
+          project_id: string
+          reason?: string | null
+          related_document_ids?: string[]
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          status?: string | null
+          target_document_id?: string | null
+          target_tab?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          action_requested?: string | null
+          created_at?: string
+          id?: string
+          need_id?: string
+          need_type?: string | null
+          project_id?: string
+          reason?: string | null
+          related_document_ids?: string[]
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          status?: string | null
+          target_document_id?: string | null
+          target_tab?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wcm_project_roadmap: {
         Row: {
           created_at: string
