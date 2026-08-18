@@ -83,6 +83,22 @@ const ROADMAP_FIELDS = [
   'notes',
 ] as const
 
+const NEED_FIELDS = [
+  'need_id',
+  'title',
+  'need_type',
+  'status',
+  'reason',
+  'action_requested',
+  'related_document_ids',
+  'target_tab',
+  'target_document_id',
+  'sort_order',
+  'source_path',
+  'source_sha',
+] as const
+
+
 const COLLECTIONS = {
   documents: {
     table: 'wcm_project_documents',
