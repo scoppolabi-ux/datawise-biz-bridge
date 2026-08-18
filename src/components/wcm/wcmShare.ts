@@ -1,10 +1,13 @@
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
+import { isApprovedDocument } from './wcmFormat';
 
-/** Safe, portable filename derived from title (+ version). */
+/** Safe, portable filename derived from title (+ version, + approval marker). */
 export const documentFileName = (doc: {
   title: string;
   version?: string | null;
   document_id: string;
+  status?: string | null;
+  category?: string | null;
 }) => {
   const base = (doc.title || doc.document_id)
     .normalize('NFKD')
