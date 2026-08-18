@@ -85,6 +85,7 @@ export type Database = {
           category: string | null
           content_markdown: string | null
           created_at: string
+          distribution_ready: boolean
           document_id: string
           id: string
           project_id: string
@@ -102,6 +103,7 @@ export type Database = {
           category?: string | null
           content_markdown?: string | null
           created_at?: string
+          distribution_ready?: boolean
           document_id: string
           id?: string
           project_id: string
@@ -119,6 +121,7 @@ export type Database = {
           category?: string | null
           content_markdown?: string | null
           created_at?: string
+          distribution_ready?: boolean
           document_id?: string
           id?: string
           project_id?: string
