@@ -9,6 +9,9 @@ import CookiePolicy from "./pages/CookiePolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AICommerceLabPage from "./pages/AICommerceLabPage";
 import WcmMissionControl from "./pages/WcmMissionControl";
+import WcmProjectsPage from "./pages/WcmProjectsPage";
+import WcmNeedsPage from "./pages/WcmNeedsPage";
+import WcmDocumentsToReadPage from "./pages/WcmDocumentsToReadPage";
 import WcmProjectDetail from "./pages/WcmProjectDetail";
 import NotFound from "./pages/NotFound";
 
