@@ -109,6 +109,10 @@ const WcmProjectDetail = () => {
         }
       >
         <p className="mt-0.5 truncate font-mono text-[11px] text-wcm-dim">{projectId}</p>
+        {project?.short_description && (
+          <p className="mt-1 text-xs leading-relaxed text-wcm-text">{project.short_description}</p>
+        )}
+
       </WcmBrandHeader>
 
 
