@@ -102,6 +102,37 @@ const NEED_FIELDS = [
   'source_sha',
 ] as const
 
+const HEALTH_STATUSES = ['HEALTHY', 'DEGRADED', 'STALE', 'CRITICAL', 'UNKNOWN']
+
+const KNOWLEDGE_HEALTH_FIELDS = [
+  'health_status',
+  'knowledge_integrity_score',
+  'score_method',
+  'checked_at',
+  'last_reconciliation_at',
+  'last_material_delta_at',
+  'components',
+  'metrics',
+  'issues',
+  'checkpoint',
+  'source_path',
+  'source_sha',
+  'notes',
+] as readonly string[]
+
+const KNOWLEDGE_CHECKPOINT_FIELDS = [
+  'checkpoint_id',
+  'label',
+  'occurred_at',
+  'health_status',
+  'knowledge_integrity_score',
+  'metrics',
+  'note',
+  'source_path',
+  'source_sha',
+  'sort_order',
+] as readonly string[]
+
 
 const COLLECTIONS = {
   documents: {
