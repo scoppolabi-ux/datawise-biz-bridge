@@ -281,8 +281,11 @@ Deno.serve(async (req) => {
     }
 
     // A collection is a full snapshot unless explicitly declared partial.
+    // INVARIANT: activity is a ledger, not a snapshot. It is append/upsert-only and
+    // never deletes event_ids missing from a later payload, regardless of flags.
     const partialFlag = (body[`${name}_partial`] ?? body.partial) === true
-    collectionPayloads[name] = { rows, snapshot: !partialFlag }
+    collectionPayloads[name] = { rows, snapshot: name === 'activity' ? false : !partialFlag }
+
   }
 
   const supabase = createClient(

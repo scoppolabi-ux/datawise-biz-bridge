@@ -72,19 +72,22 @@ export type DocBucket =
 /**
  * Category (when provided by the Projector) is authoritative; title is never used
  * to infer manuscript identity. Status strings are only a fallback.
+ * Invariante: un documento con requires_stefano=true finisce SEMPRE in "Da leggere / Board",
+ * qualunque sia la category.
  */
 export const bucketOf = (doc: {
   requires_stefano: boolean;
   status: string | null;
   category: string | null;
 }): DocBucket => {
+  if (doc.requires_stefano) return 'TO_READ';
   const category = (doc.category ?? '').trim().toUpperCase();
   if (category === 'MANUSCRIPT_APPROVED') return 'MANUSCRIPT_APPROVED';
   if (category === 'APPROVED_BASELINE' || category === 'APPROVED_FROZEN')
     return 'APPROVED_BASELINE';
-  if (doc.requires_stefano) return 'TO_READ';
   if (category === 'WORKING' || category === 'EDITORIAL' || category === 'WORKING_EDITORIAL')
     return 'WORKING_EDITORIAL';
+
 
   const s = (doc.status ?? doc.category ?? '').toLowerCase();
   if (s.includes('approved') || s.includes('frozen')) return 'APPROVED_BASELINE';
