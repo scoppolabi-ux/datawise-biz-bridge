@@ -1,14 +1,15 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { AlertTriangle, ChevronRight, FileText, Loader2, RefreshCw } from 'lucide-react';
+import { AlertTriangle, ChevronRight, Clock, FileText, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  isOpenNeed,
   needTargetPath,
   useWcmDocumentsToRead,
   useWcmNeeds,
   useWcmProjects,
 } from '@/hooks/useWcmProjects';
+import { derivedBadge, useWcmNeedStates } from '@/hooks/useWcmNeedStates';
+import { COMMAND_STATUS_LABELS } from '@/hooks/useWcmCommands';
 import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 
@@ -50,14 +51,19 @@ const WcmMissionControl = () => {
   const { data: projects, isLoading, isFetching, error, refetch } = useWcmProjects(true);
   const { data: needs } = useWcmNeeds();
   const { data: docsToReadList } = useWcmDocumentsToRead();
+  const { needsStefano, pendingNeeds, ready } = useWcmNeedStates();
 
   const all = projects ?? [];
-  const openNeeds = (needs ?? []).filter(isOpenNeed);
   const projectById = new Map(all.map((p) => [p.project_id, p]));
-  // Legacy fallback: only until the first need snapshot lands.
-  const legacyAttention = all.filter((p) => p.needs_stefano);
-  const useNeeds = openNeeds.length > 0;
-  const attentionCount = useNeeds ? openNeeds.length : legacyAttention.length;
+  // Legacy fallback: only while no first-class Need snapshot exists at all.
+  const hasNeedSnapshot = (needs?.length ?? 0) > 0;
+  const legacyAttention = hasNeedSnapshot ? [] : all.filter((p) => p.needs_stefano);
+  const attentionCount = ready
+    ? hasNeedSnapshot
+      ? needsStefano.length
+      : legacyAttention.length
+    : null;
+  const pendingCount = ready ? pendingNeeds.length : null;
   const docsToRead =
     docsToReadList?.length ??
     all.reduce((sum, p) => sum + (p.documents_to_read_count ?? 0), 0);
@@ -103,13 +109,18 @@ const WcmMissionControl = () => {
 
         {all.length > 0 && (
           <>
-            <section className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               <Metric label="Progetti" value={all.length} to="/wcm/projects" />
-              <Metric label="Needs Stefano" value={attentionCount} to="/wcm/needs" />
+              <Metric
+                label="Needs Stefano"
+                value={attentionCount ?? '—'}
+                to="/wcm/needs?view=action"
+              />
+              <Metric label="Pending" value={pendingCount ?? '—'} to="/wcm/needs?view=pending" />
               <Metric label="Documenti da leggere" value={docsToRead} to="/wcm/documents" />
             </section>
 
-            {attentionCount > 0 && (
+            {ready && (attentionCount ?? 0) > 0 && (
               <section className="mt-6 rounded-xl border border-wcm-alert/30 bg-wcm-alert/10 p-4 sm:p-5">
                 <div className="flex items-center justify-between gap-2 text-wcm-alert-fg">
                   <div className="flex items-center gap-2">
@@ -119,7 +130,7 @@ const WcmMissionControl = () => {
                     </h2>
                   </div>
                   <Link
-                    to="/wcm/needs"
+                    to="/wcm/needs?view=action"
                     className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] hover:text-wcm-strong"
                   >
                     Tutti
@@ -127,8 +138,8 @@ const WcmMissionControl = () => {
                   </Link>
                 </div>
                 <ul className="mt-3 space-y-2">
-                  {useNeeds
-                    ? openNeeds.map((need) => {
+                  {hasNeedSnapshot
+                    ? needsStefano.map(({ need, latestCommand }) => {
                         const project = projectById.get(need.project_id);
                         const related = need.related_document_ids?.length ?? 0;
                         return (
@@ -158,6 +169,12 @@ const WcmMissionControl = () => {
                               {need.action_requested && (
                                 <p className="mt-1.5 text-sm leading-relaxed text-wcm-alert-fg">
                                   {need.action_requested}
+                                </p>
+                              )}
+                              {latestCommand && (
+                                <p className="mt-1.5 text-[11px] text-wcm-dim">
+                                  Ultimo comando: {latestCommand.command_type} ·{' '}
+                                  {COMMAND_STATUS_LABELS[latestCommand.status]}
                                 </p>
                               )}
                             </Link>
@@ -196,6 +213,60 @@ const WcmMissionControl = () => {
               </section>
             )}
 
+            {ready && pendingNeeds.length > 0 && (
+              <section className="mt-6 rounded-xl border border-wcm-line-strong bg-wcm-surface/60 p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-2 text-wcm-text">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 shrink-0 text-wcm-dim" />
+                    <h2 className="text-sm font-bold uppercase tracking-[0.18em]">
+                      Decisioni in elaborazione
+                    </h2>
+                  </div>
+                  <Link
+                    to="/wcm/needs?view=pending"
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-wcm-accent hover:text-wcm-strong"
+                  >
+                    Tutte
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+                <ul className="mt-3 space-y-2">
+                  {pendingNeeds.map((item) => {
+                    const { need, latestCommand } = item;
+                    const project = projectById.get(need.project_id);
+                    const recorded = latestCommand?.status === 'RECORDED';
+                    return (
+                      <li key={need.id}>
+                        <Link
+                          to={needTargetPath(need)}
+                          className="block rounded-lg border border-wcm-line bg-wcm-bg/40 p-3 transition-colors hover:border-wcm-accent/60"
+                        >
+                          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                            <span className="text-sm font-semibold text-wcm-strong">
+                              {project?.project_name ?? need.project_id}
+                            </span>
+                            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-wcm-dim">
+                              {derivedBadge(item)}
+                            </span>
+                          </div>
+                          <p className="mt-0.5 text-sm font-medium text-wcm-text">{need.title}</p>
+                          {latestCommand && (
+                            <p className="mt-1 text-[11px] font-mono uppercase tracking-[0.12em] text-wcm-dim">
+                              {latestCommand.command_type} · {latestCommand.status}
+                            </p>
+                          )}
+                          <p className="mt-1.5 text-sm leading-relaxed text-wcm-muted">
+                            {recorded
+                              ? 'Autorità registrata su GitHub: l’esecuzione WCM può essere ancora in corso.'
+                              : 'Stefano ha già deciso: il sistema sta elaborando la decisione. Nessuna azione umana richiesta ora.'}
+                          </p>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            )}
 
             <section className="mt-6 grid gap-4 lg:grid-cols-2">
               {all.map((project) => (
