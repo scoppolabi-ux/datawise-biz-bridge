@@ -17,9 +17,15 @@ import WcmDocumentsTab from '@/components/wcm/WcmDocumentsTab';
 import WcmBoardTab from '@/components/wcm/WcmBoardTab';
 import WcmActivityTab from '@/components/wcm/WcmActivityTab';
 import WcmRoadmapTab from '@/components/wcm/WcmRoadmapTab';
+import WcmKnowledgeHealthTab from '@/components/wcm/WcmKnowledgeHealthTab';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
+import {
+  useWcmKnowledgeCheckpoints,
+  useWcmKnowledgeHealth,
+} from '@/hooks/useWcmKnowledgeHealth';
 
-const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap'];
+const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap', 'knowledge'];
+
 
 const WcmProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -51,6 +57,8 @@ const WcmProjectDetail = () => {
   const activityQuery = useWcmActivity(projectId);
   const roadmapQuery = useWcmRoadmap(projectId);
   const needsQuery = useWcmProjectNeeds(projectId);
+  const knowledgeHealthQuery = useWcmKnowledgeHealth(projectId);
+  const knowledgeCheckpointsQuery = useWcmKnowledgeCheckpoints(projectId);
 
   const project = projectQuery.data;
   const documents = documentsQuery.data ?? [];
@@ -59,7 +67,8 @@ const WcmProjectDetail = () => {
     documentsQuery.isFetching ||
     activityQuery.isFetching ||
     roadmapQuery.isFetching ||
-    needsQuery.isFetching;
+    needsQuery.isFetching ||
+    knowledgeHealthQuery.isFetching;
 
   const refetchAll = () => {
     projectQuery.refetch();
@@ -67,7 +76,10 @@ const WcmProjectDetail = () => {
     activityQuery.refetch();
     roadmapQuery.refetch();
     needsQuery.refetch();
+    knowledgeHealthQuery.refetch();
+    knowledgeCheckpointsQuery.refetch();
   };
+
 
   const openDocument = (documentId: string) => setOpenDocumentId(documentId);
 
@@ -181,7 +193,9 @@ const WcmProjectDetail = () => {
                 ['board', 'Board'],
                 ['activity', 'Activity'],
                 ['roadmap', 'Roadmap'],
+                ['knowledge', 'Knowledge'],
               ].map(([value, label]) => (
+
                 <TabsTrigger
                   key={value}
                   value={value}
@@ -193,8 +207,21 @@ const WcmProjectDetail = () => {
             </TabsList>
 
             <TabsContent value="overview" className="mt-4">
-              <WcmOverviewTab project={project} roadmap={roadmapQuery.data ?? []} />
+              <WcmOverviewTab
+                project={project}
+                roadmap={roadmapQuery.data ?? []}
+                knowledgeHealth={knowledgeHealthQuery.data}
+              />
             </TabsContent>
+            <TabsContent value="knowledge" className="mt-4">
+              <WcmKnowledgeHealthTab
+                health={knowledgeHealthQuery.data}
+                checkpoints={knowledgeCheckpointsQuery.data ?? []}
+                isLoading={knowledgeHealthQuery.isLoading}
+                hasError={Boolean(knowledgeHealthQuery.error)}
+              />
+            </TabsContent>
+
             <TabsContent value="documents" className="mt-4">
               <WcmDocumentsTab
                 documents={documents}

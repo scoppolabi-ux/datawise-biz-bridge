@@ -10,7 +10,10 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { WcmProjectStatus } from '@/hooks/useWcmProjects';
+import type { WcmKnowledgeHealth } from '@/hooks/useWcmKnowledgeHealth';
+import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
 import { STATUS_LABELS, statusClasses, relativeTime } from './wcmFormat';
+
 
 const Line = ({
   icon: Icon,
@@ -37,7 +40,14 @@ const Line = ({
  * Compact portfolio card. Renders only from wcm_project_status — no per-card
  * queries, so the home stays a single request regardless of project count.
  */
-const WcmProjectCard = ({ project }: { project: WcmProjectStatus }) => {
+const WcmProjectCard = ({
+  project,
+  knowledgeHealth,
+}: {
+  project: WcmProjectStatus;
+  knowledgeHealth?: WcmKnowledgeHealth | null;
+}) => {
+
   const heartbeat = relativeTime(project.heartbeat_last_run_at);
   const toRead = project.documents_to_read_count ?? 0;
 
@@ -110,8 +120,13 @@ const WcmProjectCard = ({ project }: { project: WcmProjectStatus }) => {
           </div>
         </div>
 
+        <div>
+          <WcmKnowledgeHealthBadge health={knowledgeHealth} showSynapses />
+        </div>
+
         <div className="space-y-1.5">
           <Line icon={Activity} label="Progressione" value={project.progress_summary} />
+
           <Line icon={Target} label="Focus" value={project.current_focus} />
           <Line icon={ArrowRight} label="Next" value={project.next_action} />
           <Line icon={Ban} label="Blocker" value={project.blocker} />
