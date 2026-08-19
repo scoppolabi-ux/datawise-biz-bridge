@@ -206,7 +206,7 @@ const WcmBoardTab = ({
         </Block>
       )}
       {project.board_review_summary && (
-        <Block icon={ScrollText} title="Review summary">
+        <Block icon={ScrollText} title="Sintesi della review">
           {project.board_review_summary}
         </Block>
       )}
