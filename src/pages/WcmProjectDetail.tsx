@@ -207,8 +207,21 @@ const WcmProjectDetail = () => {
             </TabsList>
 
             <TabsContent value="overview" className="mt-4">
-              <WcmOverviewTab project={project} roadmap={roadmapQuery.data ?? []} />
+              <WcmOverviewTab
+                project={project}
+                roadmap={roadmapQuery.data ?? []}
+                knowledgeHealth={knowledgeHealthQuery.data}
+              />
             </TabsContent>
+            <TabsContent value="knowledge" className="mt-4">
+              <WcmKnowledgeHealthTab
+                health={knowledgeHealthQuery.data}
+                checkpoints={knowledgeCheckpointsQuery.data ?? []}
+                isLoading={knowledgeHealthQuery.isLoading}
+                hasError={Boolean(knowledgeHealthQuery.error)}
+              />
+            </TabsContent>
+
             <TabsContent value="documents" className="mt-4">
               <WcmDocumentsTab
                 documents={documents}
