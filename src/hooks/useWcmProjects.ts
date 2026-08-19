@@ -29,6 +29,8 @@ export type WcmProjectStatus = {
   last_material_activity: string | null;
   notes: string | null;
   source: string | null;
+  source_state_sha: string | null;
+  semantic_fingerprint: string | null;
   updated_at: string;
 };
 
@@ -113,7 +115,7 @@ export const needTargetPath = (need: WcmProjectNeed) => {
   )}`;
 };
 
-const REFETCH = 60_000;
+const REFETCH = 30_000;
 
 /**
  * Single data entry point for Mission Control.
