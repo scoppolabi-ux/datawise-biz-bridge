@@ -10,6 +10,7 @@ import {
 } from '@/hooks/useWcmProjects';
 import { derivedBadge, useWcmNeedStates } from '@/hooks/useWcmNeedStates';
 import { COMMAND_STATUS_LABELS } from '@/hooks/useWcmCommands';
+import { useWcmKnowledgeHealthAll } from '@/hooks/useWcmKnowledgeHealth';
 import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 
@@ -270,7 +271,11 @@ const WcmMissionControl = () => {
 
             <section className="mt-6 grid gap-4 lg:grid-cols-2">
               {all.map((project) => (
-                <WcmProjectCard key={project.id} project={project} />
+                <WcmProjectCard
+                  key={project.id}
+                  project={project}
+                  knowledgeHealth={healthByProject.get(project.project_id) ?? null}
+                />
               ))}
             </section>
           </>
