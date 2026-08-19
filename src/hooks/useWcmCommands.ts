@@ -17,6 +17,8 @@ export type WcmCommandRequest = {
   command_type: 'APPROVE_FREEZE' | 'REQUEST_CHANGES';
   target_document_id: string | null;
   target_version: string | null;
+  expected_state_sha: string | null;
+  expected_need_fingerprint: string | null;
   requested_by_email: string;
   requested_by_role: string;
   note: string | null;
@@ -45,7 +47,7 @@ export const useWcmProjectCommands = (projectId: string | undefined) =>
   useQuery({
     queryKey: ['wcm-command-requests', projectId],
     enabled: Boolean(projectId),
-    refetchInterval: 30_000,
+    refetchInterval: 20_000,
     queryFn: async (): Promise<WcmCommandRequest[]> => {
       const { data, error } = await supabase
         .from('wcm_command_requests')
