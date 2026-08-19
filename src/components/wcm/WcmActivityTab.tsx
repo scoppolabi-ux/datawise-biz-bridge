@@ -44,8 +44,10 @@ const WcmActivityTab = ({ events }: { events: WcmProjectActivity[] }) => {
           </div>
         </li>
       ))}
-    </ol>
+      </ol>
+    </div>
   );
+
 };
 
 export default WcmActivityTab;
