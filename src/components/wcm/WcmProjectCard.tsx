@@ -37,7 +37,14 @@ const Line = ({
  * Compact portfolio card. Renders only from wcm_project_status — no per-card
  * queries, so the home stays a single request regardless of project count.
  */
-const WcmProjectCard = ({ project }: { project: WcmProjectStatus }) => {
+const WcmProjectCard = ({
+  project,
+  knowledgeHealth,
+}: {
+  project: WcmProjectStatus;
+  knowledgeHealth?: WcmKnowledgeHealth | null;
+}) => {
+
   const heartbeat = relativeTime(project.heartbeat_last_run_at);
   const toRead = project.documents_to_read_count ?? 0;
 
