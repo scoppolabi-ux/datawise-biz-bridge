@@ -193,7 +193,9 @@ const WcmProjectDetail = () => {
                 ['board', 'Board'],
                 ['activity', 'Activity'],
                 ['roadmap', 'Roadmap'],
+                ['knowledge', 'Knowledge'],
               ].map(([value, label]) => (
+
                 <TabsTrigger
                   key={value}
                   value={value}
