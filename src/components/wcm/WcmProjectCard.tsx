@@ -10,7 +10,10 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { WcmProjectStatus } from '@/hooks/useWcmProjects';
+import type { WcmKnowledgeHealth } from '@/hooks/useWcmKnowledgeHealth';
+import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
 import { STATUS_LABELS, statusClasses, relativeTime } from './wcmFormat';
+
 
 const Line = ({
   icon: Icon,
