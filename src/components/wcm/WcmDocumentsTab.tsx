@@ -50,7 +50,7 @@ const DocRow = ({
           href={doc.source_url}
           target="_blank"
           rel="noopener noreferrer"
-          title="View source on GitHub"
+          title="Apri il sorgente su GitHub"
           className="shrink-0 rounded-md p-2 text-wcm-dim transition-colors hover:bg-wcm-panel hover:text-wcm-text"
         >
           <ExternalLink className="h-3.5 w-3.5" />
