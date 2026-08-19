@@ -209,6 +209,117 @@ export type Database = {
         }
         Relationships: []
       }
+      wcm_project_knowledge_checkpoints: {
+        Row: {
+          checkpoint_id: string
+          created_at: string
+          health_status: string | null
+          id: string
+          knowledge_integrity_score: number | null
+          label: string
+          metrics: Json
+          note: string | null
+          occurred_at: string | null
+          project_id: string
+          sort_order: number
+          source_path: string | null
+          source_sha: string | null
+          updated_at: string
+        }
+        Insert: {
+          checkpoint_id: string
+          created_at?: string
+          health_status?: string | null
+          id?: string
+          knowledge_integrity_score?: number | null
+          label: string
+          metrics?: Json
+          note?: string | null
+          occurred_at?: string | null
+          project_id: string
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          updated_at?: string
+        }
+        Update: {
+          checkpoint_id?: string
+          created_at?: string
+          health_status?: string | null
+          id?: string
+          knowledge_integrity_score?: number | null
+          label?: string
+          metrics?: Json
+          note?: string | null
+          occurred_at?: string | null
+          project_id?: string
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wcm_project_knowledge_health: {
+        Row: {
+          checked_at: string | null
+          checkpoint: Json | null
+          components: Json
+          created_at: string
+          health_status: string
+          id: string
+          issues: Json
+          knowledge_integrity_score: number | null
+          last_material_delta_at: string | null
+          last_reconciliation_at: string | null
+          metrics: Json
+          notes: string | null
+          project_id: string
+          score_method: string | null
+          source_path: string | null
+          source_sha: string | null
+          updated_at: string
+        }
+        Insert: {
+          checked_at?: string | null
+          checkpoint?: Json | null
+          components?: Json
+          created_at?: string
+          health_status?: string
+          id?: string
+          issues?: Json
+          knowledge_integrity_score?: number | null
+          last_material_delta_at?: string | null
+          last_reconciliation_at?: string | null
+          metrics?: Json
+          notes?: string | null
+          project_id: string
+          score_method?: string | null
+          source_path?: string | null
+          source_sha?: string | null
+          updated_at?: string
+        }
+        Update: {
+          checked_at?: string | null
+          checkpoint?: Json | null
+          components?: Json
+          created_at?: string
+          health_status?: string
+          id?: string
+          issues?: Json
+          knowledge_integrity_score?: number | null
+          last_material_delta_at?: string | null
+          last_reconciliation_at?: string | null
+          metrics?: Json
+          notes?: string | null
+          project_id?: string
+          score_method?: string | null
+          source_path?: string | null
+          source_sha?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wcm_project_needs: {
         Row: {
           action_requested: string | null
