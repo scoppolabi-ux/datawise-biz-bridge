@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { CheckCircle2, Loader2, MessageSquareWarning, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Loader2, MessageSquareWarning, ShieldCheck } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,7 @@ import {
   useWcmProjectCommands,
   type WcmCommandRequest,
 } from '@/hooks/useWcmCommands';
-import type { WcmProjectDocument, WcmProjectNeed } from '@/hooks/useWcmProjects';
+import { useWcmProject, type WcmProjectDocument, type WcmProjectNeed } from '@/hooks/useWcmProjects';
 
 type CommandType = 'APPROVE_FREEZE' | 'REQUEST_CHANGES';
 
@@ -52,6 +52,12 @@ const CommandState = ({ command }: { command: WcmCommandRequest }) => (
       </p>
     )}
     {command.note && <p className="mt-2 leading-relaxed">{command.note}</p>}
+    {command.status === 'STALE' && (
+      <p className="mt-2 text-xs leading-relaxed">
+        STALE = l’autorità NON è stata registrata e non ha avuto alcun effetto: nessuna
+        approvazione, nessun freeze, nessuna ricevuta.
+      </p>
+    )}
     {command.status === 'RECORDED' && (
       <p className="mt-2 text-xs leading-relaxed text-wcm-muted">
         RECORDED = autorità registrata su GitHub; l’esecuzione WCM può essere ancora in corso.
@@ -77,6 +83,7 @@ const WcmCommandSurface = ({
   documents: WcmProjectDocument[];
 }) => {
   const { data: commands } = useWcmProjectCommands(need.project_id);
+  const { data: project } = useWcmProject(need.project_id);
   const submit = useSubmitWcmCommand();
 
   const [open, setOpen] = useState<CommandType | null>(null);
@@ -86,6 +93,15 @@ const WcmCommandSurface = ({
   const needCommands = (commands ?? []).filter((c) => c.need_id === need.need_id);
   const latest = needCommands[0] ?? null;
   const active = needCommands.find((c) => ACTIVE_COMMAND_STATUSES.includes(c.status)) ?? null;
+
+  // Projection-sync lock: the last command died STALE and the read-model is
+  // still sitting on the very same baseline, so no new authority may be given.
+  const currentStateSha = project?.source_state_sha ?? null;
+  const syncLocked =
+    latest?.status === 'STALE' &&
+    Boolean(latest.expected_state_sha) &&
+    (!currentStateSha || currentStateSha === latest.expected_state_sha);
+  const commandsDisabled = Boolean(active) || syncLocked;
 
   const targetDoc = useMemo(() => {
     const targetId = need.target_document_id ?? need.related_document_ids?.[0] ?? null;
@@ -130,6 +146,28 @@ const WcmCommandSurface = ({
         Command Surface · Board Gate
       </div>
 
+      {syncLocked && latest && (
+        <div className="mt-3 rounded-lg border border-wcm-alert/50 bg-wcm-alert/10 p-3 text-sm text-wcm-alert-fg">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em]">
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+            <span className="break-words">Approvazione non registrata</span>
+          </div>
+          <p className="mt-2 leading-relaxed">
+            Lo stato del progetto è cambiato prima dell’esecuzione del comando. Mission Control
+            deve sincronizzarsi con GitHub prima di una nuova decisione.
+          </p>
+          <p className="mt-2 text-xs leading-relaxed text-wcm-alert-fg/90">
+            Sincronizzazione in attesa · ultimo comando {latest.command_type} · {latest.status} ·{' '}
+            {new Date(latest.created_at).toLocaleString('it-IT')}
+          </p>
+          {latest.expected_state_sha && (
+            <p className="mt-1 break-all font-mono text-[11px] opacity-80">
+              baseline attesa: {latest.expected_state_sha}
+            </p>
+          )}
+        </div>
+      )}
+
       {latest && (
         <div className="mt-3">
           <CommandState command={latest} />
@@ -139,7 +177,7 @@ const WcmCommandSurface = ({
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <Button
           size="sm"
-          disabled={Boolean(active)}
+          disabled={commandsDisabled}
           onClick={() => setOpen('APPROVE_FREEZE')}
           className="w-full sm:w-auto"
         >
@@ -149,7 +187,7 @@ const WcmCommandSurface = ({
         <Button
           size="sm"
           variant="outline"
-          disabled={Boolean(active)}
+          disabled={commandsDisabled}
           onClick={() => setOpen('REQUEST_CHANGES')}
           className="w-full border-wcm-line-strong bg-transparent text-wcm-text hover:border-wcm-accent hover:bg-wcm-surface hover:text-wcm-strong sm:w-auto"
         >
@@ -158,7 +196,14 @@ const WcmCommandSurface = ({
         </Button>
       </div>
 
-      {active && (
+      {syncLocked && (
+        <p className="mt-2 text-xs text-wcm-dim">
+          Nuovi comandi disabilitati finché il Projector non allinea Mission Control a una nuova
+          baseline. Nessun reinvio automatico: sarà necessario un nuovo clic umano.
+        </p>
+      )}
+
+      {active && !syncLocked && (
         <p className="mt-2 text-xs text-wcm-dim">
           Un comando è già attivo per questo need: nuovi comandi contrastanti sono disabilitati
           finché non viene risolto.
