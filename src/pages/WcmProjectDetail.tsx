@@ -57,6 +57,8 @@ const WcmProjectDetail = () => {
   const activityQuery = useWcmActivity(projectId);
   const roadmapQuery = useWcmRoadmap(projectId);
   const needsQuery = useWcmProjectNeeds(projectId);
+  const knowledgeHealthQuery = useWcmKnowledgeHealth(projectId);
+  const knowledgeCheckpointsQuery = useWcmKnowledgeCheckpoints(projectId);
 
   const project = projectQuery.data;
   const documents = documentsQuery.data ?? [];
@@ -65,7 +67,8 @@ const WcmProjectDetail = () => {
     documentsQuery.isFetching ||
     activityQuery.isFetching ||
     roadmapQuery.isFetching ||
-    needsQuery.isFetching;
+    needsQuery.isFetching ||
+    knowledgeHealthQuery.isFetching;
 
   const refetchAll = () => {
     projectQuery.refetch();
@@ -73,7 +76,10 @@ const WcmProjectDetail = () => {
     activityQuery.refetch();
     roadmapQuery.refetch();
     needsQuery.refetch();
+    knowledgeHealthQuery.refetch();
+    knowledgeCheckpointsQuery.refetch();
   };
+
 
   const openDocument = (documentId: string) => setOpenDocumentId(documentId);
 
