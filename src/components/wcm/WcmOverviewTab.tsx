@@ -29,11 +29,17 @@ const Field = ({
 const WcmOverviewTab = ({
   project,
   roadmap,
+  knowledgeHealth,
 }: {
   project: WcmProjectStatus;
   roadmap: WcmProjectRoadmapItem[];
+  knowledgeHealth?: WcmKnowledgeHealth | null;
 }) => (
   <div className="space-y-4">
+    <div className="flex flex-wrap items-center gap-2">
+      <WcmKnowledgeHealthBadge health={knowledgeHealth} showSynapses />
+    </div>
+
     {project.short_description && (
       <section className="rounded-xl border border-wcm-line bg-wcm-panel/40 p-4 sm:p-5">
         <h2 className="text-[11px] font-semibold uppercase tracking-wider text-wcm-dim">
