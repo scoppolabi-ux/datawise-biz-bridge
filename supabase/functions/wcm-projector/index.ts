@@ -288,6 +288,63 @@ Deno.serve(async (req) => {
 
   }
 
+  // --- Knowledge Health (observation layer, optional) ---
+  // Absence of these keys must never fail projection of legacy projects.
+  let knowledgeHealthRow: Record<string, unknown> | null = null
+  if (body.knowledge_health !== undefined && body.knowledge_health !== null) {
+    const kh = body.knowledge_health
+    if (typeof kh !== 'object' || Array.isArray(kh)) {
+      return json({ error: 'knowledge_health must be an object' }, 400)
+    }
+    const obj = kh as Record<string, unknown>
+    const unknown = Object.keys(obj).filter((k) => !KNOWLEDGE_HEALTH_FIELDS.includes(k))
+    if (unknown.length > 0) {
+      return json({ error: 'Unsupported knowledge_health fields', fields: unknown }, 400)
+    }
+    const status = normalize(obj.health_status)
+    if (status !== null && !HEALTH_STATUSES.includes(String(status).toUpperCase())) {
+      return json({ error: 'Unsupported knowledge_health.health_status', value: status }, 400)
+    }
+    knowledgeHealthRow = { project_id: projectId }
+    for (const field of KNOWLEDGE_HEALTH_FIELDS) {
+      if (field in obj) knowledgeHealthRow[field] = normalize(obj[field])
+    }
+    knowledgeHealthRow.health_status = status ? String(status).toUpperCase() : 'UNKNOWN'
+  }
+
+  let knowledgeCheckpointRows: Record<string, unknown>[] | null = null
+  if (body.knowledge_checkpoints !== undefined && body.knowledge_checkpoints !== null) {
+    const raw = body.knowledge_checkpoints
+    if (!Array.isArray(raw)) return json({ error: 'knowledge_checkpoints must be an array' }, 400)
+    const rows: Record<string, unknown>[] = []
+    for (const [index, item] of raw.entries()) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) {
+        return json({ error: `knowledge_checkpoints[${index}] must be an object` }, 400)
+      }
+      const obj = item as Record<string, unknown>
+      const unknown = Object.keys(obj).filter((k) => !KNOWLEDGE_CHECKPOINT_FIELDS.includes(k))
+      if (unknown.length > 0) {
+        return json({ error: 'Unsupported knowledge_checkpoints fields', index, fields: unknown }, 400)
+      }
+      for (const required of ['checkpoint_id', 'label']) {
+        if (normalize(obj[required]) === null) {
+          return json({ error: `knowledge_checkpoints[${index}].${required} is required` }, 400)
+        }
+      }
+      const row: Record<string, unknown> = { project_id: projectId }
+      for (const field of KNOWLEDGE_CHECKPOINT_FIELDS) {
+        if (field in obj) row[field] = normalize(obj[field])
+      }
+      if (typeof row.health_status === 'string') {
+        row.health_status = row.health_status.toUpperCase()
+      }
+      rows.push(row)
+    }
+    knowledgeCheckpointRows = rows
+  }
+
+
+
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
