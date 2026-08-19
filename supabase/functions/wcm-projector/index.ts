@@ -505,10 +505,37 @@ Deno.serve(async (req) => {
     }
   }
 
+  // --- Knowledge Health upsert (observation only) ---
+  let knowledgeHealthUpserted = false
+  if (knowledgeHealthRow) {
+    const { error: khErr } = await supabase
+      .from('wcm_project_knowledge_health')
+      .upsert(knowledgeHealthRow, { onConflict: 'project_id' })
+    if (khErr) return json({ error: 'Upsert knowledge_health failed', detail: khErr.message }, 500)
+    knowledgeHealthUpserted = true
+  }
+
+  // INVARIANT: checkpoints are history. Append/upsert-only by (project_id, checkpoint_id);
+  // checkpoints omitted by a later projection are never deleted.
+  let knowledgeCheckpointsUpserted = 0
+  if (knowledgeCheckpointRows && knowledgeCheckpointRows.length > 0) {
+    const { error: kcErr } = await supabase
+      .from('wcm_project_knowledge_checkpoints')
+      .upsert(knowledgeCheckpointRows, { onConflict: 'project_id,checkpoint_id' })
+    if (kcErr)
+      return json({ error: 'Upsert knowledge_checkpoints failed', detail: kcErr.message }, 500)
+    knowledgeCheckpointsUpserted = knowledgeCheckpointRows.length
+  }
+
   const collectionsChanged = Object.values(collectionResults).some(
     (r) => r.changed > 0 || r.deleted > 0,
   )
-  const changed = created || Object.keys(updates).length > 0 || collectionsChanged
+  const changed =
+    created ||
+    Object.keys(updates).length > 0 ||
+    collectionsChanged ||
+    knowledgeHealthUpserted ||
+    knowledgeCheckpointsUpserted > 0
 
   return json({
     changed,
@@ -517,8 +544,11 @@ Deno.serve(async (req) => {
     updated_fields: Object.keys(updates),
 
     collections: collectionResults,
+    knowledge_health: knowledgeHealthUpserted,
+    knowledge_checkpoints: knowledgeCheckpointsUpserted,
     source_state_sha: sourceStateSha,
     semantic_fingerprint: semanticFingerprint,
     row: statusRow,
   })
+
 })
