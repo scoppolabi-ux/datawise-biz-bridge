@@ -17,9 +17,15 @@ import WcmDocumentsTab from '@/components/wcm/WcmDocumentsTab';
 import WcmBoardTab from '@/components/wcm/WcmBoardTab';
 import WcmActivityTab from '@/components/wcm/WcmActivityTab';
 import WcmRoadmapTab from '@/components/wcm/WcmRoadmapTab';
+import WcmKnowledgeHealthTab from '@/components/wcm/WcmKnowledgeHealthTab';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
+import {
+  useWcmKnowledgeCheckpoints,
+  useWcmKnowledgeHealth,
+} from '@/hooks/useWcmKnowledgeHealth';
 
-const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap'];
+const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap', 'knowledge'];
+
 
 const WcmProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
