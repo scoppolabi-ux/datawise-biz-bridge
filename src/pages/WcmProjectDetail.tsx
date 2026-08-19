@@ -157,7 +157,22 @@ const WcmProjectDetail = () => {
           </p>
         )}
 
+        {project && (() => {
+          const actualToRead = documents.filter((d) => d.requires_stefano).length;
+          const declared = project.documents_to_read_count ?? 0;
+          if (documentsQuery.isLoading || actualToRead === declared) return null;
+          return (
+            <p className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
+              <span className="font-semibold">Disallineamento read-model.</span> Il conteggio dei
+              documenti da leggere dichiarato dal progetto ({declared}) non coincide con i documenti
+              effettivamente marcati da leggere ({actualToRead}). Vengono mostrati i documenti
+              realmente presenti; il conteggio si allineerà alla prossima sincronizzazione.
+            </p>
+          );
+        })()}
+
         {project && (
+
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 rounded-lg border border-wcm-line bg-wcm-surface/70 p-1">
               {[
