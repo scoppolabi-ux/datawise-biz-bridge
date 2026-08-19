@@ -120,8 +120,13 @@ const WcmProjectCard = ({
           </div>
         </div>
 
+        <div>
+          <WcmKnowledgeHealthBadge health={knowledgeHealth} showSynapses />
+        </div>
+
         <div className="space-y-1.5">
           <Line icon={Activity} label="Progressione" value={project.progress_summary} />
+
           <Line icon={Target} label="Focus" value={project.current_focus} />
           <Line icon={ArrowRight} label="Next" value={project.next_action} />
           <Line icon={Ban} label="Blocker" value={project.blocker} />
