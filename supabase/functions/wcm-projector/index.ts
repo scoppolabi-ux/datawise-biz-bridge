@@ -480,6 +480,9 @@ Deno.serve(async (req) => {
     collections: collectionResults,
     knowledge_health: knowledgeHealthUpserted,
     knowledge_checkpoints: knowledgeCheckpointsUpserted,
+    // Canonical metadata accepted but intentionally not persisted.
+    knowledge_health_metadata: knowledgeHealthMetadata,
+
     source_state_sha: sourceStateSha,
     semantic_fingerprint: semanticFingerprint,
     row: statusRow,
