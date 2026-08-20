@@ -14,6 +14,7 @@ import { useWcmKnowledgeHealthAll } from '@/hooks/useWcmKnowledgeHealth';
 import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 import WcmLearningCard from '@/components/wcm/WcmLearningCard';
+import WcmDocumentationCard from '@/components/wcm/WcmDocumentationCard';
 
 const Shell = ({ children }: { children: React.ReactNode }) => (
   <div className="wcm-grid min-h-screen">
