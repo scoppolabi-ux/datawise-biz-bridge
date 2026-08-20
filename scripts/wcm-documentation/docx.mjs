@@ -116,18 +116,28 @@ function renderBlock(block, out, quoted = false) {
         }),
       );
       break;
-    case 'listItem':
+    case 'listItem': {
+      let reference = 'wcm-bullets';
+      if (block.ordered) {
+        if (!orderedState.active) {
+          orderedState.index += 1;
+          orderedState.active = true;
+        }
+        reference = `wcm-numbers-${orderedState.index}`;
+      }
       out.push(
         new Paragraph({
           spacing: { after: 60 },
           numbering: {
-            reference: block.ordered ? 'wcm-numbers' : 'wcm-bullets',
+            reference,
             level: Math.min(block.depth ?? 0, 2),
           },
           children: runs(block.spans),
         }),
       );
       break;
+    }
+
     case 'code':
       for (const line of block.text.split('\n')) {
         out.push(
