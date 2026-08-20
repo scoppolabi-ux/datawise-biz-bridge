@@ -252,7 +252,9 @@ export function buildPdf({ blocks, meta }) {
       autoFirstPage: true,
       bufferPages: true,
     });
+    registerFonts(doc);
     const chunks = [];
+
     doc.on('data', (chunk) => chunks.push(chunk));
     doc.on('error', reject);
     doc.on('end', () => resolve(Buffer.concat(chunks)));
