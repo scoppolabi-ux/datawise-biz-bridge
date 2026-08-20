@@ -13,6 +13,7 @@ import {
   relativeTime,
   roadmapStatusClasses,
 } from './wcmFormat';
+import { stewardClassificationLabel } from './wcmKnowledge';
 
 const Field = ({
   icon: Icon,
