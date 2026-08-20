@@ -23,7 +23,34 @@ export type WcmKnowledgeHealth = {
   source_path: string | null;
   source_sha: string | null;
   notes: string | null;
+  /** V0.7 — ultimo ciclo del Knowledge Steward (observation-only). */
+  steward_activity?: WcmStewardActivity | null;
+  /** V0.7 — storico bounded dei cicli recenti. */
+  steward_activity_history?: WcmStewardActivity[] | null;
   updated_at: string;
+};
+
+/** Evento di attività del Knowledge Steward, proiettato da GitHub. */
+export type WcmStewardActivity = {
+  activity_id?: string | null;
+  occurred_at?: string | null;
+  trigger?: string | null;
+  run_id?: string | null;
+  run_url?: string | null;
+  source_sha?: string | null;
+  engine?: string | null;
+  authority?: string | null;
+  classification?: string | null;
+  pre_health_status?: string | null;
+  pre_score?: number | null;
+  repairs_attempted?: unknown;
+  repairs_applied?: unknown;
+  files_changed?: unknown;
+  escalations?: unknown;
+  post_health_status?: string | null;
+  post_score?: number | null;
+  alert_disposition?: string | null;
+  [key: string]: unknown;
 };
 
 export type WcmKnowledgeCheckpoint = {

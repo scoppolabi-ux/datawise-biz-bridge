@@ -25,6 +25,9 @@ export const KNOWLEDGE_HEALTH_FIELDS = [
   'source_path',
   'source_sha',
   'notes',
+  // V0.7 Steward Activity (observation-only, both optional)
+  'steward_activity',
+  'steward_activity_history',
 ] as readonly string[]
 
 /**
