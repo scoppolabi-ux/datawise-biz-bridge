@@ -323,16 +323,17 @@ export async function buildDocx({ blocks, meta }) {
             style: { paragraph: { indent: { left: 480 + level * 360, hanging: 240 } } },
           })),
         },
-        {
-          reference: 'wcm-numbers',
+        ...Array.from({ length: Math.max(orderedState.index, 1) }, (_, i) => ({
+          reference: `wcm-numbers-${i + 1}`,
           levels: [0, 1, 2].map((level) => ({
             level,
             format: level === 1 ? LevelFormat.LOWER_LETTER : LevelFormat.DECIMAL,
             text: `%${level + 1}.`,
             alignment: AlignmentType.LEFT,
+            start: 1,
             style: { paragraph: { indent: { left: 480 + level * 360, hanging: 240 } } },
           })),
-        },
+        })),
       ],
     },
     sections: [
