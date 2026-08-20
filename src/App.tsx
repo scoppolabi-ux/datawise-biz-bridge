@@ -14,6 +14,7 @@ import WcmNeedsPage from "./pages/WcmNeedsPage";
 import WcmDocumentsToReadPage from "./pages/WcmDocumentsToReadPage";
 import WcmProjectDetail from "./pages/WcmProjectDetail";
 import WcmLearningPage from "./pages/WcmLearningPage";
+import WcmDocumentationPage from "./pages/WcmDocumentationPage";
 import WcmAuthGate from "./components/wcm/WcmAuthGate";
 import NotFound from "./pages/NotFound";
 
