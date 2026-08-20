@@ -57,8 +57,10 @@ const WcmProjectDetail = () => {
   const activityQuery = useWcmActivity(projectId);
   const roadmapQuery = useWcmRoadmap(projectId);
   const needsQuery = useWcmProjectNeeds(projectId);
+  const commandsQuery = useWcmProjectCommands(projectId);
   const knowledgeHealthQuery = useWcmKnowledgeHealth(projectId);
   const knowledgeCheckpointsQuery = useWcmKnowledgeCheckpoints(projectId);
+
 
   const project = projectQuery.data;
   const documents = documentsQuery.data ?? [];
