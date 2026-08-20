@@ -2,14 +2,30 @@
  * PDF release renderer (A4) for WCM documentation masters.
  * Layout is flow-based with explicit page-break management: no clipping.
  */
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import PDFDocument from 'pdfkit';
 import { spansToPlainText } from './markdown.mjs';
 
+const FONT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fonts');
+
 const MARGIN = 56; // ~2 cm
-const FONT = 'Helvetica';
-const FONT_BOLD = 'Helvetica-Bold';
-const FONT_ITALIC = 'Helvetica-Oblique';
-const FONT_MONO = 'Courier';
+// Unicode-capable vendored fonts: the masters use arrows, box drawing and
+// symbols that the PDF base-14 fonts cannot encode.
+const FONT = 'DejaVu';
+const FONT_BOLD = 'DejaVu-Bold';
+const FONT_ITALIC = 'DejaVu-Italic';
+const FONT_MONO = 'DejaVu-Mono';
+const FONT_MONO_BOLD = 'DejaVu-Mono-Bold';
+
+function registerFonts(doc) {
+  doc.registerFont(FONT, path.join(FONT_DIR, 'DejaVuSans.ttf'));
+  doc.registerFont(FONT_BOLD, path.join(FONT_DIR, 'DejaVuSans-Bold.ttf'));
+  doc.registerFont(FONT_ITALIC, path.join(FONT_DIR, 'DejaVuSans-Oblique.ttf'));
+  doc.registerFont(FONT_MONO, path.join(FONT_DIR, 'DejaVuSansMono.ttf'));
+  doc.registerFont(FONT_MONO_BOLD, path.join(FONT_DIR, 'DejaVuSansMono-Bold.ttf'));
+}
+
 
 const HEADING = {
   1: { size: 18, gapBefore: 18, gapAfter: 8, color: '#1F3864' },
