@@ -11,7 +11,9 @@ import {
   useWcmProjectNeeds,
   useWcmRoadmap,
 } from '@/hooks/useWcmProjects';
+import { useWcmProjectCommands } from '@/hooks/useWcmCommands';
 import { STATUS_LABELS, statusClasses } from '@/components/wcm/wcmFormat';
+
 import WcmOverviewTab from '@/components/wcm/WcmOverviewTab';
 import WcmDocumentsTab from '@/components/wcm/WcmDocumentsTab';
 import WcmBoardTab from '@/components/wcm/WcmBoardTab';
@@ -57,8 +59,10 @@ const WcmProjectDetail = () => {
   const activityQuery = useWcmActivity(projectId);
   const roadmapQuery = useWcmRoadmap(projectId);
   const needsQuery = useWcmProjectNeeds(projectId);
+  const commandsQuery = useWcmProjectCommands(projectId);
   const knowledgeHealthQuery = useWcmKnowledgeHealth(projectId);
   const knowledgeCheckpointsQuery = useWcmKnowledgeCheckpoints(projectId);
+
 
   const project = projectQuery.data;
   const documents = documentsQuery.data ?? [];
@@ -68,6 +72,7 @@ const WcmProjectDetail = () => {
     activityQuery.isFetching ||
     roadmapQuery.isFetching ||
     needsQuery.isFetching ||
+    commandsQuery.isFetching ||
     knowledgeHealthQuery.isFetching;
 
   const refetchAll = () => {
@@ -76,9 +81,11 @@ const WcmProjectDetail = () => {
     activityQuery.refetch();
     roadmapQuery.refetch();
     needsQuery.refetch();
+    commandsQuery.refetch();
     knowledgeHealthQuery.refetch();
     knowledgeCheckpointsQuery.refetch();
   };
+
 
 
   const openDocument = (documentId: string) => setOpenDocumentId(documentId);
@@ -211,8 +218,11 @@ const WcmProjectDetail = () => {
                 project={project}
                 roadmap={roadmapQuery.data ?? []}
                 knowledgeHealth={knowledgeHealthQuery.data}
+                needs={needsQuery.data}
+                commands={commandsQuery.data}
               />
             </TabsContent>
+
             <TabsContent value="knowledge" className="mt-4">
               <WcmKnowledgeHealthTab
                 health={knowledgeHealthQuery.data}

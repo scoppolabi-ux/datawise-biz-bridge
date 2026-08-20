@@ -1,10 +1,11 @@
-import { AlertTriangle, Brain, Clock, History, Info, Loader2 } from 'lucide-react';
+import { AlertTriangle, Brain, Clock, History, Info, Loader2, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type {
   WcmKnowledgeCheckpoint,
   WcmKnowledgeHealth,
 } from '@/hooks/useWcmKnowledgeHealth';
 import { formatDateTime, relativeTime } from './wcmFormat';
+import { knowledgeGrowth } from './wcmHealthPlanes';
 import {
   COMPONENT_LABELS,
   GLOSSARY,
@@ -18,6 +19,7 @@ import {
   normalizeHealthStatus,
   severityClasses,
 } from './wcmKnowledge';
+
 
 const Metric = ({ label, value }: { label: string; value: string | number | null }) => (
   <div className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-3">
@@ -200,6 +202,67 @@ const WcmKnowledgeHealthTab = ({
           ))}
         </div>
       </section>
+
+      {/* Crescita dal checkpoint */}
+      {(() => {
+        const latest = checkpoints[0];
+        if (!latest) return null;
+        const rows = knowledgeGrowth(health, latest.metrics).filter((r) => r.delta !== null);
+        if (rows.length === 0) return null;
+        return (
+          <section className="overflow-hidden rounded-xl border border-wcm-line bg-wcm-surface/60">
+            <div className="border-b border-wcm-line px-4 py-3">
+              <div className="flex items-center gap-2 text-wcm-muted">
+                <TrendingUp className="h-3.5 w-3.5" />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em]">
+                  Crescita dal checkpoint
+                </h3>
+              </div>
+              <p className="mt-1 text-[11px] text-wcm-dim">
+                Confronto con «{latest.label}» ({formatDateTime(latest.occurred_at)}).{' '}
+                {GLOSSARY.notAQualityScore}
+              </p>
+            </div>
+            <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+              {rows.map((row) => {
+                const worse = row.lowerIsBetter ? row.delta! > 0 : row.delta! < 0;
+                const better = row.delta !== 0 && !worse;
+                return (
+                  <div
+                    key={row.label}
+                    className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-3"
+                  >
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-wcm-dim">
+                      {row.label}
+                    </p>
+                    <p className="mt-1 font-mono text-lg text-wcm-strong">
+                      {row.current ?? '—'}
+                      <span
+                        className={cn(
+                          'ml-2 text-xs',
+                          row.delta === 0
+                            ? 'text-wcm-dim'
+                            : worse
+                              ? 'text-wcm-alert-fg'
+                              : better
+                                ? 'text-emerald-300'
+                                : 'text-wcm-dim',
+                        )}
+                      >
+                        {row.delta! > 0 ? `+${row.delta}` : row.delta}
+                      </span>
+                    </p>
+                    <p className="mt-0.5 font-mono text-[11px] text-wcm-dim">
+                      checkpoint: {row.checkpoint}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })()}
+
 
       {/* Freschezza */}
       <div className="grid gap-3 sm:grid-cols-3">

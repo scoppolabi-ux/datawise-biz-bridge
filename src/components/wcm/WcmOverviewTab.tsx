@@ -1,8 +1,11 @@
 import { Activity, AlertTriangle, ArrowRight, Ban, Clock, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { WcmProjectRoadmapItem, WcmProjectStatus } from '@/hooks/useWcmProjects';
+import type { WcmProjectNeed, WcmProjectRoadmapItem, WcmProjectStatus } from '@/hooks/useWcmProjects';
 import type { WcmKnowledgeHealth } from '@/hooks/useWcmKnowledgeHealth';
+import type { WcmCommandRequest } from '@/hooks/useWcmCommands';
 import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
+import WcmHealthSummary from './WcmHealthSummary';
+
 
 import {
   ROADMAP_STATUS_LABELS,
@@ -33,15 +36,28 @@ const WcmOverviewTab = ({
   project,
   roadmap,
   knowledgeHealth,
+  needs,
+  commands,
 }: {
   project: WcmProjectStatus;
   roadmap: WcmProjectRoadmapItem[];
   knowledgeHealth?: WcmKnowledgeHealth | null;
+  needs?: WcmProjectNeed[];
+  commands?: WcmCommandRequest[];
 }) => (
   <div className="space-y-4">
     <div className="flex flex-wrap items-center gap-2">
       <WcmKnowledgeHealthBadge health={knowledgeHealth} showSynapses />
     </div>
+
+    <WcmHealthSummary
+      project={project}
+      needs={needs}
+      commands={commands}
+      knowledgeHealth={knowledgeHealth}
+    />
+
+
 
     {project.short_description && (
       <section className="rounded-xl border border-wcm-line bg-wcm-panel/40 p-4 sm:p-5">
