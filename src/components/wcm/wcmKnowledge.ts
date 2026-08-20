@@ -141,3 +141,64 @@ export const GLOSSARY = {
   notAQualityScore:
     'Il numero di sinapsi non è un indicatore di qualità: più sinapsi non significa knowledge migliore.',
 };
+
+/* ---------------------------------------------------------------------------
+ * V0.7 — Steward Activity (observation-only)
+ * ------------------------------------------------------------------------- */
+
+export const STEWARD_CLASSIFICATION_LABELS: Record<string, string> = {
+  GREEN_NO_ACTION: 'Nessun intervento necessario',
+  MECHANICAL_REPAIRED: 'Anomalia meccanica riparata',
+  ESCALATE_NO_WRITE: 'Escalation senza scrittura',
+  NON_GREEN_NO_ALLOWLISTED_REPAIR: 'Nessuna repair autorizzata disponibile',
+};
+
+/** Fallback leggibile per enum non mappati: GREEN_NO_ACTION -> "Green no action". */
+export const stewardClassificationLabel = (value: unknown): string => {
+  const raw = typeof value === 'string' ? value.trim().toUpperCase() : '';
+  if (!raw) return 'Classificazione non disponibile';
+  if (STEWARD_CLASSIFICATION_LABELS[raw]) return STEWARD_CLASSIFICATION_LABELS[raw];
+  const words = raw.toLowerCase().replace(/_/g, ' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
+};
+
+export const stewardClassificationClasses = (value: unknown) => {
+  switch (typeof value === 'string' ? value.trim().toUpperCase() : '') {
+    case 'GREEN_NO_ACTION':
+      return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+    case 'MECHANICAL_REPAIRED':
+      return 'bg-sky-500/15 text-sky-300 border-sky-500/30';
+    case 'ESCALATE_NO_WRITE':
+      return 'bg-amber-500/15 text-amber-200 border-amber-500/40';
+    case 'NON_GREEN_NO_ALLOWLISTED_REPAIR':
+      return 'bg-wcm-alert/15 text-wcm-alert-fg border-wcm-alert/30';
+    default:
+      return 'bg-wcm-dim/15 text-wcm-muted border-wcm-line-strong';
+  }
+};
+
+/** Normalizza un valore in lista leggibile; mai inventa dati. */
+export const stewardList = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => {
+        if (item === null || item === undefined) return '';
+        if (typeof item === 'string' || typeof item === 'number') return String(item);
+        const rec = item as Record<string, unknown>;
+        const label = rec.title ?? rec.label ?? rec.name ?? rec.path ?? rec.id ?? rec.reason;
+        const detail = rec.detail ?? rec.description ?? rec.message;
+        const head = label !== undefined && label !== null ? String(label) : JSON.stringify(item);
+        return detail ? `${head} — ${String(detail)}` : head;
+      })
+      .filter((s) => s.trim() !== '');
+  }
+  if (typeof value === 'string' && value.trim() !== '') return [value.trim()];
+  return [];
+};
+
+/** Conteggio: array -> length, numero -> valore, altrimenti null (UNKNOWN). */
+export const stewardCount = (value: unknown): number | null => {
+  if (Array.isArray(value)) return value.length;
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  return null;
+};
