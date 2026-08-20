@@ -267,18 +267,22 @@ export function buildPdf({ blocks, meta }) {
       renderBlock(doc, block, contentWidth);
     }
 
-    // Footers on every page
-    const range = doc.bufferedPageRange?.() ?? { start: 0, count: 0 };
-    const total = doc.bufferedPageRange ? range.count : 0;
-    for (let i = 0; i < total; i += 1) {
+    // Footers on every page. The bottom margin is temporarily neutralized so
+    // pdfkit does not treat the footer as an overflow and append blank pages.
+    const range = doc.bufferedPageRange();
+    for (let i = 0; i < range.count; i += 1) {
       doc.switchToPage(range.start + i);
+      const bottom = doc.page.margins.bottom;
+      doc.page.margins.bottom = 0;
       doc.font(FONT).fontSize(7.5).fillColor('#888888').text(
-        `${meta.title} · ${meta.version} · source ${meta.source_sha_short} · pag. ${i + 1}/${total}`,
+        `${meta.title} · ${meta.version} · source ${meta.source_sha_short} · pag. ${i + 1}/${range.count}`,
         MARGIN,
-        doc.page.height - MARGIN - 4,
+        doc.page.height - MARGIN + 6,
         { width: contentWidth, align: 'center', lineBreak: false },
       );
+      doc.page.margins.bottom = bottom;
     }
+    doc.flushPages();
 
     doc.end();
   });
