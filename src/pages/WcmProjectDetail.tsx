@@ -211,8 +211,11 @@ const WcmProjectDetail = () => {
                 project={project}
                 roadmap={roadmapQuery.data ?? []}
                 knowledgeHealth={knowledgeHealthQuery.data}
+                needs={needsQuery.data}
+                commands={commandsQuery.data}
               />
             </TabsContent>
+
             <TabsContent value="knowledge" className="mt-4">
               <WcmKnowledgeHealthTab
                 health={knowledgeHealthQuery.data}
