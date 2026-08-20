@@ -278,6 +278,8 @@ export type Database = {
           score_method: string | null
           source_path: string | null
           source_sha: string | null
+          steward_activity: Json | null
+          steward_activity_history: Json
           updated_at: string
         }
         Insert: {
@@ -297,6 +299,8 @@ export type Database = {
           score_method?: string | null
           source_path?: string | null
           source_sha?: string | null
+          steward_activity?: Json | null
+          steward_activity_history?: Json
           updated_at?: string
         }
         Update: {
@@ -316,6 +320,8 @@ export type Database = {
           score_method?: string | null
           source_path?: string | null
           source_sha?: string | null
+          steward_activity?: Json | null
+          steward_activity_history?: Json
           updated_at?: string
         }
         Relationships: []

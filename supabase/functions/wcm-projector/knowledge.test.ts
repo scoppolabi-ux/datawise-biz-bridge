@@ -145,3 +145,57 @@ describe('knowledge_checkpoints boundary', () => {
     expect(rows).toMatchObject({ fields: ['bogus_metric'] });
   });
 });
+
+// V0.7 — Steward Activity (observation-only) must round-trip through the boundary,
+// while legacy payloads without these fields keep working unchanged.
+const STEWARD_EVENT = {
+  activity_id: 'STW-2026-08-20-01',
+  occurred_at: '2026-08-20T05:00:00Z',
+  trigger: 'schedule',
+  run_id: '123456789',
+  run_url: 'https://github.com/scoppolabi-ux/WCM-LAB/actions/runs/123456789',
+  source_sha: 'abc123',
+  engine: 'knowledge-steward-v1',
+  authority: 'MECHANICAL_ONLY',
+  classification: 'MECHANICAL_REPAIRED',
+  pre_health_status: 'DEGRADED',
+  pre_score: 81,
+  repairs_attempted: ['RELINK_ORPHAN'],
+  repairs_applied: ['RELINK_ORPHAN'],
+  files_changed: ['projects/prima-di-noi/kb/graph/NODES.json'],
+  escalations: [],
+  post_health_status: 'HEALTHY',
+  post_score: 87,
+  alert_disposition: 'NONE',
+};
+
+describe('steward activity boundary (V0.7)', () => {
+  it('accepts legacy payloads without steward fields', () => {
+    const parsed = parseKnowledgeHealth(CANONICAL_HEALTH, 'prima-di-noi');
+    if ('error' in parsed) throw new Error(String(parsed.error));
+    expect(parsed.row).not.toHaveProperty('steward_activity');
+    expect(parsed.row).not.toHaveProperty('steward_activity_history');
+  });
+
+  it('persists steward_activity and steward_activity_history', () => {
+    const parsed = parseKnowledgeHealth(
+      {
+        ...CANONICAL_HEALTH,
+        steward_activity: STEWARD_EVENT,
+        steward_activity_history: [STEWARD_EVENT],
+      },
+      'prima-di-noi',
+    );
+    if ('error' in parsed) throw new Error(String(parsed.error));
+    expect(parsed.row.steward_activity).toEqual(STEWARD_EVENT);
+    expect(parsed.row.steward_activity_history).toEqual([STEWARD_EVENT]);
+  });
+
+  it('keeps rejecting unknown keys alongside steward fields', () => {
+    const parsed = parseKnowledgeHealth(
+      { ...CANONICAL_HEALTH, steward_activity: STEWARD_EVENT, steward_wat: 1 },
+      'prima-di-noi',
+    );
+    expect(parsed).toMatchObject({ fields: ['steward_wat'] });
+  });
+});
