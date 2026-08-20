@@ -87,7 +87,14 @@ function tableBlock(block) {
   });
 }
 
+// Each ordered list in the master must restart at 1: Word continues numbering
+// when consecutive lists share the same numbering reference, so we allocate one
+// reference per contiguous ordered-list group.
+let orderedState = { index: 0, active: false };
+
 function renderBlock(block, out, quoted = false) {
+  if (!(block.type === 'listItem' && block.ordered)) orderedState.active = false;
+
   switch (block.type) {
     case 'heading':
       out.push(
