@@ -1,8 +1,11 @@
 import { Activity, AlertTriangle, ArrowRight, Ban, Clock, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { WcmProjectRoadmapItem, WcmProjectStatus } from '@/hooks/useWcmProjects';
+import type { WcmProjectNeed, WcmProjectRoadmapItem, WcmProjectStatus } from '@/hooks/useWcmProjects';
 import type { WcmKnowledgeHealth } from '@/hooks/useWcmKnowledgeHealth';
+import type { WcmCommandRequest } from '@/hooks/useWcmCommands';
 import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
+import WcmHealthSummary from './WcmHealthSummary';
+
 
 import {
   ROADMAP_STATUS_LABELS,
