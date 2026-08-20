@@ -27,21 +27,28 @@ function fontFor(span) {
   return FONT;
 }
 
-/** Render styled spans as continued text with wrapping inside the given width. */
+/**
+ * Render styled spans as one continued, wrapping text flow.
+ * NOTE: pdfkit only keeps segments on the same line when the continuation
+ * calls omit explicit coordinates, so the cursor is positioned up-front.
+ */
 function writeSpans(doc, spans, { x, width, size = BODY_SIZE, color = '#1A1A1A' }) {
   const list = spans.length ? spans : [{ text: ' ' }];
+  doc.x = x;
   doc.fontSize(size);
   list.forEach((span, i) => {
     doc
       .font(fontFor(span))
+      .fontSize(size)
       .fillColor(span.href ? '#1F4E79' : span.code ? '#8A2222' : color)
-      .text(span.text, i === 0 ? x : undefined, i === 0 ? doc.y : undefined, {
+      .text(span.text, {
         width,
         continued: i < list.length - 1,
         align: 'left',
         lineGap: 1.5,
       });
   });
+  doc.x = x;
   doc.fillColor('#1A1A1A').font(FONT);
 }
 
