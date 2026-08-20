@@ -36,15 +36,28 @@ const WcmOverviewTab = ({
   project,
   roadmap,
   knowledgeHealth,
+  needs,
+  commands,
 }: {
   project: WcmProjectStatus;
   roadmap: WcmProjectRoadmapItem[];
   knowledgeHealth?: WcmKnowledgeHealth | null;
+  needs?: WcmProjectNeed[];
+  commands?: WcmCommandRequest[];
 }) => (
   <div className="space-y-4">
     <div className="flex flex-wrap items-center gap-2">
       <WcmKnowledgeHealthBadge health={knowledgeHealth} showSynapses />
     </div>
+
+    <WcmHealthSummary
+      project={project}
+      needs={needs}
+      commands={commands}
+      knowledgeHealth={knowledgeHealth}
+    />
+
+
 
     {project.short_description && (
       <section className="rounded-xl border border-wcm-line bg-wcm-panel/40 p-4 sm:p-5">
