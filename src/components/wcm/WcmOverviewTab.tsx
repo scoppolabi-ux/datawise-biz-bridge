@@ -57,6 +57,20 @@ const WcmOverviewTab = ({
       knowledgeHealth={knowledgeHealth}
     />
 
+    {knowledgeHealth?.steward_activity && (
+      <p className="rounded-lg border border-wcm-line bg-wcm-surface/60 px-4 py-2.5 text-xs text-wcm-muted">
+        <span className="font-semibold uppercase tracking-wider text-wcm-dim">
+          Ultimo ciclo Steward
+        </span>{' '}
+        · {stewardClassificationLabel(knowledgeHealth.steward_activity.classification)} ·{' '}
+        <span className="text-wcm-text">
+          {formatDateTime(knowledgeHealth.steward_activity.occurred_at ?? null)}
+        </span>
+      </p>
+    )}
+
+
+
 
 
     {project.short_description && (
