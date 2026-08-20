@@ -13,6 +13,7 @@ import { COMMAND_STATUS_LABELS } from '@/hooks/useWcmCommands';
 import { useWcmKnowledgeHealthAll } from '@/hooks/useWcmKnowledgeHealth';
 import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
+import WcmLearningCard from '@/components/wcm/WcmLearningCard';
 
 const Shell = ({ children }: { children: React.ReactNode }) => (
   <div className="wcm-grid min-h-screen">
@@ -123,6 +124,11 @@ const WcmMissionControl = () => {
               <Metric label="Pending" value={pendingCount ?? '—'} to="/wcm/needs?view=pending" />
               <Metric label="Documenti da leggere" value={docsToRead} to="/wcm/documents" />
             </section>
+
+            <div className="mt-4">
+              <WcmLearningCard />
+            </div>
+
 
             {ready && (attentionCount ?? 0) > 0 && (
               <section className="mt-6 rounded-xl border border-wcm-alert/30 bg-wcm-alert/10 p-4 sm:p-5">

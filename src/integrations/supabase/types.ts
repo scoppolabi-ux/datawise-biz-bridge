@@ -107,6 +107,216 @@ export type Database = {
         }
         Relationships: []
       }
+      wcm_method_learning_evidence: {
+        Row: {
+          changed_paths: Json
+          created_at: string
+          detected_at: string | null
+          event_id: string
+          id: string
+          linked_learning_ids: Json
+          repair_evidence_sha: string | null
+          review_note: string | null
+          review_status: string | null
+          reviewed_at: string | null
+          sort_order: number
+          source_committed_at: string | null
+          source_sha: string | null
+          source_type: string | null
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          changed_paths?: Json
+          created_at?: string
+          detected_at?: string | null
+          event_id: string
+          id?: string
+          linked_learning_ids?: Json
+          repair_evidence_sha?: string | null
+          review_note?: string | null
+          review_status?: string | null
+          reviewed_at?: string | null
+          sort_order?: number
+          source_committed_at?: string | null
+          source_sha?: string | null
+          source_type?: string | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          changed_paths?: Json
+          created_at?: string
+          detected_at?: string | null
+          event_id?: string
+          id?: string
+          linked_learning_ids?: Json
+          repair_evidence_sha?: string | null
+          review_note?: string | null
+          review_status?: string | null
+          reviewed_at?: string | null
+          sort_order?: number
+          source_committed_at?: string | null
+          source_sha?: string | null
+          source_type?: string | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wcm_method_learning_health: {
+        Row: {
+          checked_at: string | null
+          components: Json
+          created_at: string
+          health_status: string
+          id: string
+          issues: Json
+          last_material_method_delta_at: string | null
+          last_material_method_delta_sha: string | null
+          method_integrity_score: number | null
+          metrics: Json
+          score_method: string | null
+          source_path: string | null
+          source_sha: string | null
+          system_id: string
+          updated_at: string
+        }
+        Insert: {
+          checked_at?: string | null
+          components?: Json
+          created_at?: string
+          health_status?: string
+          id?: string
+          issues?: Json
+          last_material_method_delta_at?: string | null
+          last_material_method_delta_sha?: string | null
+          method_integrity_score?: number | null
+          metrics?: Json
+          score_method?: string | null
+          source_path?: string | null
+          source_sha?: string | null
+          system_id?: string
+          updated_at?: string
+        }
+        Update: {
+          checked_at?: string | null
+          components?: Json
+          created_at?: string
+          health_status?: string
+          id?: string
+          issues?: Json
+          last_material_method_delta_at?: string | null
+          last_material_method_delta_sha?: string | null
+          method_integrity_score?: number | null
+          metrics?: Json
+          score_method?: string | null
+          source_path?: string | null
+          source_sha?: string | null
+          system_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wcm_method_learning_records: {
+        Row: {
+          confidence: string | null
+          created_at: string
+          generalizability: string | null
+          id: string
+          last_reviewed_at: string | null
+          learning_id: string
+          origin_created_at: string | null
+          origin_refs: Json
+          promoted_to: Json
+          record_path: string | null
+          revisit_trigger: string | null
+          sort_order: number
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          confidence?: string | null
+          created_at?: string
+          generalizability?: string | null
+          id?: string
+          last_reviewed_at?: string | null
+          learning_id: string
+          origin_created_at?: string | null
+          origin_refs?: Json
+          promoted_to?: Json
+          record_path?: string | null
+          revisit_trigger?: string | null
+          sort_order?: number
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          confidence?: string | null
+          created_at?: string
+          generalizability?: string | null
+          id?: string
+          last_reviewed_at?: string | null
+          learning_id?: string
+          origin_created_at?: string | null
+          origin_refs?: Json
+          promoted_to?: Json
+          record_path?: string | null
+          revisit_trigger?: string | null
+          sort_order?: number
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wcm_method_learning_relations: {
+        Row: {
+          created_at: string
+          evidence_refs: Json
+          id: string
+          last_verified_at: string | null
+          rationale: string | null
+          relation_id: string
+          relation_type: string | null
+          sort_order: number
+          source_node: string | null
+          status: string | null
+          target_node: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          evidence_refs?: Json
+          id?: string
+          last_verified_at?: string | null
+          rationale?: string | null
+          relation_id: string
+          relation_type?: string | null
+          sort_order?: number
+          source_node?: string | null
+          status?: string | null
+          target_node?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          evidence_refs?: Json
+          id?: string
+          last_verified_at?: string | null
+          rationale?: string | null
+          relation_id?: string
+          relation_type?: string | null
+          sort_order?: number
+          source_node?: string | null
+          status?: string | null
+          target_node?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wcm_project_activity: {
         Row: {
           created_at: string
