@@ -40,7 +40,7 @@ const runs = (spans, extra = {}) =>
         text: span.text,
         bold: span.bold || extra.bold,
         italics: span.italic || extra.italics,
-        font: span.code ? 'Consolas' : undefined,
+        font: span.code ? 'Courier New' : undefined,
         color: span.href ? '1F4E79' : extra.color,
         size: extra.size,
       }),
@@ -87,7 +87,14 @@ function tableBlock(block) {
   });
 }
 
+// Each ordered list in the master must restart at 1: Word continues numbering
+// when consecutive lists share the same numbering reference, so we allocate one
+// reference per contiguous ordered-list group.
+let orderedState = { index: 0, active: false };
+
 function renderBlock(block, out, quoted = false) {
+  if (!(block.type === 'listItem' && block.ordered)) orderedState.active = false;
+
   switch (block.type) {
     case 'heading':
       out.push(
@@ -109,18 +116,28 @@ function renderBlock(block, out, quoted = false) {
         }),
       );
       break;
-    case 'listItem':
+    case 'listItem': {
+      let reference = 'wcm-bullets';
+      if (block.ordered) {
+        if (!orderedState.active) {
+          orderedState.index += 1;
+          orderedState.active = true;
+        }
+        reference = `wcm-numbers-${orderedState.index}`;
+      }
       out.push(
         new Paragraph({
           spacing: { after: 60 },
           numbering: {
-            reference: block.ordered ? 'wcm-numbers' : 'wcm-bullets',
+            reference,
             level: Math.min(block.depth ?? 0, 2),
           },
           children: runs(block.spans),
         }),
       );
       break;
+    }
+
     case 'code':
       for (const line of block.text.split('\n')) {
         out.push(
@@ -128,7 +145,7 @@ function renderBlock(block, out, quoted = false) {
             spacing: { before: 0, after: 0 },
             shading: { fill: 'F2F2F2', type: ShadingType.CLEAR },
             indent: { left: 240 },
-            children: [new TextRun({ text: line || ' ', font: 'Consolas', size: 18 })],
+            children: [new TextRun({ text: line || ' ', font: 'Courier New', size: 16 })],
           }),
         );
       }
@@ -200,6 +217,7 @@ function metaTable(meta) {
  * @returns {Promise<Buffer>} the DOCX release buffer
  */
 export async function buildDocx({ blocks, meta }) {
+  orderedState = { index: 0, active: false };
   const documentTitle = blocks.find((b) => b.type === 'heading' && b.depth === 1);
   const body = [
     new Paragraph({
@@ -306,16 +324,17 @@ export async function buildDocx({ blocks, meta }) {
             style: { paragraph: { indent: { left: 480 + level * 360, hanging: 240 } } },
           })),
         },
-        {
-          reference: 'wcm-numbers',
+        ...Array.from({ length: Math.max(orderedState.index, 1) }, (_, i) => ({
+          reference: `wcm-numbers-${i + 1}`,
           levels: [0, 1, 2].map((level) => ({
             level,
             format: level === 1 ? LevelFormat.LOWER_LETTER : LevelFormat.DECIMAL,
             text: `%${level + 1}.`,
             alignment: AlignmentType.LEFT,
+            start: 1,
             style: { paragraph: { indent: { left: 480 + level * 360, hanging: 240 } } },
           })),
-        },
+        })),
       ],
     },
     sections: [

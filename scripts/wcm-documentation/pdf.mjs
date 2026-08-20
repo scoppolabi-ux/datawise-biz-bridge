@@ -2,14 +2,30 @@
  * PDF release renderer (A4) for WCM documentation masters.
  * Layout is flow-based with explicit page-break management: no clipping.
  */
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import PDFDocument from 'pdfkit';
 import { spansToPlainText } from './markdown.mjs';
 
+const FONT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fonts');
+
 const MARGIN = 56; // ~2 cm
-const FONT = 'Helvetica';
-const FONT_BOLD = 'Helvetica-Bold';
-const FONT_ITALIC = 'Helvetica-Oblique';
-const FONT_MONO = 'Courier';
+// Unicode-capable vendored fonts: the masters use arrows, box drawing and
+// symbols that the PDF base-14 fonts cannot encode.
+const FONT = 'DejaVu';
+const FONT_BOLD = 'DejaVu-Bold';
+const FONT_ITALIC = 'DejaVu-Italic';
+const FONT_MONO = 'DejaVu-Mono';
+const FONT_MONO_BOLD = 'DejaVu-Mono-Bold';
+
+function registerFonts(doc) {
+  doc.registerFont(FONT, path.join(FONT_DIR, 'DejaVuSans.ttf'));
+  doc.registerFont(FONT_BOLD, path.join(FONT_DIR, 'DejaVuSans-Bold.ttf'));
+  doc.registerFont(FONT_ITALIC, path.join(FONT_DIR, 'DejaVuSans-Oblique.ttf'));
+  doc.registerFont(FONT_MONO, path.join(FONT_DIR, 'DejaVuSansMono.ttf'));
+  doc.registerFont(FONT_MONO_BOLD, path.join(FONT_DIR, 'DejaVuSansMono-Bold.ttf'));
+}
+
 
 const HEADING = {
   1: { size: 18, gapBefore: 18, gapAfter: 8, color: '#1F3864' },
@@ -21,11 +37,12 @@ const HEADING = {
 const BODY_SIZE = 10.5;
 
 function fontFor(span) {
-  if (span.code) return FONT_MONO;
+  if (span.code) return span.bold ? FONT_MONO_BOLD : FONT_MONO;
   if (span.bold) return FONT_BOLD;
   if (span.italic) return FONT_ITALIC;
   return FONT;
 }
+
 
 /**
  * Render styled spans as one continued, wrapping text flow.
@@ -53,16 +70,17 @@ function writeSpans(doc, spans, { x, width, size = BODY_SIZE, color = '#1A1A1A' 
 }
 
 function measureSpans(doc, spans, width, size = BODY_SIZE) {
-  doc.fontSize(size);
-  let height = 0;
-  let lineText = '';
-  for (const span of spans) lineText += span.text;
-  const bold = spans.some((s) => s.bold);
-  doc.font(bold ? FONT_BOLD : FONT);
-  height = doc.heightOfString(lineText || ' ', { width, lineGap: 1.5 });
-  doc.font(FONT);
-  return height;
+  const list = spans.length ? spans : [{ text: ' ' }];
+  let total = 0;
+  for (const span of list) {
+    doc.font(fontFor(span)).fontSize(size);
+    total += doc.widthOfString(span.text);
+  }
+  doc.font(FONT).fontSize(size);
+  const lines = Math.max(1, Math.ceil(total / Math.max(width, 1)));
+  return lines * (doc.currentLineHeight() + 1.5);
 }
+
 
 function ensureSpace(doc, needed) {
   const bottom = doc.page.height - doc.page.margins.bottom;
@@ -170,22 +188,41 @@ function renderBlock(doc, block, contentWidth, quoted = false) {
       break;
     }
     case 'code': {
-      const lines = block.text.split('\n');
-      const lineHeight = 11;
-      const boxHeight = lines.length * lineHeight + 12;
-      ensureSpace(doc, Math.min(boxHeight, 200));
-      const top = doc.y;
-      doc.rect(MARGIN, top, contentWidth, Math.min(boxHeight, doc.page.height)).fill('#F4F4F4');
-      doc.y = top + 6;
-      for (const line of lines) {
-        ensureSpace(doc, lineHeight + 6);
-        doc.font(FONT_MONO).fontSize(8.5).fillColor('#333333')
-          .text(line || ' ', MARGIN + 8, doc.y, { width: contentWidth - 16, lineBreak: true });
+      const lines = block.text.replace(/\t/g, '    ').split('\n');
+      const maxSize = 8.5;
+      const minSize = 5.2;
+      const avail = contentWidth - 16;
+      doc.font(FONT_MONO).fontSize(maxSize);
+      const longest = lines.reduce((m, l) => Math.max(m, doc.widthOfString(l || ' ')), 0);
+      // Shrink to fit so ASCII diagrams never wrap or overflow the box.
+      const size = longest > avail ? Math.max(minSize, (maxSize * avail) / longest) : maxSize;
+      const lineHeight = size * 1.34;
+      let i = 0;
+      while (i < lines.length) {
+        let limit = doc.page.height - doc.page.margins.bottom;
+        if (doc.y + lineHeight + 12 > limit) {
+          doc.addPage();
+          limit = doc.page.height - doc.page.margins.bottom;
+        }
+        const fit = Math.max(1, Math.floor((limit - doc.y - 12) / lineHeight));
+        const chunk = lines.slice(i, i + fit);
+        const top = doc.y;
+        doc.rect(MARGIN, top, contentWidth, chunk.length * lineHeight + 12).fill('#F4F4F4');
+        let yy = top + 6;
+        for (const line of chunk) {
+          doc.font(FONT_MONO).fontSize(size).fillColor('#333333')
+            .text(line || ' ', MARGIN + 8, yy, { width: avail, lineBreak: false });
+          yy += lineHeight;
+        }
+        doc.y = yy + 6;
+        i += chunk.length;
       }
-      doc.font(FONT).fillColor('#1A1A1A');
-      doc.y += 10;
+      doc.x = MARGIN;
+      doc.font(FONT).fontSize(BODY_SIZE).fillColor('#1A1A1A');
+      doc.y += 6;
       break;
     }
+
     case 'blockquote':
       for (const inner of block.blocks) renderBlock(doc, inner, contentWidth, true);
       break;
@@ -215,7 +252,9 @@ export function buildPdf({ blocks, meta }) {
       autoFirstPage: true,
       bufferPages: true,
     });
+    registerFonts(doc);
     const chunks = [];
+
     doc.on('data', (chunk) => chunks.push(chunk));
     doc.on('error', reject);
     doc.on('end', () => resolve(Buffer.concat(chunks)));
