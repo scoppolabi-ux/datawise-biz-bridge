@@ -13,6 +13,7 @@ import { COMMAND_STATUS_LABELS } from '@/hooks/useWcmCommands';
 import { useWcmKnowledgeHealthAll } from '@/hooks/useWcmKnowledgeHealth';
 import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
+import WcmLearningCard from '@/components/wcm/WcmLearningCard';
 
 const Shell = ({ children }: { children: React.ReactNode }) => (
   <div className="wcm-grid min-h-screen">
