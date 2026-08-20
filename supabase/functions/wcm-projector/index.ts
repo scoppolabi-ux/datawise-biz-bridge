@@ -146,14 +146,8 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   })
 
-function normalize(value: unknown): unknown {
-  if (value === undefined || value === null) return null
-  if (typeof value === 'string') {
-    const trimmed = value.trim()
-    return trimmed === '' ? null : trimmed
-  }
-  return value
-}
+// `normalize` is imported from ./knowledge.ts (single shared implementation).
+
 
 // Timestamps may be expressed differently but mean the same instant.
 function sameValue(field: string, incoming: unknown, current: unknown): boolean {
