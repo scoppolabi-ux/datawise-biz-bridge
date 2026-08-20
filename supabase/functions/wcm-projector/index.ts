@@ -120,6 +120,20 @@ const KNOWLEDGE_HEALTH_FIELDS = [
   'notes',
 ] as readonly string[]
 
+// Canonical metadata keys accepted on knowledge_health but NOT persisted as-is.
+// - project_id: validated against the top-level project_id, then dropped.
+// - schema_version: accepted and ignored (contract versioning only).
+// - last_material_delta: transparently mapped to the existing
+//   last_material_delta_at column when that column was not provided explicitly.
+// - last_material_delta_sha: no dedicated column; kept as unpersisted metadata
+//   and echoed back in the response. It is NEVER folded into `notes`.
+const KNOWLEDGE_HEALTH_META_KEYS = [
+  'schema_version',
+  'project_id',
+  'last_material_delta',
+  'last_material_delta_sha',
+] as readonly string[]
+
 const KNOWLEDGE_CHECKPOINT_FIELDS = [
   'checkpoint_id',
   'label',
@@ -132,6 +146,27 @@ const KNOWLEDGE_CHECKPOINT_FIELDS = [
   'source_sha',
   'sort_order',
 ] as readonly string[]
+
+// Canonical CHECKPOINTS.json uses flat metric keys instead of a `metrics` object.
+// These are collected deterministically into the `metrics` JSONB column.
+const KNOWLEDGE_CHECKPOINT_FLAT_METRIC_KEYS = [
+  'active_synapses',
+  'new_synapses',
+  'new_synapses_since_checkpoint',
+  'modified_synapses',
+  'modified_synapses_since_checkpoint',
+  'at_risk_synapses',
+  'broken_synapses',
+  'orphan_nodes',
+  'open_drifts',
+  'continuity_debt',
+  'payoff_debt',
+  'synapse_snapshot',
+] as readonly string[]
+
+// Canonical metadata keys accepted on a checkpoint but not persisted.
+const KNOWLEDGE_CHECKPOINT_META_KEYS = ['schema_version', 'project_id'] as readonly string[]
+
 
 
 const COLLECTIONS = {
