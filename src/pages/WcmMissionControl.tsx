@@ -125,6 +125,11 @@ const WcmMissionControl = () => {
               <Metric label="Documenti da leggere" value={docsToRead} to="/wcm/documents" />
             </section>
 
+            <div className="mt-4">
+              <WcmLearningCard />
+            </div>
+
+
             {ready && (attentionCount ?? 0) > 0 && (
               <section className="mt-6 rounded-xl border border-wcm-alert/30 bg-wcm-alert/10 p-4 sm:p-5">
                 <div className="flex items-center justify-between gap-2 text-wcm-alert-fg">
