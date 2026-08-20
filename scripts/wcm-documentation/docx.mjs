@@ -40,7 +40,7 @@ const runs = (spans, extra = {}) =>
         text: span.text,
         bold: span.bold || extra.bold,
         italics: span.italic || extra.italics,
-        font: span.code ? 'Consolas' : undefined,
+        font: span.code ? 'Courier New' : undefined,
         color: span.href ? '1F4E79' : extra.color,
         size: extra.size,
       }),
@@ -128,7 +128,7 @@ function renderBlock(block, out, quoted = false) {
             spacing: { before: 0, after: 0 },
             shading: { fill: 'F2F2F2', type: ShadingType.CLEAR },
             indent: { left: 240 },
-            children: [new TextRun({ text: line || ' ', font: 'Consolas', size: 18 })],
+            children: [new TextRun({ text: line || ' ', font: 'Courier New', size: 16 })],
           }),
         );
       }
