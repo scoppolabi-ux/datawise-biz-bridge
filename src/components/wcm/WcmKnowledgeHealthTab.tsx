@@ -6,6 +6,7 @@ import type {
 } from '@/hooks/useWcmKnowledgeHealth';
 import { formatDateTime, relativeTime } from './wcmFormat';
 import { knowledgeGrowth } from './wcmHealthPlanes';
+import WcmStewardActivitySection from './WcmStewardActivity';
 import {
   COMPONENT_LABELS,
   GLOSSARY,
@@ -143,6 +144,9 @@ const WcmKnowledgeHealthTab = ({
           </span>
         </p>
       </section>
+
+      {/* Attività Knowledge Steward (V0.7, observation-only) */}
+      <WcmStewardActivitySection health={health} />
 
       {/* Invariante di salute */}
       {outdated && (
