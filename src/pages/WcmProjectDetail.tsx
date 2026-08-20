@@ -72,6 +72,7 @@ const WcmProjectDetail = () => {
     activityQuery.isFetching ||
     roadmapQuery.isFetching ||
     needsQuery.isFetching ||
+    commandsQuery.isFetching ||
     knowledgeHealthQuery.isFetching;
 
   const refetchAll = () => {
@@ -80,9 +81,11 @@ const WcmProjectDetail = () => {
     activityQuery.refetch();
     roadmapQuery.refetch();
     needsQuery.refetch();
+    commandsQuery.refetch();
     knowledgeHealthQuery.refetch();
     knowledgeCheckpointsQuery.refetch();
   };
+
 
 
   const openDocument = (documentId: string) => setOpenDocumentId(documentId);
