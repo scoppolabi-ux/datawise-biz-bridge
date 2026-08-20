@@ -37,11 +37,12 @@ const HEADING = {
 const BODY_SIZE = 10.5;
 
 function fontFor(span) {
-  if (span.code) return FONT_MONO;
+  if (span.code) return span.bold ? FONT_MONO_BOLD : FONT_MONO;
   if (span.bold) return FONT_BOLD;
   if (span.italic) return FONT_ITALIC;
   return FONT;
 }
+
 
 /**
  * Render styled spans as one continued, wrapping text flow.
