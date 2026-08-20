@@ -101,6 +101,7 @@ export function canDownload(doc: WcmReleaseDocument, format: 'docx' | 'pdf'): bo
 }
 
 export const STATUS_LABELS: Record<string, string> = {
+  ACTIVE: 'Attivo',
   CURRENT: 'Corrente',
   DRAFT: 'Bozza',
   FROZEN: 'Congelato',

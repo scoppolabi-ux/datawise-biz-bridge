@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "wcm:release": "node scripts/wcm-release.mjs",
     "build:release": "node scripts/wcm-release.mjs && vite build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "wcm:release:bootstrap": "node scripts/wcm-release-bootstrap.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
