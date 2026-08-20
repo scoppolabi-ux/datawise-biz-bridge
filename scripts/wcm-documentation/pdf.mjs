@@ -206,6 +206,7 @@ export function buildPdf({ blocks, meta }) {
       margins: { top: MARGIN, bottom: MARGIN + 20, left: MARGIN, right: MARGIN },
       info: { Title: `${meta.title} ${meta.version}`, Author: 'DataWisePartners · WCM' },
       autoFirstPage: true,
+      bufferPages: true,
     });
     const chunks = [];
     doc.on('data', (chunk) => chunks.push(chunk));
