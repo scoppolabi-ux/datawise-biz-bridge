@@ -13,6 +13,15 @@ import {
   useWcmMethodRelations,
   type WcmLearningRecord,
 } from '@/hooks/useWcmMethodLearning';
+import {
+  localizeComponentKey,
+  localizeEvidenceSummary,
+  localizeLearningTitle,
+  localizeRelationRationale,
+  localizeReviewNote,
+  localizeRevisitTrigger,
+  localizeScoreMethod,
+} from '@/components/wcm/wcmLearningI18n';
 
 const NO_DATA = 'Non disponibile';
 
@@ -122,7 +131,9 @@ const LearningRow = ({
               {record.status ?? 'UNKNOWN'}
             </span>
           </span>
-          <span className="mt-1 block text-sm font-medium text-wcm-strong">{record.title}</span>
+          <span className="mt-1 block text-sm font-medium text-wcm-strong">
+            {localizeLearningTitle(record.learning_id, record.title)}
+          </span>
           <span className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-wcm-dim">
             <span>Confidenza: {text(record.confidence)}</span>
             <span>Generalizzabilità: {text(record.generalizability)}</span>
@@ -139,7 +150,7 @@ const LearningRow = ({
         <div className="space-y-3 border-t border-wcm-line px-3 py-3 text-xs text-wcm-muted">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wider text-wcm-dim">
-              Origin refs
+              Riferimenti di origine
             </p>
             {origins.length ? (
               <ul className="mt-1 space-y-0.5 font-mono text-[11px] text-wcm-text">
@@ -188,7 +199,7 @@ const LearningRow = ({
           </div>
           <div className="grid gap-1 sm:grid-cols-2">
             <p>Percorso record: <span className="font-mono">{text(record.record_path)}</span></p>
-            <p>Revisit trigger: {text(record.revisit_trigger)}</p>
+            <p>Condizione di riesame: {text(localizeRevisitTrigger(record.revisit_trigger))}</p>
             <p>Creato: {record.origin_created_at ? formatDateTime(record.origin_created_at) : NO_DATA}</p>
             <p>Ultima revisione: {record.last_reviewed_at ? formatDateTime(record.last_reviewed_at) : NO_DATA}</p>
           </div>
@@ -270,7 +281,7 @@ const WcmLearningPage = () => {
                 {health.method_integrity_score ?? '—'}
               </span>
               <span className="text-[11px] text-wcm-dim">
-                {text(health.score_method)}
+                {text(localizeScoreMethod(health.score_method))}
               </span>
             </div>
             <div className="grid gap-1 text-xs text-wcm-muted sm:grid-cols-2">
@@ -297,7 +308,7 @@ const WcmLearningPage = () => {
                       key={key}
                       className="flex items-baseline justify-between gap-2 rounded border border-wcm-line bg-wcm-bg/40 px-2 py-1 text-xs"
                     >
-                      <span className="font-mono text-wcm-dim">{key}</span>
+                      <span className="text-wcm-dim">{localizeComponentKey(key)}</span>
                       <span className="font-mono text-wcm-text">
                         {typeof value === 'object' ? JSON.stringify(value) : String(value)}
                       </span>
@@ -362,14 +373,16 @@ const WcmLearningPage = () => {
                       {event.review_status ?? 'UNKNOWN'}
                     </span>
                   </div>
-                  <p className="mt-1 text-sm text-wcm-text">{text(event.summary)}</p>
+                  <p className="mt-1 text-sm text-wcm-text">{text(localizeEvidenceSummary(event.summary))}</p>
                   <p className="mt-1 text-[11px] text-wcm-dim">
                     Rilevato: {event.detected_at ? formatDateTime(event.detected_at) : NO_DATA} ·
                     Revisionato:{' '}
                     {event.reviewed_at ? formatDateTime(event.reviewed_at) : NO_DATA}
                   </p>
                   {event.review_note && (
-                    <p className="mt-1 text-xs text-wcm-muted">{event.review_note}</p>
+                    <p className="mt-1 text-xs text-wcm-muted">
+                      {localizeReviewNote(event.review_note, event.summary)}
+                    </p>
                   )}
                   {linked.length > 0 && (
                     <p className="mt-1 break-all font-mono text-[11px] text-wcm-accent">
@@ -410,7 +423,9 @@ const WcmLearningPage = () => {
                 </div>
                 <p className="mt-1 font-mono text-[10px] text-wcm-dim">{relation.relation_id}</p>
                 {relation.rationale && (
-                  <p className="mt-1 text-wcm-muted">{relation.rationale}</p>
+                  <p className="mt-1 text-wcm-muted">
+                    {localizeRelationRationale(relation.relation_id, relation.rationale)}
+                  </p>
                 )}
                 <p className="mt-1 text-[11px] text-wcm-dim">
                   Ultima verifica:{' '}
