@@ -199,7 +199,7 @@ const LearningRow = ({
           </div>
           <div className="grid gap-1 sm:grid-cols-2">
             <p>Percorso record: <span className="font-mono">{text(record.record_path)}</span></p>
-            <p>Condizione di riesame: {text(localizeRevisitTrigger(record.revisit_trigger))}</p>
+            <p>Condizione di riesame: {text(localizeRevisitTrigger(record.revisit_trigger, record.learning_id))}</p>
             <p>Creato: {record.origin_created_at ? formatDateTime(record.origin_created_at) : NO_DATA}</p>
             <p>Ultima revisione: {record.last_reviewed_at ? formatDateTime(record.last_reviewed_at) : NO_DATA}</p>
           </div>
@@ -373,7 +373,9 @@ const WcmLearningPage = () => {
                       {event.review_status ?? 'UNKNOWN'}
                     </span>
                   </div>
-                  <p className="mt-1 text-sm text-wcm-text">{text(localizeEvidenceSummary(event.summary))}</p>
+                  <p className="mt-1 text-sm text-wcm-text">
+                    {text(localizeEvidenceSummary(event.summary, event.event_id))}
+                  </p>
                   <p className="mt-1 text-[11px] text-wcm-dim">
                     Rilevato: {event.detected_at ? formatDateTime(event.detected_at) : NO_DATA} ·
                     Revisionato:{' '}
@@ -381,7 +383,7 @@ const WcmLearningPage = () => {
                   </p>
                   {event.review_note && (
                     <p className="mt-1 text-xs text-wcm-muted">
-                      {localizeReviewNote(event.review_note, event.summary)}
+                      {localizeReviewNote(event.review_note, event.summary, event.event_id)}
                     </p>
                   )}
                   {linked.length > 0 && (
