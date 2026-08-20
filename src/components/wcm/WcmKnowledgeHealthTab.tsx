@@ -1,10 +1,11 @@
-import { AlertTriangle, Brain, Clock, History, Info, Loader2 } from 'lucide-react';
+import { AlertTriangle, Brain, Clock, History, Info, Loader2, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type {
   WcmKnowledgeCheckpoint,
   WcmKnowledgeHealth,
 } from '@/hooks/useWcmKnowledgeHealth';
 import { formatDateTime, relativeTime } from './wcmFormat';
+import { knowledgeGrowth } from './wcmHealthPlanes';
 import {
   COMPONENT_LABELS,
   GLOSSARY,
@@ -18,6 +19,7 @@ import {
   normalizeHealthStatus,
   severityClasses,
 } from './wcmKnowledge';
+
 
 const Metric = ({ label, value }: { label: string; value: string | number | null }) => (
   <div className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-3">
