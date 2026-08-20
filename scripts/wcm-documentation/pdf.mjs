@@ -187,22 +187,41 @@ function renderBlock(doc, block, contentWidth, quoted = false) {
       break;
     }
     case 'code': {
-      const lines = block.text.split('\n');
-      const lineHeight = 11;
-      const boxHeight = lines.length * lineHeight + 12;
-      ensureSpace(doc, Math.min(boxHeight, 200));
-      const top = doc.y;
-      doc.rect(MARGIN, top, contentWidth, Math.min(boxHeight, doc.page.height)).fill('#F4F4F4');
-      doc.y = top + 6;
-      for (const line of lines) {
-        ensureSpace(doc, lineHeight + 6);
-        doc.font(FONT_MONO).fontSize(8.5).fillColor('#333333')
-          .text(line || ' ', MARGIN + 8, doc.y, { width: contentWidth - 16, lineBreak: true });
+      const lines = block.text.replace(/\t/g, '    ').split('\n');
+      const maxSize = 8.5;
+      const minSize = 5.2;
+      const avail = contentWidth - 16;
+      doc.font(FONT_MONO).fontSize(maxSize);
+      const longest = lines.reduce((m, l) => Math.max(m, doc.widthOfString(l || ' ')), 0);
+      // Shrink to fit so ASCII diagrams never wrap or overflow the box.
+      const size = longest > avail ? Math.max(minSize, (maxSize * avail) / longest) : maxSize;
+      const lineHeight = size * 1.34;
+      let i = 0;
+      while (i < lines.length) {
+        let limit = doc.page.height - doc.page.margins.bottom;
+        if (doc.y + lineHeight + 12 > limit) {
+          doc.addPage();
+          limit = doc.page.height - doc.page.margins.bottom;
+        }
+        const fit = Math.max(1, Math.floor((limit - doc.y - 12) / lineHeight));
+        const chunk = lines.slice(i, i + fit);
+        const top = doc.y;
+        doc.rect(MARGIN, top, contentWidth, chunk.length * lineHeight + 12).fill('#F4F4F4');
+        let yy = top + 6;
+        for (const line of chunk) {
+          doc.font(FONT_MONO).fontSize(size).fillColor('#333333')
+            .text(line || ' ', MARGIN + 8, yy, { width: avail, lineBreak: false });
+          yy += lineHeight;
+        }
+        doc.y = yy + 6;
+        i += chunk.length;
       }
-      doc.font(FONT).fillColor('#1A1A1A');
-      doc.y += 10;
+      doc.x = MARGIN;
+      doc.font(FONT).fontSize(BODY_SIZE).fillColor('#1A1A1A');
+      doc.y += 6;
       break;
     }
+
     case 'blockquote':
       for (const inner of block.blocks) renderBlock(doc, inner, contentWidth, true);
       break;
