@@ -14,6 +14,7 @@ import { useWcmKnowledgeHealthAll } from '@/hooks/useWcmKnowledgeHealth';
 import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 import WcmLearningCard from '@/components/wcm/WcmLearningCard';
+import WcmDocumentationCard from '@/components/wcm/WcmDocumentationCard';
 
 const Shell = ({ children }: { children: React.ReactNode }) => (
   <div className="wcm-grid min-h-screen">
@@ -125,9 +126,12 @@ const WcmMissionControl = () => {
               <Metric label="Documenti da leggere" value={docsToRead} to="/wcm/documents" />
             </section>
 
-            <div className="mt-4">
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
               <WcmLearningCard />
+              <WcmDocumentationCard />
             </div>
+
+
 
 
             {ready && (attentionCount ?? 0) > 0 && (
