@@ -217,6 +217,7 @@ function metaTable(meta) {
  * @returns {Promise<Buffer>} the DOCX release buffer
  */
 export async function buildDocx({ blocks, meta }) {
+  orderedState = { index: 0, active: false };
   const documentTitle = blocks.find((b) => b.type === 'heading' && b.depth === 1);
   const body = [
     new Paragraph({
