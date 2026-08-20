@@ -70,16 +70,17 @@ function writeSpans(doc, spans, { x, width, size = BODY_SIZE, color = '#1A1A1A' 
 }
 
 function measureSpans(doc, spans, width, size = BODY_SIZE) {
-  doc.fontSize(size);
-  let height = 0;
-  let lineText = '';
-  for (const span of spans) lineText += span.text;
-  const bold = spans.some((s) => s.bold);
-  doc.font(bold ? FONT_BOLD : FONT);
-  height = doc.heightOfString(lineText || ' ', { width, lineGap: 1.5 });
-  doc.font(FONT);
-  return height;
+  const list = spans.length ? spans : [{ text: ' ' }];
+  let total = 0;
+  for (const span of list) {
+    doc.font(fontFor(span)).fontSize(size);
+    total += doc.widthOfString(span.text);
+  }
+  doc.font(FONT).fontSize(size);
+  const lines = Math.max(1, Math.ceil(total / Math.max(width, 1)));
+  return lines * (doc.currentLineHeight() + 1.5);
 }
+
 
 function ensureSpace(doc, needed) {
   const bottom = doc.page.height - doc.page.margins.bottom;
