@@ -171,12 +171,34 @@ const WcmExecutionTab = ({
           Nessun workflow persistente proiettato.
         </p>
       ) : (
-        <div className="space-y-3">
-          {sorted.map((workflow) => (
-            <WorkflowCard key={workflow.id ?? workflow.workflow_instance_id} workflow={workflow} />
-          ))}
-        </div>
+        <>
+          <div className="space-y-3">
+            {open.map((workflow) => (
+              <WorkflowCard key={workflow.id ?? workflow.workflow_instance_id} workflow={workflow} />
+            ))}
+            {open.length === 0 && (
+              <p className="rounded-lg border border-wcm-line bg-wcm-surface/50 p-4 text-sm text-wcm-dim">
+                Nessun workflow attivo: tutti i workflow proiettati sono storici.
+              </p>
+            )}
+          </div>
+
+          {closed.length > 0 && (
+            <section className="space-y-3">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
+                Storico chiuso
+              </h2>
+              {closed.map((workflow) => (
+                <WorkflowCard
+                  key={workflow.id ?? workflow.workflow_instance_id}
+                  workflow={workflow}
+                />
+              ))}
+            </section>
+          )}
+        </>
       )}
+
     </div>
   );
 };
