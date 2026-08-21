@@ -85,7 +85,7 @@ const WcmDocumentReader = ({
       ) : (
         <p className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-4 text-sm text-wcm-muted">
           Contenuto non ancora sincronizzato nel read-model.
-          {doc.source_url && ' Usa "View source on GitHub" per leggere l\'originale.'}
+          {doc.source_url && ' Usa "Apri il sorgente su GitHub" per leggere l\'originale.'}
         </p>
       )}
     </div>
