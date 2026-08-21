@@ -6,6 +6,8 @@ import {
   parseKnowledgeHealth,
   normalize,
 } from './knowledge.ts'
+import { parseExecutionWorkflows } from './execution.ts'
+
 
 const ISSUER = 'https://token.actions.githubusercontent.com'
 const AUDIENCE = 'wcm-projector'
