@@ -150,6 +150,9 @@ const WcmExecutionTab = ({
   }
 
   const sorted = sortExecutionWorkflows(workflows);
+  const open = sorted.filter(isOpenExecutionWorkflow);
+  const closed = sorted.filter((w) => !isOpenExecutionWorkflow(w));
+
 
   return (
     <div className="space-y-4">
