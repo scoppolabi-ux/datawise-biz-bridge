@@ -1,4 +1,14 @@
-import { AlertTriangle, Brain, Clock, History, Info, Loader2, TrendingUp } from 'lucide-react';
+import { useState } from 'react';
+import {
+  AlertTriangle,
+  Brain,
+  ChevronDown,
+  Clock,
+  History,
+  Info,
+  Loader2,
+  TrendingUp,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type {
   WcmKnowledgeCheckpoint,
@@ -11,15 +21,24 @@ import {
   COMPONENT_LABELS,
   GLOSSARY,
   HEALTH_LABELS,
+  KNOWLEDGE_ISSUE_NOTE,
   SYNAPSE_METRICS,
+  componentScoreOf,
   effectiveHealthStatus,
   healthClasses,
   isCheckOutdated,
+  issueHumanSummaryOf,
+  issueRawDetailOf,
+  issueTitleOf,
   issuesOf,
+  knowledgeSummaryParts,
   metricOf,
   normalizeHealthStatus,
   severityClasses,
+  splitIssues,
+  type KnowledgeIssue,
 } from './wcmKnowledge';
+
 
 
 const Metric = ({ label, value }: { label: string; value: string | number | null }) => (
