@@ -85,7 +85,7 @@ const ComponentCard = ({
   </div>
 );
 
-const IssueCard = ({ issue, index }: { issue: KnowledgeIssue; index: number }) => {
+const IssueCard = ({ issue }: { issue: KnowledgeIssue }) => {
   const [rawOpen, setRawOpen] = useState(false);
   const human = issueHumanSummaryOf(issue);
   const raw = issueRawDetailOf(issue);
@@ -147,7 +147,6 @@ const IssueCard = ({ issue, index }: { issue: KnowledgeIssue; index: number }) =
           {issue.since ? `dal ${formatDateTime(String(issue.since))}` : ''}
         </p>
       )}
-      <span className="hidden">{index}</span>
     </article>
   );
 };
