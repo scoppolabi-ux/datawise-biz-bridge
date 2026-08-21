@@ -1,6 +1,8 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { isOpenNeed, needFingerprint } from '../_shared/wcmGovernance.ts'
+import { isBoardCandidateCategory } from '../_shared/wcmBoardGate.ts'
+
 
 const COMMAND_TYPES = ['APPROVE_FREEZE', 'REQUEST_CHANGES'] as const
 const ALLOWED_ROLES = ['owner', 'admin']
