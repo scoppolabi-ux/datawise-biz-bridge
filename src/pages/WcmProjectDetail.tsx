@@ -118,6 +118,14 @@ const WcmProjectDetail = () => {
           <button
             type="button"
             onClick={() => {
+              if (openDocumentId) {
+                backFromReader();
+                return;
+              }
+              if (tab !== 'overview') {
+                navigate(`/wcm/${projectId}?tab=overview`);
+                return;
+              }
               if (window.history.length > 1) {
                 navigate(-1);
               } else {
