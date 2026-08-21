@@ -83,9 +83,15 @@ export const SYNAPSE_METRICS: { keys: string[]; label: string; hint?: string }[]
     label: 'Nuove dal checkpoint',
   },
   {
-    keys: ['changed_synapses_since_checkpoint', 'changed_synapses'],
+    keys: [
+      'modified_synapses_since_checkpoint',
+      'changed_synapses_since_checkpoint',
+      'modified_synapses',
+      'changed_synapses',
+    ],
     label: 'Modificate dal checkpoint',
   },
+
   { keys: ['at_risk_synapses', 'synapses_at_risk'], label: 'Sinapsi a rischio' },
   { keys: ['broken_synapses', 'synapses_broken'], label: 'Sinapsi rotte' },
   { keys: ['orphan_nodes', 'orphans'], label: 'Nodi orfani' },
