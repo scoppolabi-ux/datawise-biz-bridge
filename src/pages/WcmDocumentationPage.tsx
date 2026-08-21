@@ -158,8 +158,18 @@ const Reader = ({ doc, onClose }: { doc: WcmReleaseDocument; onClose: () => void
             Snapshot della release non disponibile. Rigenera la release dalla pipeline.
           </p>
         )}
-        {data && <WcmMarkdown content={data} />}
+        {data && (
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start lg:gap-6">
+            <div className="order-2 min-w-0 lg:order-1">
+              <WcmMarkdown content={data} />
+            </div>
+            <div className="order-1 min-w-0 lg:order-2">
+              <WcmDocumentToc markdown={data} documentTitle={doc.title} />
+            </div>
+          </div>
+        )}
       </div>
+
     </section>
   );
 };
