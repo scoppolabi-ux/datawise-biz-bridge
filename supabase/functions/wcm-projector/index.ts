@@ -134,14 +134,8 @@ const EXECUTION_WORKFLOW_FIELDS = [
   'project_id',
 ] as const
 
-export const EXECUTION_WORKFLOW_STATUSES = [
-  'ACTIVE',
-  'INTERRUPTED_RESUMABLE',
-  'WAITING_AUTHORITY',
-  'BLOCKED',
-  'COMPLETED',
-  'CANCELLED',
-] as const
+
+
 
 const COLLECTIONS = {
   documents: {
