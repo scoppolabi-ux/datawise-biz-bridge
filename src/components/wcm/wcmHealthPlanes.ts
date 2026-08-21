@@ -119,9 +119,24 @@ const knowledgePlane = (
   };
 };
 
+/** Riconosce lo stop governato previsto (`blocked_board`, varianti case/underscore/hyphen). */
+export const isGovernedStopOutcome = (outcome: string | null | undefined): boolean => {
+  const normalized = (outcome ?? '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  return normalized === 'blocked_board' || normalized === 'board_blocked';
+};
+
+/** Failure espliciti: FAIL/FAILED/ERROR/KO. `BLOCK` NON è un failure. */
+const isFailureOutcome = (outcomeUpper: string): boolean =>
+  /\b(FAIL|FAILED|FAILURE|ERROR|ERRORED|KO|CRASH|TIMEOUT)\b/.test(outcomeUpper);
+
+const isSuccessOutcome = (outcomeUpper: string): boolean =>
+  /\b(OK|SUCCESS|SUCCEEDED|PASS|PASSED|DONE|GREEN)\b/.test(outcomeUpper);
+
+const RUNTIME_LIVENESS_VALUE = 'Non proiettata da Mission Control';
+
 /**
- * EXECUTION HEALTH — only real evidence: heartbeat and knowledge-assurance check.
- * A missing heartbeat is UNKNOWN, never green.
+ * EXECUTION HEALTH — solo evidenza reale: ultimo esito heartbeat registrato nella
+ * proiezione. La liveness runtime corrente NON è osservabile da Mission Control.
  */
 const executionPlane = (
   project: WcmProjectStatus,
@@ -130,31 +145,34 @@ const executionPlane = (
   const lastRun = project.heartbeat_last_run_at;
   const outcome = txt(project.heartbeat_last_outcome);
   const outcomeUpper = (outcome ?? '').toUpperCase();
+  const governedStop = isGovernedStopOutcome(outcome);
 
   let status: WcmHealthStatus = 'UNKNOWN';
-  let headline = 'Heartbeat non proiettato';
+  let headline = 'Nessun esito heartbeat registrato nella proiezione';
 
-  if (lastRun) {
-    const ageHours = (Date.now() - Date.parse(lastRun)) / 3_600_000;
-    const failed = /FAIL|ERROR|KO|BLOCK/.test(outcomeUpper);
-    const ok = /OK|SUCCESS|PASS|DONE|GREEN/.test(outcomeUpper);
-
-    if (failed) {
+  if (lastRun || outcome) {
+    if (governedStop) {
+      status = lastRun ? 'HEALTHY' : 'UNKNOWN';
+      headline = lastRun
+        ? 'Stop governato previsto — attesa decisione umana'
+        : 'Stop governato previsto — nessun record heartbeat proiettato';
+    } else if (isFailureOutcome(outcomeUpper)) {
       status = 'CRITICAL';
-      headline = 'Ultimo heartbeat fallito';
-    } else if (Number.isFinite(ageHours) && ageHours > 48) {
-      status = 'STALE';
-      headline = 'Heartbeat non aggiornato da oltre 48 ore';
-    } else if (ok) {
+      headline = 'Ultimo esito heartbeat registrato: fallito';
+    } else if (isSuccessOutcome(outcomeUpper)) {
       status = 'HEALTHY';
-      headline = 'Heartbeat regolare';
-    } else {
+      headline = 'Ultimo esito heartbeat registrato: conforme';
+    } else if (outcome) {
       status = 'DEGRADED';
-      headline = outcome ? `Esito heartbeat: ${outcome}` : 'Esito heartbeat non dichiarato';
+      headline = `Esito heartbeat non riconosciuto: ${outcome}`;
+    } else {
+      status = 'UNKNOWN';
+      headline = 'Esito heartbeat non dichiarato';
     }
   }
 
-  if (txt(project.blocker) && status !== 'CRITICAL') {
+  // Il blocker appartiene a Project/Governance Health: non degrada uno stop governato.
+  if (!governedStop && txt(project.blocker) && status !== 'CRITICAL') {
     status = 'DEGRADED';
     headline = 'Blocker operativo dichiarato';
   }
@@ -165,13 +183,13 @@ const executionPlane = (
     status,
     headline,
     lines: [
-      { label: 'Ultimo heartbeat', value: lastRun ?? UNKNOWN_HINT },
-      { label: 'Cadenza', value: txt(project.heartbeat_cadence) ?? UNKNOWN_HINT },
-      { label: 'Esito', value: outcome ?? UNKNOWN_HINT },
       {
-        label: 'Ultima attività materiale',
-        value: project.last_material_activity_at ?? UNKNOWN_HINT,
+        label: 'Ultimo heartbeat registrato nella proiezione',
+        value: lastRun ?? UNKNOWN_HINT,
       },
+      { label: 'Runtime liveness', value: RUNTIME_LIVENESS_VALUE },
+      { label: 'Cadenza dichiarata', value: txt(project.heartbeat_cadence) ?? UNKNOWN_HINT },
+      { label: 'Ultimo esito registrato', value: outcome ?? UNKNOWN_HINT },
       {
         label: 'Knowledge assurance check',
         value: health?.checked_at ?? UNKNOWN_HINT,
@@ -181,6 +199,7 @@ const executionPlane = (
     linkLabel: 'Vedi activity',
   };
 };
+
 
 /** GOVERNANCE HEALTH — board gate, open needs, command queue evidence. */
 const governancePlane = (

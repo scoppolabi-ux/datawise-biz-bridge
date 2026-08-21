@@ -8,7 +8,9 @@ import {
   stewardClassificationLabel,
   stewardCount,
   stewardList,
+  stewardSignature,
 } from './wcmKnowledge';
+
 
 const Field = ({ label, value }: { label: string; value: string | number | null }) => (
   <div className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-3">
@@ -70,7 +72,21 @@ const WcmStewardActivitySection = ({ health }: { health: WcmKnowledgeHealth }) =
   const historyRaw = Array.isArray(health.steward_activity_history)
     ? health.steward_activity_history.filter(isRecord)
     : [];
-  const history = historyRaw.slice(0, 10);
+  // Evita di duplicare l'ultimo ciclo già mostrato come "latest".
+  const history = historyRaw
+    .filter(
+      (event) =>
+        !latest ||
+        !latest.activity_id ||
+        String(event.activity_id ?? '') !== String(latest.activity_id),
+    )
+    .slice(0, 10);
+  // Run precedenti con la stessa signature sostanziale del latest: nessuna variazione.
+  const latestSignature = latest ? stewardSignature(latest) : null;
+  const unchangedCount = latestSignature
+    ? history.filter((event) => stewardSignature(event) === latestSignature).length
+    : 0;
+
 
   if (!latest && history.length === 0) {
     return (
@@ -206,6 +222,15 @@ const WcmStewardActivitySection = ({ health }: { health: WcmKnowledgeHealth }) =
             <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
               <History className="h-3.5 w-3.5" />
               Storico Steward ({history.length})
+              {unchangedCount > 0 && (
+                <span className="ml-2 normal-case tracking-normal text-wcm-dim">
+                  · {unchangedCount}{' '}
+                  {unchangedCount === 1
+                    ? 'verifica precedente senza variazioni'
+                    : 'verifiche precedenti senza variazioni'}
+                </span>
+              )}
+
             </span>
             <ChevronDown
               className={cn(

@@ -1,4 +1,14 @@
-import { AlertTriangle, Brain, Clock, History, Info, Loader2, TrendingUp } from 'lucide-react';
+import { useState } from 'react';
+import {
+  AlertTriangle,
+  Brain,
+  ChevronDown,
+  Clock,
+  History,
+  Info,
+  Loader2,
+  TrendingUp,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type {
   WcmKnowledgeCheckpoint,
@@ -11,15 +21,24 @@ import {
   COMPONENT_LABELS,
   GLOSSARY,
   HEALTH_LABELS,
+  KNOWLEDGE_ISSUE_NOTE,
   SYNAPSE_METRICS,
+  componentScoreOf,
   effectiveHealthStatus,
   healthClasses,
   isCheckOutdated,
+  issueHumanSummaryOf,
+  issueRawDetailOf,
+  issueTitleOf,
   issuesOf,
+  knowledgeSummaryParts,
   metricOf,
   normalizeHealthStatus,
   severityClasses,
+  splitIssues,
+  type KnowledgeIssue,
 } from './wcmKnowledge';
+
 
 
 const Metric = ({ label, value }: { label: string; value: string | number | null }) => (
@@ -42,6 +61,97 @@ const TimeField = ({ label, value }: { label: string; value: string | null }) =>
   </div>
 );
 
+const ComponentCard = ({
+  label,
+  score,
+  status,
+  reason,
+}: {
+  label: string;
+  score: number | null;
+  status: string | null;
+  reason: string | null;
+}) => (
+  <div className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-3">
+    <p className="text-[11px] font-semibold uppercase tracking-wider text-wcm-dim">{label}</p>
+    <p className="mt-1 font-mono text-lg text-wcm-strong">
+      {score ?? '—'}
+      {score !== null && <span className="text-xs text-wcm-dim">/100</span>}
+    </p>
+    {status && (
+      <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-wcm-dim">{status}</p>
+    )}
+    {reason && <p className="mt-1 text-[11px] leading-relaxed text-wcm-muted">{reason}</p>}
+  </div>
+);
+
+const IssueCard = ({ issue }: { issue: KnowledgeIssue }) => {
+  const [rawOpen, setRawOpen] = useState(false);
+  const human = issueHumanSummaryOf(issue);
+  const raw = issueRawDetailOf(issue);
+  return (
+    <article className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-medium text-wcm-strong">{issueTitleOf(issue)}</p>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {issue.severity && (
+            <span
+              className={cn(
+                'rounded-md border px-2 py-0.5 text-[11px] font-medium',
+                severityClasses(issue.severity),
+              )}
+            >
+              {String(issue.severity).toUpperCase()}
+            </span>
+          )}
+          {issue.status && (
+            <span className="rounded-md border border-wcm-line-strong bg-wcm-panel/60 px-2 py-0.5 font-mono text-[11px] text-wcm-text">
+              {String(issue.status).toUpperCase()}
+            </span>
+          )}
+        </div>
+      </div>
+      {issue.id && (
+        <p className="mt-0.5 font-mono text-[10px] text-wcm-dim">{String(issue.id)}</p>
+      )}
+      {human ? (
+        <>
+          <p className="mt-1.5 text-sm leading-relaxed text-wcm-text">{human}</p>
+          {raw && (
+            <>
+              <button
+                type="button"
+                onClick={() => setRawOpen((v) => !v)}
+                className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-wcm-dim hover:text-wcm-text"
+              >
+                <ChevronDown
+                  className={cn('h-3 w-3 transition-transform', rawOpen && 'rotate-180')}
+                />
+                Dettaglio tecnico
+              </button>
+              {rawOpen && (
+                <p className="mt-1 break-words font-mono text-[11px] leading-relaxed text-wcm-muted">
+                  {raw}
+                </p>
+              )}
+            </>
+          )}
+        </>
+      ) : (
+        raw && <p className="mt-1.5 text-sm leading-relaxed text-wcm-text">{raw}</p>
+      )}
+      {(issue.node || issue.since) && (
+        <p className="mt-1.5 font-mono text-[11px] text-wcm-dim">
+          {issue.node ? `nodo: ${issue.node}` : ''}
+          {issue.node && issue.since ? ' · ' : ''}
+          {issue.since ? `dal ${formatDateTime(String(issue.since))}` : ''}
+        </p>
+      )}
+    </article>
+  );
+};
+
+
 const WcmKnowledgeHealthTab = ({
   health,
   checkpoints,
@@ -53,6 +163,8 @@ const WcmKnowledgeHealthTab = ({
   isLoading: boolean;
   hasError: boolean;
 }) => {
+  const [resolvedOpen, setResolvedOpen] = useState(false);
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-16">
@@ -95,7 +207,15 @@ const WcmKnowledgeHealthTab = ({
   const stored = normalizeHealthStatus(health.health_status);
   const outdated = isCheckOutdated(health);
   const issues = issuesOf(health);
-  const componentsSource = health.components;
+  const { openIssues, resolvedIssues } = splitIssues(issues);
+  const summaryParts = knowledgeSummaryParts(health, openIssues.length);
+  const componentCards = COMPONENT_LABELS.map(({ keys, label }) => ({
+    label,
+    component: componentScoreOf(health.components, ...keys),
+  })).filter(
+    (row): row is { label: string; component: NonNullable<typeof row.component> } =>
+      row.component !== null,
+  );
 
   return (
     <div className="space-y-4">
@@ -136,6 +256,10 @@ const WcmKnowledgeHealthTab = ({
             </p>
           )}
         </div>
+
+        {summaryParts.length > 0 && (
+          <p className="mt-3 text-sm text-wcm-text">{summaryParts.join(' · ')}</p>
+        )}
 
         <p className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-wcm-dim">
           <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
@@ -179,15 +303,20 @@ const WcmKnowledgeHealthTab = ({
           Composizione dello score
         </h3>
         <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
-          {COMPONENT_LABELS.map(({ keys, label }) => {
-            const value = metricOf(componentsSource, ...keys);
-            if (value === null) return null;
-            return <Metric key={label} label={label} value={value} />;
-          })}
-          {COMPONENT_LABELS.every(({ keys }) => metricOf(componentsSource, ...keys) === null) && (
+          {componentCards.length === 0 ? (
             <p className="text-sm text-wcm-dim">
               Nessun dettaglio di composizione fornito dalla telemetria.
             </p>
+          ) : (
+            componentCards.map(({ label, component }) => (
+              <ComponentCard
+                key={label}
+                label={label}
+                score={component.score}
+                status={component.status}
+                reason={component.reason}
+              />
+            ))
           )}
         </div>
       </section>
@@ -275,61 +404,54 @@ const WcmKnowledgeHealthTab = ({
         <TimeField label="Ultimo delta materiale" value={health.last_material_delta_at} />
       </div>
 
-      {/* Issues / drift aperti */}
+      {/* Problemi aperti */}
       <section className="overflow-hidden rounded-xl border border-wcm-line bg-wcm-surface/60">
-        <h3 className="border-b border-wcm-line px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
-          Problemi e drift aperti
-        </h3>
+        <div className="border-b border-wcm-line px-4 py-3">
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
+            Problemi e drift aperti ({openIssues.length})
+          </h3>
+          <p className="mt-1 text-[11px] text-wcm-dim">{KNOWLEDGE_ISSUE_NOTE}</p>
+        </div>
         <div className="space-y-3 p-4">
-          {issues.length === 0 ? (
+          {openIssues.length === 0 ? (
             <p className="text-sm text-wcm-dim">
-              Nessun problema segnalato dalla telemetria di knowledge.
+              Nessun problema aperto segnalato dalla telemetria di knowledge.
             </p>
           ) : (
-            issues.map((issue, index) => (
-              <article
-                key={String(issue.id ?? index)}
-                className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-3"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-sm font-medium text-wcm-strong">
-                    {issue.title ?? issue.label ?? issue.id ?? 'Problema senza titolo'}
-                  </p>
-                  <div className="flex shrink-0 items-center gap-1.5">
-                    {issue.severity && (
-                      <span
-                        className={cn(
-                          'rounded-md border px-2 py-0.5 text-[11px] font-medium',
-                          severityClasses(issue.severity),
-                        )}
-                      >
-                        {String(issue.severity).toUpperCase()}
-                      </span>
-                    )}
-                    {issue.status && (
-                      <span className="rounded-md border border-wcm-line-strong bg-wcm-panel/60 px-2 py-0.5 font-mono text-[11px] text-wcm-text">
-                        {String(issue.status).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                {(issue.detail ?? issue.description) && (
-                  <p className="mt-1.5 text-sm leading-relaxed text-wcm-text">
-                    {issue.detail ?? issue.description}
-                  </p>
-                )}
-                {(issue.node || issue.since) && (
-                  <p className="mt-1.5 font-mono text-[11px] text-wcm-dim">
-                    {issue.node ? `nodo: ${issue.node}` : ''}
-                    {issue.node && issue.since ? ' · ' : ''}
-                    {issue.since ? `dal ${formatDateTime(String(issue.since))}` : ''}
-                  </p>
-                )}
-              </article>
+            openIssues.map((issue, index) => (
+              <IssueCard key={String(issue.id ?? `open-${index}`)} issue={issue} />
             ))
           )}
         </div>
       </section>
+
+      {/* Problemi risolti / storico */}
+      {resolvedIssues.length > 0 && (
+        <section className="overflow-hidden rounded-xl border border-wcm-line bg-wcm-surface/60">
+          <button
+            type="button"
+            onClick={() => setResolvedOpen((v) => !v)}
+            className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left"
+          >
+            <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
+              Problemi risolti / storico ({resolvedIssues.length})
+            </span>
+            <ChevronDown
+              className={cn(
+                'h-4 w-4 shrink-0 text-wcm-dim transition-transform',
+                resolvedOpen && 'rotate-180',
+              )}
+            />
+          </button>
+          {resolvedOpen && (
+            <div className="space-y-3 border-t border-wcm-line p-4">
+              {resolvedIssues.map((issue, index) => (
+                <IssueCard key={String(issue.id ?? `resolved-${index}`)} issue={issue} />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Storico checkpoint */}
       <section className="overflow-hidden rounded-xl border border-wcm-line bg-wcm-surface/60">
