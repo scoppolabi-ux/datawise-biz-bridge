@@ -29,15 +29,9 @@ export const requestsApproveFreeze = (need: { action_requested?: unknown }) => {
   return action.includes('APPROVE_FREEZE') || action.includes('APPROVE + FREEZE')
 }
 
-export const relatedDocumentIds = (need: {
-  related_document_ids?: unknown
-  target_document_id?: unknown
-}): string[] => {
+export const relatedDocumentIds = (need: { related_document_ids?: unknown }): string[] => {
   const raw = Array.isArray(need.related_document_ids) ? need.related_document_ids : []
-  const ids = raw.map((v) => String(v))
-  const target = need.target_document_id ? String(need.target_document_id) : null
-  if (target && !ids.includes(target)) ids.push(target)
-  return ids
+  return raw.map((v) => String(v))
 }
 
 export type BoardGateDoc = { document_id?: unknown; category?: unknown }
