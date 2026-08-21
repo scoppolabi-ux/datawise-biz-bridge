@@ -280,12 +280,23 @@ Deno.serve(async (req) => {
   > = {}
 
   for (const name of Object.keys(COLLECTIONS) as CollectionName[]) {
-    if (body[name] === undefined) continue
+    // Absence of the key must never fail projection (legacy projects stay valid).
+    if (body[name] === undefined || body[name] === null) continue
     const raw = body[name]
     if (!Array.isArray(raw)) return json({ error: `${name} must be an array` }, 400)
 
     const cfg = COLLECTIONS[name]
+
+    // DEC-012: execution workflows have their own enum/path validation.
+    if (name === 'execution_workflows') {
+      const parsed = parseExecutionWorkflows(raw, projectId)
+      if (!Array.isArray(parsed)) return json(parsed, 400)
+      collectionPayloads[name] = { rows: parsed, snapshot: body.execution_workflows_partial !== true }
+      continue
+    }
+
     const rows: Record<string, unknown>[] = []
+
     for (const [index, item] of raw.entries()) {
       if (!item || typeof item !== 'object' || Array.isArray(item)) {
         return json({ error: `${name}[${index}] must be an object` }, 400)
