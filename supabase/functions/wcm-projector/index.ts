@@ -107,7 +107,39 @@ const NEED_FIELDS = [
   'source_sha',
 ] as const
 
+// DEC-012 — Session-Independent Workflow Execution (observation only).
+const EXECUTION_WORKFLOW_FIELDS = [
+  'workflow_instance_id',
+  'workflow',
+  'status',
+  'authority_refs',
+  'scope',
+  'last_completed_transition',
+  'next_transition',
+  'true_stop_condition',
+  'started_at',
+  'last_checkpoint_at',
+  'resume_required',
+  'interruption_type',
+  'interruption_reason',
+  'interruption_evidence',
+  'completed_step_ids',
+  'completion_gate',
+  'source_path',
+  'source_sha',
+  'sort_order',
+  // accepted but ignored: the backend always enforces its own project_id
+  'project_id',
+] as const
 
+export const EXECUTION_WORKFLOW_STATUSES = [
+  'ACTIVE',
+  'INTERRUPTED_RESUMABLE',
+  'WAITING_AUTHORITY',
+  'BLOCKED',
+  'COMPLETED',
+  'CANCELLED',
+] as const
 
 const COLLECTIONS = {
   documents: {
@@ -134,9 +166,16 @@ const COLLECTIONS = {
     fields: NEED_FIELDS as readonly string[],
     required: ['need_id', 'title'],
   },
+  execution_workflows: {
+    table: 'wcm_project_execution_workflows',
+    key: 'workflow_instance_id',
+    fields: EXECUTION_WORKFLOW_FIELDS as readonly string[],
+    required: ['workflow_instance_id', 'workflow', 'status', 'true_stop_condition'],
+  },
 } as const
 
 type CollectionName = keyof typeof COLLECTIONS
+
 
 const JWKS = createRemoteJWKSet(new URL(`${ISSUER}/.well-known/jwks`))
 
