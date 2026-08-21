@@ -524,6 +524,9 @@ Deno.serve(async (req) => {
     updated_fields: Object.keys(updates),
 
     collections: collectionResults,
+    // DEC-012 — explicit observation stats for the execution read-model.
+    execution_workflows: collectionResults.execution_workflows ?? null,
+
     knowledge_health: knowledgeHealthUpserted,
     knowledge_checkpoints: knowledgeCheckpointsUpserted,
     // Canonical metadata accepted but intentionally not persisted.
