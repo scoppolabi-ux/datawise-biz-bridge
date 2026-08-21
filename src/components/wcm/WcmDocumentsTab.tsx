@@ -65,11 +65,15 @@ const WcmDocumentsTab = ({
   projectId,
   openDocumentId,
   onOpenDocument,
+  backLabel,
+  onBack,
 }: {
   documents: WcmProjectDocument[];
   projectId: string;
   openDocumentId: string | null;
   onOpenDocument: (documentId: string | null) => void;
+  backLabel?: string;
+  onBack?: () => void;
 }) => {
   const openDoc = documents.find((d) => d.document_id === openDocumentId);
 
@@ -78,10 +82,12 @@ const WcmDocumentsTab = ({
       <WcmDocumentReader
         doc={openDoc}
         projectId={projectId}
-        onBack={() => onOpenDocument(null)}
+        backLabel={backLabel}
+        onBack={() => (onBack ? onBack() : onOpenDocument(null))}
       />
     );
   }
+
 
   if (documents.length === 0) {
     return (
