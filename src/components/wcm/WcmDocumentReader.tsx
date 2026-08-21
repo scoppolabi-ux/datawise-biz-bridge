@@ -62,7 +62,7 @@ const WcmDocumentReader = ({
               className="inline-flex shrink-0 items-center gap-2 rounded-md border border-wcm-line-strong px-3 py-1.5 text-xs text-wcm-text transition-colors hover:bg-wcm-panel hover:text-wcm-strong"
             >
               <ExternalLink className="h-3.5 w-3.5" />
-              View source on GitHub
+              Apri il sorgente su GitHub
             </a>
           )}
         </div>
