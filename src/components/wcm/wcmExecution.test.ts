@@ -21,14 +21,14 @@ describe('DEC-012 · mapping stato → segnale', () => {
     expect(normalizeExecutionStatus(null)).toBe('UNKNOWN');
   });
 
-  it('INTERRUPTED_RESUMABLE produce RIPRESA RICHIESTA', () => {
+  it('INTERRUPTED_RESUMABLE produce RIPRESA NECESSARIA', () => {
     const signal = executionSignalOf(wf('INTERRUPTED_RESUMABLE'));
     expect(signal.key).toBe('RESUME_REQUIRED');
-    expect(signal.label).toBe('RIPRESA RICHIESTA');
+    expect(signal.label).toBe('RIPRESA NECESSARIA');
     expect(signal.explanation).toContain('prossimo trigger operativo');
   });
 
-  it('resume_required=true su ACTIVE produce RIPRESA RICHIESTA', () => {
+  it('resume_required=true su ACTIVE produce RIPRESA NECESSARIA', () => {
     expect(executionSignalOf(wf('ACTIVE', true)).key).toBe('RESUME_REQUIRED');
   });
 
@@ -51,7 +51,7 @@ describe('DEC-012 · mapping stato → segnale', () => {
 });
 
 describe('DEC-012 · priorità di portfolio', () => {
-  it('RIPRESA RICHIESTA > BLOCKED > IN ATTESA DI AUTORITÀ > ACTIVE', () => {
+  it('RIPRESA NECESSARIA > BLOCKED > IN ATTESA DI AUTORITÀ > ACTIVE', () => {
     const p = (s: string, r = false) => executionSignalOf(wf(s, r)).priority;
     expect(p('INTERRUPTED_RESUMABLE')).toBeGreaterThan(p('BLOCKED'));
     expect(p('BLOCKED')).toBeGreaterThan(p('WAITING_AUTHORITY'));

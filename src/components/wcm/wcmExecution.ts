@@ -35,7 +35,7 @@ const SIGNALS: Record<WcmExecutionSignalKey, WcmExecutionSignal> = {
   RESUME_REQUIRED: {
     key: 'RESUME_REQUIRED',
     priority: 40,
-    label: 'RIPRESA RICHIESTA',
+    label: 'RIPRESA NECESSARIA',
     explanation:
       'Il workflow non è concluso. Riprenderà al prossimo trigger operativo disponibile.',
     tone: 'alert',

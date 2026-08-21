@@ -45,7 +45,8 @@ const WorkflowCard = ({ workflow }: { workflow: WcmExecutionWorkflow }) => {
         </div>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
           <span className="rounded-md border border-wcm-line-strong bg-wcm-panel/60 px-2 py-0.5 text-[11px] text-wcm-text">
-            {EXECUTION_STATUS_LABELS[status] ?? workflow.status}
+            {EXECUTION_STATUS_LABELS[status] ?? workflow.status}{' '}
+            <span className="font-mono text-wcm-dim">{status}</span>
           </span>
           <span
             className={cn(
@@ -56,6 +57,7 @@ const WorkflowCard = ({ workflow }: { workflow: WcmExecutionWorkflow }) => {
             {signal.label}
           </span>
         </div>
+
       </header>
 
       {open && (
@@ -148,6 +150,9 @@ const WcmExecutionTab = ({
   }
 
   const sorted = sortExecutionWorkflows(workflows);
+  const open = sorted.filter(isOpenExecutionWorkflow);
+  const closed = sorted.filter((w) => !isOpenExecutionWorkflow(w));
+
 
   return (
     <div className="space-y-4">
@@ -169,12 +174,34 @@ const WcmExecutionTab = ({
           Nessun workflow persistente proiettato.
         </p>
       ) : (
-        <div className="space-y-3">
-          {sorted.map((workflow) => (
-            <WorkflowCard key={workflow.id ?? workflow.workflow_instance_id} workflow={workflow} />
-          ))}
-        </div>
+        <>
+          <div className="space-y-3">
+            {open.map((workflow) => (
+              <WorkflowCard key={workflow.id ?? workflow.workflow_instance_id} workflow={workflow} />
+            ))}
+            {open.length === 0 && (
+              <p className="rounded-lg border border-wcm-line bg-wcm-surface/50 p-4 text-sm text-wcm-dim">
+                Nessun workflow attivo: tutti i workflow proiettati sono storici.
+              </p>
+            )}
+          </div>
+
+          {closed.length > 0 && (
+            <section className="space-y-3">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
+                Storico chiuso
+              </h2>
+              {closed.map((workflow) => (
+                <WorkflowCard
+                  key={workflow.id ?? workflow.workflow_instance_id}
+                  workflow={workflow}
+                />
+              ))}
+            </section>
+          )}
+        </>
       )}
+
     </div>
   );
 };

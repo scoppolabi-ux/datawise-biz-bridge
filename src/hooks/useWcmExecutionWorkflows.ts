@@ -74,3 +74,6 @@ export const useWcmExecutionWorkflowsAll = () =>
       return (data ?? []) as unknown as WcmExecutionWorkflow[];
     },
   });
+
+/** Alias semantico DEC-012: Execution Health di un singolo progetto. */
+export const useWcmExecutionHealth = useWcmExecutionWorkflows;
