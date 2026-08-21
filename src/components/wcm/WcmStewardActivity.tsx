@@ -70,7 +70,21 @@ const WcmStewardActivitySection = ({ health }: { health: WcmKnowledgeHealth }) =
   const historyRaw = Array.isArray(health.steward_activity_history)
     ? health.steward_activity_history.filter(isRecord)
     : [];
-  const history = historyRaw.slice(0, 10);
+  // Evita di duplicare l'ultimo ciclo già mostrato come "latest".
+  const history = historyRaw
+    .filter(
+      (event) =>
+        !latest ||
+        !latest.activity_id ||
+        String(event.activity_id ?? '') !== String(latest.activity_id),
+    )
+    .slice(0, 10);
+  // Run precedenti con la stessa signature sostanziale del latest: nessuna variazione.
+  const latestSignature = latest ? stewardSignature(latest) : null;
+  const unchangedCount = latestSignature
+    ? history.filter((event) => stewardSignature(event) === latestSignature).length
+    : 0;
+
 
   if (!latest && history.length === 0) {
     return (
