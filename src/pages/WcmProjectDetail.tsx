@@ -78,6 +78,8 @@ const WcmProjectDetail = () => {
   const commandsQuery = useWcmProjectCommands(projectId);
   const knowledgeHealthQuery = useWcmKnowledgeHealth(projectId);
   const knowledgeCheckpointsQuery = useWcmKnowledgeCheckpoints(projectId);
+  const executionQuery = useWcmExecutionWorkflows(projectId);
+
 
 
   const project = projectQuery.data;
@@ -89,7 +91,9 @@ const WcmProjectDetail = () => {
     roadmapQuery.isFetching ||
     needsQuery.isFetching ||
     commandsQuery.isFetching ||
-    knowledgeHealthQuery.isFetching;
+    knowledgeHealthQuery.isFetching ||
+    executionQuery.isFetching;
+
 
   const refetchAll = () => {
     projectQuery.refetch();
@@ -100,6 +104,8 @@ const WcmProjectDetail = () => {
     commandsQuery.refetch();
     knowledgeHealthQuery.refetch();
     knowledgeCheckpointsQuery.refetch();
+    executionQuery.refetch();
+
   };
 
 
@@ -233,6 +239,8 @@ const WcmProjectDetail = () => {
                 ['activity', 'Activity'],
                 ['roadmap', 'Roadmap'],
                 ['knowledge', 'Knowledge'],
+                ['execution', 'Esecuzione'],
+
               ].map(([value, label]) => (
 
                 <TabsTrigger
