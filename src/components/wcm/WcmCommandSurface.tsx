@@ -103,14 +103,48 @@ const WcmCommandSurface = ({
     (!currentStateSha || currentStateSha === latest.expected_state_sha);
   const commandsDisabled = Boolean(active) || syncLocked;
 
-  const targetDoc = useMemo(() => {
+  const relatedDocs = useMemo(() => {
+    const ids = new Set<string>([
+      ...(need.related_document_ids ?? []),
+      ...(need.target_document_id ? [need.target_document_id] : []),
+    ]);
+    return documents.filter((d) => ids.has(d.document_id));
+  }, [documents, need]);
+
+  // INVARIANT: APPROVE_FREEZE acts on the freezable Candidate only.
+  // A BOARD_REPORT is readable/related, never the authority target.
+  const candidateDocs = useMemo(
+    () => relatedDocs.filter((d) => String(d.category ?? '').toUpperCase() === 'BOARD_CANDIDATE'),
+    [relatedDocs],
+  );
+  const approveTarget = candidateDocs.length === 1 ? candidateDocs[0] : null;
+
+  // REQUEST_CHANGES keeps the historical, looser target resolution.
+  const changesTarget = useMemo(() => {
     const targetId = need.target_document_id ?? need.related_document_ids?.[0] ?? null;
     if (!targetId) return null;
     return documents.find((d) => d.document_id === targetId) ?? null;
   }, [documents, need]);
 
+  const targetDoc = open === 'APPROVE_FREEZE' ? approveTarget : changesTarget;
+
+  // Authority recorded on an incoherent (non-Candidate) target while the need
+  // is still open: the decision exists, WCM application is blocked.
+  const coherenceBlock = useMemo(() => {
+    const recorded = needCommands.find(
+      (c) => c.status === 'RECORDED' && c.command_type === 'APPROVE_FREEZE',
+    );
+    if (!recorded) return null;
+    const doc = recorded.target_document_id
+      ? documents.find((d) => d.document_id === recorded.target_document_id)
+      : null;
+    const isCandidate = String(doc?.category ?? '').toUpperCase() === 'BOARD_CANDIDATE';
+    return isCandidate ? null : recorded;
+  }, [documents, needCommands]);
+
   const isBoardGate = String(need.need_type ?? '').toUpperCase() === 'BOARD_GATE';
   if (!isBoardGate) return null;
+
 
   const close = () => {
     setOpen(null);
@@ -168,6 +202,25 @@ const WcmCommandSurface = ({
         </div>
       )}
 
+      {coherenceBlock && (
+        <div className="mt-3 rounded-lg border border-wcm-alert/50 bg-wcm-alert/10 p-3 text-sm text-wcm-alert-fg">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em]">
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+            <span className="break-words">Autorità registrata · Blocco di coerenza</span>
+          </div>
+          <p className="mt-2 leading-relaxed">
+            La decisione umana è stata registrata su GitHub, ma l’applicazione WCM è bloccata:
+            il target del comando non è una Candidate congelabile (category=BOARD_CANDIDATE).
+            Il Need resta aperto finché il target non viene corretto a monte.
+          </p>
+          {coherenceBlock.target_document_id && (
+            <p className="mt-1 break-all font-mono text-[11px] opacity-80">
+              target registrato: {coherenceBlock.target_document_id}
+            </p>
+          )}
+        </div>
+      )}
+
       {latest && (
         <div className="mt-3">
           <CommandState command={latest} />
@@ -177,7 +230,7 @@ const WcmCommandSurface = ({
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <Button
           size="sm"
-          disabled={commandsDisabled}
+          disabled={commandsDisabled || !approveTarget}
           onClick={() => setOpen('APPROVE_FREEZE')}
           className="w-full sm:w-auto"
         >
@@ -195,6 +248,15 @@ const WcmCommandSurface = ({
           Richiedi modifiche
         </Button>
       </div>
+
+      {!approveTarget && (
+        <p className="mt-2 text-xs text-wcm-dim">
+          {candidateDocs.length === 0
+            ? 'Approva + Freeze non disponibile: nessun documento Candidate (BOARD_CANDIDATE) collegato a questo Need. Un Board Report non può essere il target dell’autorità.'
+            : 'Approva + Freeze non disponibile: più documenti Candidate collegati a questo Need, target non univoco.'}
+        </p>
+      )}
+
 
       {syncLocked && (
         <p className="mt-2 text-xs text-wcm-dim">

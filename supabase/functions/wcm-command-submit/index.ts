@@ -1,6 +1,8 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { isOpenNeed, needFingerprint } from '../_shared/wcmGovernance.ts'
+import { isBoardCandidateCategory } from '../_shared/wcmBoardGate.ts'
+
 
 const COMMAND_TYPES = ['APPROVE_FREEZE', 'REQUEST_CHANGES'] as const
 const ALLOWED_ROLES = ['owner', 'admin']
@@ -106,6 +108,16 @@ Deno.serve(async (req) => {
         409,
       )
     }
+    if (!targetDocumentId) {
+      return json(
+        {
+          error:
+            'APPROVE_FREEZE richiede un documento Candidate (category=BOARD_CANDIDATE) come target: nessun target indicato.',
+          code: 'INVALID_APPROVE_TARGET',
+        },
+        400,
+      )
+    }
   }
 
   if (targetDocumentId) {
@@ -119,14 +131,40 @@ Deno.serve(async (req) => {
     }
     const { data: doc, error: docError } = await admin
       .from('wcm_project_documents')
-      .select('document_id, version')
+      .select('document_id, version, category, status')
       .eq('project_id', projectId)
       .eq('document_id', targetDocumentId)
       .maybeSingle()
     if (docError) return json({ error: 'Document lookup failed' }, 500)
     if (!doc) return json({ error: 'Target document not found', code: 'TARGET_NOT_FOUND' }, 404)
+
+    if (commandType === 'APPROVE_FREEZE') {
+      if (!isBoardCandidateCategory(doc.category)) {
+        return json(
+          {
+            error:
+              `Il target di APPROVE_FREEZE deve essere la Candidate congelabile (category=BOARD_CANDIDATE), non "${String(doc.category ?? 'sconosciuta')}". Il Board Report resta leggibile ma non è un target di autorità.`,
+            code: 'INVALID_APPROVE_TARGET',
+          },
+          409,
+        )
+      }
+      const docVersion = doc.version ?? null
+      if (targetVersion && String(targetVersion) !== String(docVersion ?? '')) {
+        return json(
+          {
+            error:
+              `La versione indicata (${targetVersion}) non corrisponde alla versione corrente del documento (${docVersion ?? 'assente'}).`,
+            code: 'INVALID_APPROVE_TARGET',
+          },
+          409,
+        )
+      }
+    }
+
     if (!targetVersion) targetVersion = doc.version ?? null
   }
+
 
   const fingerprint = await needFingerprint(need as Record<string, unknown>)
 

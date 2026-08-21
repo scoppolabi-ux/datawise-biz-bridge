@@ -7,6 +7,8 @@ import {
   normalize,
 } from './knowledge.ts'
 import { parseExecutionWorkflows } from './execution.ts'
+import { validateBoardGateTargets, type BoardGateDoc } from '../_shared/wcmBoardGate.ts'
+
 
 
 const ISSUER = 'https://token.actions.githubusercontent.com'
@@ -336,6 +338,19 @@ Deno.serve(async (req) => {
     collectionPayloads[name] = { rows, snapshot: name === 'activity' ? false : !partialFlag }
 
   }
+
+  // --- BOARD_GATE semantic validation (cross-collection, pre-write) ---
+  // An OPEN BOARD_GATE need asking for APPROVE_FREEZE must target a
+  // BOARD_CANDIDATE document. Reject the whole payload: no partial projection.
+  if (collectionPayloads.needs && collectionPayloads.documents) {
+    const boardGateError = validateBoardGateTargets(
+      collectionPayloads.needs.rows,
+      collectionPayloads.documents.rows as BoardGateDoc[],
+    )
+    if (boardGateError) return json(boardGateError, 400)
+  }
+
+
 
   // --- Knowledge Health (observation layer, optional) ---
   // Absence of these keys must never fail projection of legacy projects.
