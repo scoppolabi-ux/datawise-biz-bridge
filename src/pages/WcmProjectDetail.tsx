@@ -31,28 +31,41 @@ const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap', 'knowledg
 
 const WcmProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const tabParam = searchParams.get('tab');
   const tab = tabParam && TABS.includes(tabParam) ? tabParam : 'overview';
   const openDocumentId = searchParams.get('document');
   const selectedNeedId = searchParams.get('need');
+  const returnTo = safeReturnTo(searchParams.get('returnTo'));
+  const fallbackTo = `/wcm/${projectId}?tab=documents`;
 
   const setTab = (next: string) => {
     const params = new URLSearchParams(searchParams);
     params.set('tab', next);
     if (next !== 'documents') params.delete('document');
     if (next !== 'board') params.delete('need');
+    params.delete('returnTo');
     setSearchParams(params, { replace: true });
   };
 
-  const setOpenDocumentId = (documentId: string | null) => {
+  const setOpenDocumentId = (documentId: string | null, nextReturnTo?: string) => {
     const params = new URLSearchParams(searchParams);
     params.set('tab', 'documents');
     if (documentId) params.set('document', documentId);
     else params.delete('document');
+    const safeNext = safeReturnTo(nextReturnTo);
+    if (documentId && safeNext) params.set('returnTo', safeNext);
+    else params.delete('returnTo');
     setSearchParams(params, { replace: true });
   };
+
+  const backFromReader = () => {
+    if (returnTo) navigate(returnTo);
+    else setOpenDocumentId(null);
+  };
+
 
   const projectQuery = useWcmProject(projectId);
   const documentsQuery = useWcmDocuments(projectId);
