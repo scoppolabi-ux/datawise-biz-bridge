@@ -20,14 +20,17 @@ import WcmBoardTab from '@/components/wcm/WcmBoardTab';
 import WcmActivityTab from '@/components/wcm/WcmActivityTab';
 import WcmRoadmapTab from '@/components/wcm/WcmRoadmapTab';
 import WcmKnowledgeHealthTab from '@/components/wcm/WcmKnowledgeHealthTab';
+import WcmExecutionTab from '@/components/wcm/WcmExecutionTab';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 import { backLabelFor, safeReturnTo } from '@/components/wcm/wcmReturnTo';
 import {
   useWcmKnowledgeCheckpoints,
   useWcmKnowledgeHealth,
 } from '@/hooks/useWcmKnowledgeHealth';
+import { useWcmExecutionWorkflows } from '@/hooks/useWcmExecutionWorkflows';
 
-const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap', 'knowledge'];
+const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap', 'knowledge', 'execution'];
+
 
 
 const WcmProjectDetail = () => {
