@@ -45,7 +45,8 @@ const WorkflowCard = ({ workflow }: { workflow: WcmExecutionWorkflow }) => {
         </div>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
           <span className="rounded-md border border-wcm-line-strong bg-wcm-panel/60 px-2 py-0.5 text-[11px] text-wcm-text">
-            {EXECUTION_STATUS_LABELS[status] ?? workflow.status}
+            {EXECUTION_STATUS_LABELS[status] ?? workflow.status}{' '}
+            <span className="font-mono text-wcm-dim">{status}</span>
           </span>
           <span
             className={cn(
@@ -56,6 +57,7 @@ const WorkflowCard = ({ workflow }: { workflow: WcmExecutionWorkflow }) => {
             {signal.label}
           </span>
         </div>
+
       </header>
 
       {open && (
