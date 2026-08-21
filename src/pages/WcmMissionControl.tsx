@@ -11,6 +11,8 @@ import {
 import { derivedBadge, useWcmNeedStates } from '@/hooks/useWcmNeedStates';
 import { COMMAND_STATUS_LABELS } from '@/hooks/useWcmCommands';
 import { useWcmKnowledgeHealthAll } from '@/hooks/useWcmKnowledgeHealth';
+import { useWcmExecutionWorkflowsAll } from '@/hooks/useWcmExecutionWorkflows';
+
 import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 import WcmLearningCard from '@/components/wcm/WcmLearningCard';
