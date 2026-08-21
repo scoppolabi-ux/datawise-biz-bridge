@@ -20,6 +20,7 @@ export const safeReturnTo = (value: string | null | undefined): string | null =>
   if (decoded.startsWith('//')) return null;
   if (/[\\\s]/.test(decoded)) return null;
   if (decoded.length > 512) return null;
+  if (decoded.split('/').includes('..')) return null;
   // Must be exactly /wcm or /wcm/... or /wcm?... 
   if (!/^\/wcm(\/[^?#]*)?(\?[^#]*)?$/.test(decoded)) return null;
   return decoded;
