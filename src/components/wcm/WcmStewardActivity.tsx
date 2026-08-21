@@ -222,6 +222,15 @@ const WcmStewardActivitySection = ({ health }: { health: WcmKnowledgeHealth }) =
             <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
               <History className="h-3.5 w-3.5" />
               Storico Steward ({history.length})
+              {unchangedCount > 0 && (
+                <span className="ml-2 normal-case tracking-normal text-wcm-dim">
+                  · {unchangedCount}{' '}
+                  {unchangedCount === 1
+                    ? 'verifica precedente senza variazioni'
+                    : 'verifiche precedenti senza variazioni'}
+                </span>
+              )}
+
             </span>
             <ChevronDown
               className={cn(
