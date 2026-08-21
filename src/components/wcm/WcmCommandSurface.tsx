@@ -103,14 +103,48 @@ const WcmCommandSurface = ({
     (!currentStateSha || currentStateSha === latest.expected_state_sha);
   const commandsDisabled = Boolean(active) || syncLocked;
 
-  const targetDoc = useMemo(() => {
+  const relatedDocs = useMemo(() => {
+    const ids = new Set<string>([
+      ...(need.related_document_ids ?? []),
+      ...(need.target_document_id ? [need.target_document_id] : []),
+    ]);
+    return documents.filter((d) => ids.has(d.document_id));
+  }, [documents, need]);
+
+  // INVARIANT: APPROVE_FREEZE acts on the freezable Candidate only.
+  // A BOARD_REPORT is readable/related, never the authority target.
+  const candidateDocs = useMemo(
+    () => relatedDocs.filter((d) => String(d.category ?? '').toUpperCase() === 'BOARD_CANDIDATE'),
+    [relatedDocs],
+  );
+  const approveTarget = candidateDocs.length === 1 ? candidateDocs[0] : null;
+
+  // REQUEST_CHANGES keeps the historical, looser target resolution.
+  const changesTarget = useMemo(() => {
     const targetId = need.target_document_id ?? need.related_document_ids?.[0] ?? null;
     if (!targetId) return null;
     return documents.find((d) => d.document_id === targetId) ?? null;
   }, [documents, need]);
 
+  const targetDoc = open === 'APPROVE_FREEZE' ? approveTarget : changesTarget;
+
+  // Authority recorded on an incoherent (non-Candidate) target while the need
+  // is still open: the decision exists, WCM application is blocked.
+  const coherenceBlock = useMemo(() => {
+    const recorded = needCommands.find(
+      (c) => c.status === 'RECORDED' && c.command_type === 'APPROVE_FREEZE',
+    );
+    if (!recorded) return null;
+    const doc = recorded.target_document_id
+      ? documents.find((d) => d.document_id === recorded.target_document_id)
+      : null;
+    const isCandidate = String(doc?.category ?? '').toUpperCase() === 'BOARD_CANDIDATE';
+    return isCandidate ? null : recorded;
+  }, [documents, needCommands]);
+
   const isBoardGate = String(need.need_type ?? '').toUpperCase() === 'BOARD_GATE';
   if (!isBoardGate) return null;
+
 
   const close = () => {
     setOpen(null);
