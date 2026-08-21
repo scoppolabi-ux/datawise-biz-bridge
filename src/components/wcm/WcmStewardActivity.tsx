@@ -8,7 +8,9 @@ import {
   stewardClassificationLabel,
   stewardCount,
   stewardList,
+  stewardSignature,
 } from './wcmKnowledge';
+
 
 const Field = ({ label, value }: { label: string; value: string | number | null }) => (
   <div className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-3">
