@@ -88,6 +88,8 @@ const WcmMarkdown = ({ content }: { content: string }) => {
       {content}
     </ReactMarkdown>
   </div>
-);
+  );
+};
+
 
 export default WcmMarkdown;
