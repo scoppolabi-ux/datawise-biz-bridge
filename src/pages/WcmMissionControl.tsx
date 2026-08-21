@@ -59,10 +59,20 @@ const WcmMissionControl = () => {
   const { data: docsToReadList } = useWcmDocumentsToRead();
   const { needsStefano, pendingNeeds, ready } = useWcmNeedStates();
   const { data: knowledgeHealth } = useWcmKnowledgeHealthAll();
+  const { data: executionWorkflows } = useWcmExecutionWorkflowsAll();
 
   const all = projects ?? [];
   const projectById = new Map(all.map((p) => [p.project_id, p]));
   const healthByProject = new Map((knowledgeHealth ?? []).map((h) => [h.project_id, h]));
+  const workflowsByProject = (executionWorkflows ?? []).reduce<
+    Map<string, typeof executionWorkflows>
+  >((acc, wf) => {
+    const list = acc.get(wf.project_id) ?? [];
+    list.push(wf);
+    acc.set(wf.project_id, list);
+    return acc;
+  }, new Map());
+
 
   // Legacy fallback: only while no first-class Need snapshot exists at all.
   const hasNeedSnapshot = (needs?.length ?? 0) > 0;
