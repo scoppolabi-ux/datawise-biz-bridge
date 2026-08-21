@@ -260,8 +260,19 @@ const WcmProjectDetail = () => {
                 knowledgeHealth={knowledgeHealthQuery.data}
                 needs={needsQuery.data}
                 commands={commandsQuery.data}
+                executionWorkflows={executionQuery.data}
               />
             </TabsContent>
+
+            <TabsContent value="execution" className="mt-4">
+              <WcmExecutionTab
+                workflows={executionQuery.data ?? []}
+                isLoading={executionQuery.isLoading}
+                hasError={Boolean(executionQuery.error)}
+              />
+            </TabsContent>
+
+
 
             <TabsContent value="knowledge" className="mt-4">
               <WcmKnowledgeHealthTab
