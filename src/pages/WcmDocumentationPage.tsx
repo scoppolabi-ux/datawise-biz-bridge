@@ -2,6 +2,8 @@ import { useSearchParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Download, FileText, Loader2, ShieldAlert } from 'lucide-react';
 import WcmPageShell from '@/components/wcm/WcmPageShell';
 import WcmMarkdown from '@/components/wcm/WcmMarkdown';
+import WcmDocumentToc from '@/components/wcm/WcmDocumentToc';
+
 import {
   SOURCE_OF_TRUTH_NOTE,
   assetUrl,
