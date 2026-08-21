@@ -1,4 +1,4 @@
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ import WcmActivityTab from '@/components/wcm/WcmActivityTab';
 import WcmRoadmapTab from '@/components/wcm/WcmRoadmapTab';
 import WcmKnowledgeHealthTab from '@/components/wcm/WcmKnowledgeHealthTab';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
+import { backLabelFor, safeReturnTo } from '@/components/wcm/wcmReturnTo';
 import {
   useWcmKnowledgeCheckpoints,
   useWcmKnowledgeHealth,
@@ -101,7 +102,8 @@ const WcmProjectDetail = () => {
 
 
 
-  const openDocument = (documentId: string) => setOpenDocumentId(documentId);
+  const openDocument = (documentId: string, fromTab: 'board' | 'roadmap') =>
+    setOpenDocumentId(documentId, `/wcm/${projectId}?tab=${fromTab}`);
 
   return (
     <div className="wcm-grid min-h-screen">
@@ -251,6 +253,8 @@ const WcmProjectDetail = () => {
                 projectId={projectId!}
                 openDocumentId={openDocumentId}
                 onOpenDocument={setOpenDocumentId}
+                backLabel={backLabelFor(returnTo)}
+                onBack={backFromReader}
               />
             </TabsContent>
             <TabsContent value="board" className="mt-4">
@@ -259,7 +263,7 @@ const WcmProjectDetail = () => {
                 documents={documents}
                 needs={needsQuery.data ?? []}
                 selectedNeedId={selectedNeedId}
-                onOpenDocument={openDocument}
+                onOpenDocument={(id: string) => openDocument(id, 'board')}
               />
             </TabsContent>
             <TabsContent value="activity" className="mt-4">
@@ -269,7 +273,7 @@ const WcmProjectDetail = () => {
               <WcmRoadmapTab
                 items={roadmapQuery.data ?? []}
                 documents={documents}
-                onOpenDocument={openDocument}
+                onOpenDocument={(id: string) => openDocument(id, 'roadmap')}
               />
             </TabsContent>
           </Tabs>
