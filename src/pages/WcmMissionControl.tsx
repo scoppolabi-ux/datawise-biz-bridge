@@ -15,6 +15,7 @@ import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 import WcmLearningCard from '@/components/wcm/WcmLearningCard';
 import WcmDocumentationCard from '@/components/wcm/WcmDocumentationCard';
+import { withReturnTo } from '@/components/wcm/wcmReturnTo';
 
 const Shell = ({ children }: { children: React.ReactNode }) => (
   <div className="wcm-grid min-h-screen">
@@ -159,7 +160,7 @@ const WcmMissionControl = () => {
                         return (
                           <li key={need.id}>
                             <Link
-                              to={needTargetPath(need)}
+                              to={withReturnTo(needTargetPath(need), '/wcm')}
                               className="block rounded-lg border border-wcm-alert/25 bg-wcm-bg/40 p-3 transition-colors hover:border-wcm-alert/60"
                             >
                               <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
@@ -252,7 +253,7 @@ const WcmMissionControl = () => {
                     return (
                       <li key={need.id}>
                         <Link
-                          to={needTargetPath(need)}
+                          to={withReturnTo(needTargetPath(need), '/wcm')}
                           className="block rounded-lg border border-wcm-line bg-wcm-bg/40 p-3 transition-colors hover:border-wcm-accent/60"
                         >
                           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
