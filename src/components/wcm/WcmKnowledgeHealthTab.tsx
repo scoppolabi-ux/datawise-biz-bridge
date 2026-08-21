@@ -163,6 +163,8 @@ const WcmKnowledgeHealthTab = ({
   isLoading: boolean;
   hasError: boolean;
 }) => {
+  const [resolvedOpen, setResolvedOpen] = useState(false);
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-16">
