@@ -61,6 +61,98 @@ const TimeField = ({ label, value }: { label: string; value: string | null }) =>
   </div>
 );
 
+const ComponentCard = ({
+  label,
+  score,
+  status,
+  reason,
+}: {
+  label: string;
+  score: number | null;
+  status: string | null;
+  reason: string | null;
+}) => (
+  <div className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-3">
+    <p className="text-[11px] font-semibold uppercase tracking-wider text-wcm-dim">{label}</p>
+    <p className="mt-1 font-mono text-lg text-wcm-strong">
+      {score ?? '—'}
+      {score !== null && <span className="text-xs text-wcm-dim">/100</span>}
+    </p>
+    {status && (
+      <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-wcm-dim">{status}</p>
+    )}
+    {reason && <p className="mt-1 text-[11px] leading-relaxed text-wcm-muted">{reason}</p>}
+  </div>
+);
+
+const IssueCard = ({ issue, index }: { issue: KnowledgeIssue; index: number }) => {
+  const [rawOpen, setRawOpen] = useState(false);
+  const human = issueHumanSummaryOf(issue);
+  const raw = issueRawDetailOf(issue);
+  return (
+    <article className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-medium text-wcm-strong">{issueTitleOf(issue)}</p>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {issue.severity && (
+            <span
+              className={cn(
+                'rounded-md border px-2 py-0.5 text-[11px] font-medium',
+                severityClasses(issue.severity),
+              )}
+            >
+              {String(issue.severity).toUpperCase()}
+            </span>
+          )}
+          {issue.status && (
+            <span className="rounded-md border border-wcm-line-strong bg-wcm-panel/60 px-2 py-0.5 font-mono text-[11px] text-wcm-text">
+              {String(issue.status).toUpperCase()}
+            </span>
+          )}
+        </div>
+      </div>
+      {issue.id && (
+        <p className="mt-0.5 font-mono text-[10px] text-wcm-dim">{String(issue.id)}</p>
+      )}
+      {human ? (
+        <>
+          <p className="mt-1.5 text-sm leading-relaxed text-wcm-text">{human}</p>
+          {raw && (
+            <>
+              <button
+                type="button"
+                onClick={() => setRawOpen((v) => !v)}
+                className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-wcm-dim hover:text-wcm-text"
+              >
+                <ChevronDown
+                  className={cn('h-3 w-3 transition-transform', rawOpen && 'rotate-180')}
+                />
+                Dettaglio tecnico
+              </button>
+              {rawOpen && (
+                <p className="mt-1 break-words font-mono text-[11px] leading-relaxed text-wcm-muted">
+                  {raw}
+                </p>
+              )}
+            </>
+          )}
+        </>
+      ) : (
+        raw && <p className="mt-1.5 text-sm leading-relaxed text-wcm-text">{raw}</p>
+      )}
+      {(issue.node || issue.since) && (
+        <p className="mt-1.5 font-mono text-[11px] text-wcm-dim">
+          {issue.node ? `nodo: ${issue.node}` : ''}
+          {issue.node && issue.since ? ' · ' : ''}
+          {issue.since ? `dal ${formatDateTime(String(issue.since))}` : ''}
+        </p>
+      )}
+      <span className="hidden">{index}</span>
+    </article>
+  );
+};
+
+
 const WcmKnowledgeHealthTab = ({
   health,
   checkpoints,
