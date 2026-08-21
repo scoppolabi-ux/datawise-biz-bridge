@@ -115,13 +115,20 @@ const WcmProjectDetail = () => {
 
       <WcmBrandHeader
         eyebrow={
-          <Link
-            to="/wcm"
+          <button
+            type="button"
+            onClick={() => {
+              if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate('/wcm');
+              }
+            }}
             className="inline-flex items-center gap-1.5 text-wcm-accent transition-colors hover:text-wcm-strong"
           >
             <ArrowLeft className="h-3 w-3" />
-            WCM Mission Control
-          </Link>
+            Indietro
+          </button>
         }
         title={
           <h1 className="truncate text-base font-semibold tracking-tight sm:text-lg">
