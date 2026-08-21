@@ -3,6 +3,7 @@ import { ArrowRight, FileText, Loader2 } from 'lucide-react';
 import WcmPageShell from '@/components/wcm/WcmPageShell';
 import WcmDocumentActions from '@/components/wcm/WcmDocumentActions';
 import WcmUnapprovedBadge from '@/components/wcm/WcmUnapprovedBadge';
+import { withReturnTo } from '@/components/wcm/wcmReturnTo';
 import {
   isOpenNeed,
   useWcmDocumentsToRead,
@@ -60,9 +61,12 @@ const WcmDocumentsToReadPage = () => {
             >
               <div className="flex flex-wrap items-start justify-between gap-3 p-4">
                 <Link
-                  to={`/wcm/${doc.project_id}?tab=documents&document=${encodeURIComponent(
-                    doc.document_id,
-                  )}`}
+                  to={withReturnTo(
+                    `/wcm/${doc.project_id}?tab=documents&document=${encodeURIComponent(
+                      doc.document_id,
+                    )}`,
+                    '/wcm/documents',
+                  )}
                   className="min-w-0 flex-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-wcm-accent"
                 >
                   <span className="text-xs font-semibold uppercase tracking-[0.16em] text-wcm-dim">

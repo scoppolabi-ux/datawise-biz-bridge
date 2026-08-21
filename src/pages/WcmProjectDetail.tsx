@@ -40,7 +40,6 @@ const WcmProjectDetail = () => {
   const openDocumentId = searchParams.get('document');
   const selectedNeedId = searchParams.get('need');
   const returnTo = safeReturnTo(searchParams.get('returnTo'));
-  const fallbackTo = `/wcm/${projectId}?tab=documents`;
 
   const setTab = (next: string) => {
     const params = new URLSearchParams(searchParams);

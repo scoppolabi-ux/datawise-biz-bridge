@@ -2,6 +2,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { AlertTriangle, ArrowRight, Clock, FileText, Loader2 } from 'lucide-react';
 import WcmPageShell from '@/components/wcm/WcmPageShell';
 import { needTargetPath, useWcmProjects } from '@/hooks/useWcmProjects';
+import { withReturnTo } from '@/components/wcm/wcmReturnTo';
 import {
   derivedBadge,
   useWcmNeedStates,
@@ -22,6 +23,8 @@ const WcmNeedsPage = () => {
   const { data: projects } = useWcmProjects(true);
   const byId = new Map((projects ?? []).map((p) => [p.project_id, p]));
 
+  const currentReturnTo = view ? `/wcm/needs?view=${view}` : '/wcm/needs';
+
   const visible: ClassifiedNeed[] =
     view === 'action' ? needsStefano : view === 'pending' ? pendingNeeds : classified;
 
@@ -35,7 +38,7 @@ const WcmNeedsPage = () => {
     return (
       <li key={need.id}>
         <Link
-          to={needTargetPath(need)}
+          to={withReturnTo(needTargetPath(need), currentReturnTo)}
           className={`block rounded-xl border p-4 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wcm-accent ${
             isAction
               ? 'border-wcm-alert/30 bg-wcm-alert/10 hover:border-wcm-alert/60 hover:bg-wcm-alert/15'
