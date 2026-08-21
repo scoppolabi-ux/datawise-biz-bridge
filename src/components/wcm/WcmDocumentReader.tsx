@@ -23,10 +23,12 @@ const WcmDocumentReader = ({
   doc,
   projectId,
   onBack,
+  backLabel = 'Torna ai documenti',
 }: {
   doc: WcmProjectDocument;
   projectId: string;
   onBack: () => void;
+  backLabel?: string;
 }) => (
   <div className="rounded-xl border border-wcm-line bg-wcm-surface/60">
     <header className="space-y-4 border-b border-wcm-line p-4 sm:p-6">
@@ -37,8 +39,9 @@ const WcmDocumentReader = ({
         className="-ml-2 h-8 text-wcm-muted hover:bg-wcm-panel hover:text-wcm-strong"
       >
         <ArrowLeft className="mr-2 h-3.5 w-3.5" />
-        Torna ai documenti
+        {backLabel}
       </Button>
+
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
@@ -59,7 +62,7 @@ const WcmDocumentReader = ({
               className="inline-flex shrink-0 items-center gap-2 rounded-md border border-wcm-line-strong px-3 py-1.5 text-xs text-wcm-text transition-colors hover:bg-wcm-panel hover:text-wcm-strong"
             >
               <ExternalLink className="h-3.5 w-3.5" />
-              View source on GitHub
+              Apri il sorgente su GitHub
             </a>
           )}
         </div>
@@ -82,7 +85,7 @@ const WcmDocumentReader = ({
       ) : (
         <p className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-4 text-sm text-wcm-muted">
           Contenuto non ancora sincronizzato nel read-model.
-          {doc.source_url && ' Usa "View source on GitHub" per leggere l\'originale.'}
+          {doc.source_url && ' Usa "Apri il sorgente su GitHub" per leggere l\'originale.'}
         </p>
       )}
     </div>

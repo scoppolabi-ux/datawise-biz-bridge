@@ -1,4 +1,4 @@
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ import WcmActivityTab from '@/components/wcm/WcmActivityTab';
 import WcmRoadmapTab from '@/components/wcm/WcmRoadmapTab';
 import WcmKnowledgeHealthTab from '@/components/wcm/WcmKnowledgeHealthTab';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
+import { backLabelFor, safeReturnTo } from '@/components/wcm/wcmReturnTo';
 import {
   useWcmKnowledgeCheckpoints,
   useWcmKnowledgeHealth,
@@ -31,28 +32,40 @@ const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap', 'knowledg
 
 const WcmProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const tabParam = searchParams.get('tab');
   const tab = tabParam && TABS.includes(tabParam) ? tabParam : 'overview';
   const openDocumentId = searchParams.get('document');
   const selectedNeedId = searchParams.get('need');
+  const returnTo = safeReturnTo(searchParams.get('returnTo'));
 
   const setTab = (next: string) => {
     const params = new URLSearchParams(searchParams);
     params.set('tab', next);
     if (next !== 'documents') params.delete('document');
     if (next !== 'board') params.delete('need');
+    params.delete('returnTo');
     setSearchParams(params, { replace: true });
   };
 
-  const setOpenDocumentId = (documentId: string | null) => {
+  const setOpenDocumentId = (documentId: string | null, nextReturnTo?: string) => {
     const params = new URLSearchParams(searchParams);
     params.set('tab', 'documents');
     if (documentId) params.set('document', documentId);
     else params.delete('document');
+    const safeNext = safeReturnTo(nextReturnTo);
+    if (documentId && safeNext) params.set('returnTo', safeNext);
+    else params.delete('returnTo');
     setSearchParams(params, { replace: true });
   };
+
+  const backFromReader = () => {
+    if (returnTo) navigate(returnTo);
+    else setOpenDocumentId(null);
+  };
+
 
   const projectQuery = useWcmProject(projectId);
   const documentsQuery = useWcmDocuments(projectId);
@@ -88,7 +101,8 @@ const WcmProjectDetail = () => {
 
 
 
-  const openDocument = (documentId: string) => setOpenDocumentId(documentId);
+  const openDocument = (documentId: string, fromTab: 'board' | 'roadmap') =>
+    setOpenDocumentId(documentId, `/wcm/${projectId}?tab=${fromTab}`);
 
   return (
     <div className="wcm-grid min-h-screen">
@@ -238,6 +252,8 @@ const WcmProjectDetail = () => {
                 projectId={projectId!}
                 openDocumentId={openDocumentId}
                 onOpenDocument={setOpenDocumentId}
+                backLabel={backLabelFor(returnTo)}
+                onBack={backFromReader}
               />
             </TabsContent>
             <TabsContent value="board" className="mt-4">
@@ -246,7 +262,7 @@ const WcmProjectDetail = () => {
                 documents={documents}
                 needs={needsQuery.data ?? []}
                 selectedNeedId={selectedNeedId}
-                onOpenDocument={openDocument}
+                onOpenDocument={(id: string) => openDocument(id, 'board')}
               />
             </TabsContent>
             <TabsContent value="activity" className="mt-4">
@@ -256,7 +272,7 @@ const WcmProjectDetail = () => {
               <WcmRoadmapTab
                 items={roadmapQuery.data ?? []}
                 documents={documents}
-                onOpenDocument={openDocument}
+                onOpenDocument={(id: string) => openDocument(id, 'roadmap')}
               />
             </TabsContent>
           </Tabs>
