@@ -3,8 +3,11 @@ import { cn } from '@/lib/utils';
 import type { WcmProjectNeed, WcmProjectRoadmapItem, WcmProjectStatus } from '@/hooks/useWcmProjects';
 import type { WcmKnowledgeHealth } from '@/hooks/useWcmKnowledgeHealth';
 import type { WcmCommandRequest } from '@/hooks/useWcmCommands';
+import type { WcmExecutionWorkflow } from '@/hooks/useWcmExecutionWorkflows';
 import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
+import WcmExecutionSignal from './WcmExecutionSignal';
 import WcmHealthSummary from './WcmHealthSummary';
+
 
 
 import {
