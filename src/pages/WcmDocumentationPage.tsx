@@ -2,6 +2,8 @@ import { useSearchParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Download, FileText, Loader2, ShieldAlert } from 'lucide-react';
 import WcmPageShell from '@/components/wcm/WcmPageShell';
 import WcmMarkdown from '@/components/wcm/WcmMarkdown';
+import WcmDocumentToc from '@/components/wcm/WcmDocumentToc';
+
 import {
   SOURCE_OF_TRUTH_NOTE,
   assetUrl,
@@ -158,8 +160,18 @@ const Reader = ({ doc, onClose }: { doc: WcmReleaseDocument; onClose: () => void
             Snapshot della release non disponibile. Rigenera la release dalla pipeline.
           </p>
         )}
-        {data && <WcmMarkdown content={data} />}
+        {data && (
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start lg:gap-6">
+            <div className="order-2 min-w-0 lg:order-1">
+              <WcmMarkdown content={data} />
+            </div>
+            <div className="order-1 min-w-0 lg:order-2">
+              <WcmDocumentToc markdown={data} documentTitle={doc.title} />
+            </div>
+          </div>
+        )}
       </div>
+
     </section>
   );
 };
