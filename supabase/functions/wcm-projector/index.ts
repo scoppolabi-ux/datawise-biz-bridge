@@ -284,12 +284,15 @@ Deno.serve(async (req) => {
     const cfg = COLLECTIONS[name]
 
     // DEC-012: execution workflows have their own enum/path validation.
+    // INVARIANT: this is a ledger/history, not a snapshot. Append/upsert-only:
+    // instances omitted from a later payload are never deleted.
     if (name === 'execution_workflows') {
       const parsed = parseExecutionWorkflows(raw, projectId)
       if (!Array.isArray(parsed)) return json(parsed, 400)
-      collectionPayloads[name] = { rows: parsed, snapshot: body.execution_workflows_partial !== true }
+      collectionPayloads[name] = { rows: parsed, snapshot: false }
       continue
     }
+
 
     const rows: Record<string, unknown>[] = []
 
