@@ -23,10 +23,12 @@ const WcmDocumentReader = ({
   doc,
   projectId,
   onBack,
+  backLabel = 'Torna ai documenti',
 }: {
   doc: WcmProjectDocument;
   projectId: string;
   onBack: () => void;
+  backLabel?: string;
 }) => (
   <div className="rounded-xl border border-wcm-line bg-wcm-surface/60">
     <header className="space-y-4 border-b border-wcm-line p-4 sm:p-6">
@@ -37,8 +39,9 @@ const WcmDocumentReader = ({
         className="-ml-2 h-8 text-wcm-muted hover:bg-wcm-panel hover:text-wcm-strong"
       >
         <ArrowLeft className="mr-2 h-3.5 w-3.5" />
-        Torna ai documenti
+        {backLabel}
       </Button>
+
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
