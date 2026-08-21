@@ -20,14 +20,17 @@ import WcmBoardTab from '@/components/wcm/WcmBoardTab';
 import WcmActivityTab from '@/components/wcm/WcmActivityTab';
 import WcmRoadmapTab from '@/components/wcm/WcmRoadmapTab';
 import WcmKnowledgeHealthTab from '@/components/wcm/WcmKnowledgeHealthTab';
+import WcmExecutionTab from '@/components/wcm/WcmExecutionTab';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 import { backLabelFor, safeReturnTo } from '@/components/wcm/wcmReturnTo';
 import {
   useWcmKnowledgeCheckpoints,
   useWcmKnowledgeHealth,
 } from '@/hooks/useWcmKnowledgeHealth';
+import { useWcmExecutionWorkflows } from '@/hooks/useWcmExecutionWorkflows';
 
-const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap', 'knowledge'];
+const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap', 'knowledge', 'execution'];
+
 
 
 const WcmProjectDetail = () => {
@@ -75,6 +78,8 @@ const WcmProjectDetail = () => {
   const commandsQuery = useWcmProjectCommands(projectId);
   const knowledgeHealthQuery = useWcmKnowledgeHealth(projectId);
   const knowledgeCheckpointsQuery = useWcmKnowledgeCheckpoints(projectId);
+  const executionQuery = useWcmExecutionWorkflows(projectId);
+
 
 
   const project = projectQuery.data;
@@ -86,7 +91,9 @@ const WcmProjectDetail = () => {
     roadmapQuery.isFetching ||
     needsQuery.isFetching ||
     commandsQuery.isFetching ||
-    knowledgeHealthQuery.isFetching;
+    knowledgeHealthQuery.isFetching ||
+    executionQuery.isFetching;
+
 
   const refetchAll = () => {
     projectQuery.refetch();
@@ -97,6 +104,8 @@ const WcmProjectDetail = () => {
     commandsQuery.refetch();
     knowledgeHealthQuery.refetch();
     knowledgeCheckpointsQuery.refetch();
+    executionQuery.refetch();
+
   };
 
 
@@ -230,6 +239,8 @@ const WcmProjectDetail = () => {
                 ['activity', 'Activity'],
                 ['roadmap', 'Roadmap'],
                 ['knowledge', 'Knowledge'],
+                ['execution', 'Esecuzione'],
+
               ].map(([value, label]) => (
 
                 <TabsTrigger
@@ -249,8 +260,19 @@ const WcmProjectDetail = () => {
                 knowledgeHealth={knowledgeHealthQuery.data}
                 needs={needsQuery.data}
                 commands={commandsQuery.data}
+                executionWorkflows={executionQuery.data}
               />
             </TabsContent>
+
+            <TabsContent value="execution" className="mt-4">
+              <WcmExecutionTab
+                workflows={executionQuery.data ?? []}
+                isLoading={executionQuery.isLoading}
+                hasError={Boolean(executionQuery.error)}
+              />
+            </TabsContent>
+
+
 
             <TabsContent value="knowledge" className="mt-4">
               <WcmKnowledgeHealthTab

@@ -3,8 +3,11 @@ import { cn } from '@/lib/utils';
 import type { WcmProjectNeed, WcmProjectRoadmapItem, WcmProjectStatus } from '@/hooks/useWcmProjects';
 import type { WcmKnowledgeHealth } from '@/hooks/useWcmKnowledgeHealth';
 import type { WcmCommandRequest } from '@/hooks/useWcmCommands';
+import type { WcmExecutionWorkflow } from '@/hooks/useWcmExecutionWorkflows';
 import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
+import WcmExecutionSignal from './WcmExecutionSignal';
 import WcmHealthSummary from './WcmHealthSummary';
+
 
 
 import {
@@ -39,16 +42,23 @@ const WcmOverviewTab = ({
   knowledgeHealth,
   needs,
   commands,
+  executionWorkflows,
 }: {
   project: WcmProjectStatus;
   roadmap: WcmProjectRoadmapItem[];
   knowledgeHealth?: WcmKnowledgeHealth | null;
   needs?: WcmProjectNeed[];
   commands?: WcmCommandRequest[];
+  executionWorkflows?: WcmExecutionWorkflow[];
 }) => (
   <div className="space-y-4">
     <div className="flex flex-wrap items-center gap-2">
       <WcmKnowledgeHealthBadge health={knowledgeHealth} showSynapses />
+      <WcmExecutionSignal
+        workflows={executionWorkflows}
+        projectId={project.project_id}
+        asLink
+      />
     </div>
 
     <WcmHealthSummary
@@ -57,6 +67,7 @@ const WcmOverviewTab = ({
       commands={commands}
       knowledgeHealth={knowledgeHealth}
     />
+
 
     {knowledgeHealth?.steward_activity && (
       <p className="rounded-lg border border-wcm-line bg-wcm-surface/60 px-4 py-2.5 text-xs text-wcm-muted">

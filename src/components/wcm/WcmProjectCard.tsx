@@ -11,8 +11,11 @@ import {
 import { cn } from '@/lib/utils';
 import type { WcmProjectStatus } from '@/hooks/useWcmProjects';
 import type { WcmKnowledgeHealth } from '@/hooks/useWcmKnowledgeHealth';
+import type { WcmExecutionWorkflow } from '@/hooks/useWcmExecutionWorkflows';
 import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
+import WcmExecutionSignal from './WcmExecutionSignal';
 import { STATUS_LABELS, statusClasses, relativeTime } from './wcmFormat';
+
 
 
 const Line = ({
@@ -43,10 +46,13 @@ const Line = ({
 const WcmProjectCard = ({
   project,
   knowledgeHealth,
+  executionWorkflows,
 }: {
   project: WcmProjectStatus;
   knowledgeHealth?: WcmKnowledgeHealth | null;
+  executionWorkflows?: WcmExecutionWorkflow[];
 }) => {
+
 
   const heartbeat = relativeTime(project.heartbeat_last_run_at);
   const toRead = project.documents_to_read_count ?? 0;
@@ -120,9 +126,15 @@ const WcmProjectCard = ({
           </div>
         </div>
 
-        <div>
+        <div className="flex flex-wrap items-center gap-2">
           <WcmKnowledgeHealthBadge health={knowledgeHealth} showSynapses />
+          <WcmExecutionSignal
+            workflows={executionWorkflows}
+            projectId={project.project_id}
+            asLink
+          />
         </div>
+
 
         <div className="space-y-1.5">
           <Line icon={Activity} label="Progressione" value={project.progress_summary} />

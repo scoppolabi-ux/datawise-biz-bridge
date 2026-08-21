@@ -6,6 +6,8 @@ import {
   parseKnowledgeHealth,
   normalize,
 } from './knowledge.ts'
+import { parseExecutionWorkflows } from './execution.ts'
+
 
 const ISSUER = 'https://token.actions.githubusercontent.com'
 const AUDIENCE = 'wcm-projector'
@@ -107,6 +109,32 @@ const NEED_FIELDS = [
   'source_sha',
 ] as const
 
+// DEC-012 — Session-Independent Workflow Execution (observation only).
+const EXECUTION_WORKFLOW_FIELDS = [
+  'workflow_instance_id',
+  'workflow',
+  'status',
+  'authority_refs',
+  'scope',
+  'last_completed_transition',
+  'next_transition',
+  'true_stop_condition',
+  'started_at',
+  'last_checkpoint_at',
+  'resume_required',
+  'interruption_type',
+  'interruption_reason',
+  'interruption_evidence',
+  'completed_step_ids',
+  'completion_gate',
+  'source_path',
+  'source_sha',
+  'sort_order',
+  // accepted but ignored: the backend always enforces its own project_id
+  'project_id',
+] as const
+
+
 
 
 const COLLECTIONS = {
@@ -134,9 +162,16 @@ const COLLECTIONS = {
     fields: NEED_FIELDS as readonly string[],
     required: ['need_id', 'title'],
   },
+  execution_workflows: {
+    table: 'wcm_project_execution_workflows',
+    key: 'workflow_instance_id',
+    fields: EXECUTION_WORKFLOW_FIELDS as readonly string[],
+    required: ['workflow_instance_id', 'workflow', 'status', 'true_stop_condition'],
+  },
 } as const
 
 type CollectionName = keyof typeof COLLECTIONS
+
 
 const JWKS = createRemoteJWKSet(new URL(`${ISSUER}/.well-known/jwks`))
 
@@ -241,12 +276,23 @@ Deno.serve(async (req) => {
   > = {}
 
   for (const name of Object.keys(COLLECTIONS) as CollectionName[]) {
-    if (body[name] === undefined) continue
+    // Absence of the key must never fail projection (legacy projects stay valid).
+    if (body[name] === undefined || body[name] === null) continue
     const raw = body[name]
     if (!Array.isArray(raw)) return json({ error: `${name} must be an array` }, 400)
 
     const cfg = COLLECTIONS[name]
+
+    // DEC-012: execution workflows have their own enum/path validation.
+    if (name === 'execution_workflows') {
+      const parsed = parseExecutionWorkflows(raw, projectId)
+      if (!Array.isArray(parsed)) return json(parsed, 400)
+      collectionPayloads[name] = { rows: parsed, snapshot: body.execution_workflows_partial !== true }
+      continue
+    }
+
     const rows: Record<string, unknown>[] = []
+
     for (const [index, item] of raw.entries()) {
       if (!item || typeof item !== 'object' || Array.isArray(item)) {
         return json({ error: `${name}[${index}] must be an object` }, 400)
@@ -478,6 +524,9 @@ Deno.serve(async (req) => {
     updated_fields: Object.keys(updates),
 
     collections: collectionResults,
+    // DEC-012 — explicit observation stats for the execution read-model.
+    execution_workflows: collectionResults.execution_workflows ?? null,
+
     knowledge_health: knowledgeHealthUpserted,
     knowledge_checkpoints: knowledgeCheckpointsUpserted,
     // Canonical metadata accepted but intentionally not persisted.

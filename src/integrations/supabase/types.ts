@@ -419,6 +419,84 @@ export type Database = {
         }
         Relationships: []
       }
+      wcm_project_execution_workflows: {
+        Row: {
+          authority_refs: Json
+          completed_step_ids: Json
+          completion_gate: Json | null
+          created_at: string
+          id: string
+          interruption_evidence: Json
+          interruption_reason: string | null
+          interruption_type: string | null
+          last_checkpoint_at: string | null
+          last_completed_transition: string | null
+          next_transition: string | null
+          project_id: string
+          resume_required: boolean
+          scope: string | null
+          sort_order: number
+          source_path: string | null
+          source_sha: string | null
+          started_at: string | null
+          status: string
+          true_stop_condition: string
+          updated_at: string
+          workflow: string
+          workflow_instance_id: string
+        }
+        Insert: {
+          authority_refs?: Json
+          completed_step_ids?: Json
+          completion_gate?: Json | null
+          created_at?: string
+          id?: string
+          interruption_evidence?: Json
+          interruption_reason?: string | null
+          interruption_type?: string | null
+          last_checkpoint_at?: string | null
+          last_completed_transition?: string | null
+          next_transition?: string | null
+          project_id: string
+          resume_required?: boolean
+          scope?: string | null
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          started_at?: string | null
+          status?: string
+          true_stop_condition: string
+          updated_at?: string
+          workflow: string
+          workflow_instance_id: string
+        }
+        Update: {
+          authority_refs?: Json
+          completed_step_ids?: Json
+          completion_gate?: Json | null
+          created_at?: string
+          id?: string
+          interruption_evidence?: Json
+          interruption_reason?: string | null
+          interruption_type?: string | null
+          last_checkpoint_at?: string | null
+          last_completed_transition?: string | null
+          next_transition?: string | null
+          project_id?: string
+          resume_required?: boolean
+          scope?: string | null
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          started_at?: string | null
+          status?: string
+          true_stop_condition?: string
+          updated_at?: string
+          workflow?: string
+          workflow_instance_id?: string
+        }
+        Relationships: []
+      }
       wcm_project_knowledge_checkpoints: {
         Row: {
           checkpoint_id: string
