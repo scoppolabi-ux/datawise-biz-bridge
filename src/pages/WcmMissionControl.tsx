@@ -301,6 +301,8 @@ const WcmMissionControl = () => {
                   key={project.id}
                   project={project}
                   knowledgeHealth={healthByProject.get(project.project_id) ?? null}
+                  executionWorkflows={workflowsByProject.get(project.project_id) ?? []}
+
                 />
               ))}
             </section>
