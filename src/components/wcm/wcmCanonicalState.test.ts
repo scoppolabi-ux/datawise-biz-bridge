@@ -47,7 +47,7 @@ describe('canonical state resolution', () => {
     const doc = { category: 'BOARD_REPORT', status: 'BOARD_GATE_CLOSED_SUPPORTING_MATERIAL' };
     const state = resolveCanonicalState(doc, index);
     expect(state).toBe('CLOSED');
-    expect(governanceBadgeOf({ requires_stefano: false }, state)).toBe('NONE');
+    expect(governanceBadgeOf({ distribution_ready: true }, state)).toBe('NONE');
   });
 
   it('never derives a canonical state from a PENDING proposal', () => {
@@ -60,7 +60,7 @@ describe('canonical state resolution', () => {
     const state = resolveCanonicalState({ category: 'NEW_CAT', status: 'NEW_STATUS' }, index);
     expect(state).toBe('UNKNOWN');
     expect(authorityAllowed(state)).toBe(false);
-    expect(governanceBadgeOf({ requires_stefano: false }, state)).toBe('UNCLASSIFIED');
+    expect(governanceBadgeOf({ distribution_ready: true }, state)).toBe('UNCLASSIFIED');
     expect(bucketOf({ requires_stefano: false, category: 'NEW_CAT' }, state)).toBe('UNCLASSIFIED');
   });
 
