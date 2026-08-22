@@ -80,6 +80,7 @@ const WcmDocumentsTab = ({
   backLabel?: string;
   onBack?: () => void;
 }) => {
+  const { index } = useCanonicalStateIndex();
   const openDoc = documents.find((d) => d.document_id === openDocumentId);
 
   if (openDoc) {
@@ -106,7 +107,7 @@ const WcmDocumentsTab = ({
     <div className="space-y-6">
       {ORDER.map((bucket) => {
         const items = documents
-          .filter((d) => bucketOf(d) === bucket)
+          .filter((d) => bucketOf(d, resolveCanonicalState(d, index)) === bucket)
           .sort((a, b) => Number(b.requires_stefano) - Number(a.requires_stefano));
         if (items.length === 0) return null;
         return (
