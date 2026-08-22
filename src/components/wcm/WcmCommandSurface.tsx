@@ -85,6 +85,7 @@ const WcmCommandSurface = ({
   const { data: commands } = useWcmProjectCommands(need.project_id);
   const { data: project } = useWcmProject(need.project_id);
   const submit = useSubmitWcmCommand();
+  const { index: stateIndex } = useCanonicalStateIndex();
 
   const [open, setOpen] = useState<CommandType | null>(null);
   const [step, setStep] = useState<1 | 2>(1);
@@ -127,6 +128,16 @@ const WcmCommandSurface = ({
   }, [documents, need]);
 
   const targetDoc = open === 'APPROVE_FREEZE' ? approveTarget : changesTarget;
+
+  // Un target con stato non classificato blocca SOLO l'autorità su quell'oggetto.
+  const approveTargetState = approveTarget
+    ? resolveCanonicalState(approveTarget, stateIndex)
+    : null;
+  const changesTargetState = changesTarget
+    ? resolveCanonicalState(changesTarget, stateIndex)
+    : null;
+  const approveBlockedByState = approveTargetState === 'UNKNOWN';
+  const changesBlockedByState = changesTargetState === 'UNKNOWN';
 
   // Authority recorded on an incoherent (non-Candidate) target while the need
   // is still open: the decision exists, WCM application is blocked.
