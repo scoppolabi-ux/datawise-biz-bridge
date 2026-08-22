@@ -74,8 +74,8 @@ const WcmMissionControl = () => {
   }, new Map());
 
 
-  // Legacy fallback: only while no first-class Need snapshot exists at all.
-  const hasNeedSnapshot = (needs?.length ?? 0) > 0;
+  // Legacy fallback: only while no Need (real or virtual) exists at all.
+  const hasNeedSnapshot = (needs?.length ?? 0) > 0 || needsStefano.length > 0 || pendingNeeds.length > 0;
   const legacyAttention = hasNeedSnapshot ? [] : all.filter((p) => p.needs_stefano);
   const attentionCount = ready
     ? hasNeedSnapshot
