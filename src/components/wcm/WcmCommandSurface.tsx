@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useCanonicalStateIndex } from '@/hooks/useWcmStateMappings';
+import { resolveCanonicalState } from './wcmCanonicalState';
 import {
   ACTIVE_COMMAND_STATUSES,
   COMMAND_STATUS_LABELS,
