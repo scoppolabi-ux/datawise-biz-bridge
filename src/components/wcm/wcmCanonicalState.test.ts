@@ -76,3 +76,15 @@ describe('canonical state resolution', () => {
     expect(isApprovedState(state)).toBe(true);
   });
 });
+
+describe('canonical state suggestion', () => {
+  it('suggests CLOSED for PROFESSIONAL_REVIEW | PROFESSIONAL_REVIEWS_COMPLETED without mapping it', () => {
+    const doc = { category: 'PROFESSIONAL_REVIEW', status: 'PROFESSIONAL_REVIEWS_COMPLETED' };
+    const suggestion = suggestCanonicalState(doc);
+    expect(suggestion?.state).toBe('CLOSED');
+    expect(suggestion?.reason).toMatch(/complet/i);
+    // la proposta non deve mai classificare il documento
+    expect(resolveCanonicalState(doc, index)).toBe('UNKNOWN');
+    expect(authorityAllowed(resolveCanonicalState(doc, index))).toBe(false);
+  });
+});
