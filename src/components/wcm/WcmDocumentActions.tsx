@@ -2,6 +2,7 @@ import { Download, Share2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
+import { useCanonicalState } from '@/hooks/useWcmStateMappings';
 import { downloadDocument, shareDocument } from './wcmShare';
 
 type Props = {
@@ -13,6 +14,7 @@ type Props = {
 
 /** Download + share actions, only rendered for distribution_ready documents. */
 const WcmDocumentActions = ({ doc, projectId, variant = 'row', className }: Props) => {
+  const state = useCanonicalState(doc);
   if (!doc.distribution_ready) return null;
 
   const stop = (e: React.MouseEvent) => {
