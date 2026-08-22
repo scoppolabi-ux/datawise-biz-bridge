@@ -503,27 +503,53 @@ Deno.serve(async (req) => {
     }
   }
 
-  // --- Knowledge Health upsert (observation only) ---
+  // --- Knowledge Health upsert (observation only, DEC-013 idempotent) ---
   let knowledgeHealthUpserted = false
   if (knowledgeHealthRow) {
-    const { error: khErr } = await supabase
+    const { data: currentHealth, error: khReadErr } = await supabase
       .from('wcm_project_knowledge_health')
-      .upsert(knowledgeHealthRow, { onConflict: 'project_id' })
-    if (khErr) return json({ error: 'Upsert knowledge_health failed', detail: khErr.message }, 500)
-    knowledgeHealthUpserted = true
+      .select('*')
+      .eq('project_id', projectId)
+      .maybeSingle()
+    if (khReadErr) {
+      return json({ error: 'Read knowledge_health failed', detail: khReadErr.message }, 500)
+    }
+    if (rowNeedsUpsert(knowledgeHealthRow, currentHealth as Record<string, unknown> | null)) {
+      const { error: khErr } = await supabase
+        .from('wcm_project_knowledge_health')
+        .upsert(knowledgeHealthRow, { onConflict: 'project_id' })
+      if (khErr) {
+        return json({ error: 'Upsert knowledge_health failed', detail: khErr.message }, 500)
+      }
+      knowledgeHealthUpserted = true
+    }
   }
 
   // INVARIANT: checkpoints are history. Append/upsert-only by (project_id, checkpoint_id);
   // checkpoints omitted by a later projection are never deleted.
   let knowledgeCheckpointsUpserted = 0
   if (knowledgeCheckpointRows && knowledgeCheckpointRows.length > 0) {
-    const { error: kcErr } = await supabase
+    const { data: existingCheckpoints, error: kcReadErr } = await supabase
       .from('wcm_project_knowledge_checkpoints')
-      .upsert(knowledgeCheckpointRows, { onConflict: 'project_id,checkpoint_id' })
-    if (kcErr)
-      return json({ error: 'Upsert knowledge_checkpoints failed', detail: kcErr.message }, 500)
-    knowledgeCheckpointsUpserted = knowledgeCheckpointRows.length
+      .select('*')
+      .eq('project_id', projectId)
+    if (kcReadErr) {
+      return json({ error: 'Read knowledge_checkpoints failed', detail: kcReadErr.message }, 500)
+    }
+    const toUpsert = selectChangedCheckpoints(
+      knowledgeCheckpointRows,
+      (existingCheckpoints ?? []) as Record<string, unknown>[],
+    )
+    if (toUpsert.length > 0) {
+      const { error: kcErr } = await supabase
+        .from('wcm_project_knowledge_checkpoints')
+        .upsert(toUpsert, { onConflict: 'project_id,checkpoint_id' })
+      if (kcErr)
+        return json({ error: 'Upsert knowledge_checkpoints failed', detail: kcErr.message }, 500)
+    }
+    knowledgeCheckpointsUpserted = toUpsert.length
   }
+
 
   const collectionsChanged = Object.values(collectionResults).some(
     (r) => r.changed > 0 || r.deleted > 0,
