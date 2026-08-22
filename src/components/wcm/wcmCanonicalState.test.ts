@@ -5,6 +5,7 @@ import {
   governanceBadgeOf,
   isApprovedState,
   resolveCanonicalState,
+  suggestCanonicalState,
   type WcmStateMapping,
 } from './wcmCanonicalState';
 import { bucketOf } from './wcmFormat';

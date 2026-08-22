@@ -140,6 +140,14 @@ export const suggestCanonicalState = (doc: StateInput): CanonicalSuggestion | nu
       reason: 'Category/status contengono termini di approvazione e freeze.',
     };
   }
+  if (/COMPLETED|COMPLETE|FINALIZED|CONCLUDED/.test(both)) {
+    return {
+      state: 'CLOSED',
+      confidence: 'MEDIUM',
+      reason:
+        'Lo status indica un lavoro già completato: sembra materiale chiuso, non un documento in attesa di approvazione.',
+    };
+  }
   if (/CLOSED|SUPPORTING|REPORT|ARCHIVE/.test(both)) {
     return {
       state: 'CLOSED',
