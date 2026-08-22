@@ -5,6 +5,8 @@ import {
   type WcmCommandRequest,
 } from '@/hooks/useWcmCommands';
 import { isOpenNeed, useWcmNeeds, type WcmProjectNeed } from '@/hooks/useWcmProjects';
+import { useCanonicalStateIndex } from '@/hooks/useWcmStateMappings';
+import { resolveCanonicalState } from '@/components/wcm/wcmCanonicalState';
 
 export type DerivedNeedState = 'NEEDS_STEFANO' | 'PENDING_SYSTEM';
 
@@ -12,6 +14,8 @@ export type ClassifiedNeed = {
   need: WcmProjectNeed;
   derived: DerivedNeedState;
   latestCommand: WcmCommandRequest | null;
+  /** Derived in the UI from an unmapped state: never written to wcm_project_needs. */
+  virtual?: boolean;
 };
 
 /** All governance commands (owner/admin RLS, read-only). */
@@ -30,10 +34,34 @@ export const useWcmAllCommands = () =>
     },
   });
 
+type MinimalDoc = {
+  project_id: string;
+  document_id: string;
+  title: string;
+  category: string | null;
+  status: string | null;
+};
+
+/** Minimal projection of every document, used to detect unmapped states. */
+export const useWcmAllDocumentStates = () =>
+  useQuery({
+    queryKey: ['wcm-project-documents', 'states'],
+    refetchInterval: 30_000,
+    queryFn: async (): Promise<MinimalDoc[]> => {
+      const { data, error } = await supabase
+        .from('wcm_project_documents')
+        .select('project_id, document_id, title, category, status');
+
+      if (error) throw error;
+      return (data ?? []) as unknown as MinimalDoc[];
+    },
+  });
+
 export const needKey = (projectId: string, needId: string) => `${projectId}::${needId}`;
 
 /** Human-attention badge label for a classified need. */
 export const derivedBadge = (item: ClassifiedNeed) => {
+  if (item.virtual) return 'STATO DA CLASSIFICARE';
   if (item.derived === 'NEEDS_STEFANO') return 'ACTION REQUIRED';
   return item.latestCommand?.status === 'RECORDED'
     ? 'AUTHORITY RECORDED · PENDING WCM'
