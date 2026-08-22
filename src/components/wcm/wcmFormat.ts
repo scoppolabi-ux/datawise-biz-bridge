@@ -1,3 +1,11 @@
+import {
+  governanceBadgeOf,
+  isApprovedState,
+  UNAPPROVED_BADGE_LABEL,
+  UNCLASSIFIED_BADGE_LABEL,
+  type ResolvedState,
+} from './wcmCanonicalState';
+
 export const STATUS_LABELS: Record<string, string> = {
   working: 'Working',
   waiting: 'Waiting',
