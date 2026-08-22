@@ -28,13 +28,13 @@ const WcmDocumentActions = ({ doc, projectId, variant = 'row', className }: Prop
       toast({ title: 'Contenuto non disponibile', description: 'Documento non sincronizzato.' });
       return;
     }
-    downloadDocument(doc);
+    downloadDocument(doc, state);
     toast({ title: 'Download avviato', description: doc.title });
   };
 
   const onShare = async (e: React.MouseEvent) => {
     stop(e);
-    const result = await shareDocument(doc, projectId);
+    const result = await shareDocument(doc, projectId, state);
     if (result.kind === 'file') {
       toast({ title: 'Documento condiviso', description: 'File allegato alla condivisione.' });
     } else if (result.kind === 'link') {
