@@ -863,6 +863,48 @@ export type Database = {
         }
         Relationships: []
       }
+      wcm_state_mappings: {
+        Row: {
+          canonical_state: string | null
+          category: string
+          confidence: number | null
+          created_at: string
+          decided_by: string | null
+          id: string
+          proposed_state: string | null
+          reason: string | null
+          resolution_status: string
+          source_status: string
+          updated_at: string
+        }
+        Insert: {
+          canonical_state?: string | null
+          category: string
+          confidence?: number | null
+          created_at?: string
+          decided_by?: string | null
+          id?: string
+          proposed_state?: string | null
+          reason?: string | null
+          resolution_status?: string
+          source_status: string
+          updated_at?: string
+        }
+        Update: {
+          canonical_state?: string | null
+          category?: string
+          confidence?: number | null
+          created_at?: string
+          decided_by?: string | null
+          id?: string
+          proposed_state?: string | null
+          reason?: string | null
+          resolution_status?: string
+          source_status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
