@@ -78,6 +78,8 @@ const WcmDocumentReader = ({
           <Meta label="Source path" value={doc.source_path} />
         </div>
       </div>
+
+      <WcmUnknownStateResolver doc={doc} />
     </header>
 
     <div className="p-4 sm:p-6">
