@@ -78,6 +78,8 @@ export const derivedBadge = (item: ClassifiedNeed) => {
 export const useWcmNeedStates = () => {
   const needsQuery = useWcmNeeds();
   const commandsQuery = useWcmAllCommands();
+  const docsQuery = useWcmAllDocumentStates();
+  const { index } = useCanonicalStateIndex();
 
   const isLoading = needsQuery.isLoading || commandsQuery.isLoading;
   const error = needsQuery.error ?? commandsQuery.error;
@@ -104,14 +106,45 @@ export const useWcmNeedStates = () => {
       })
     : [];
 
+  // Virtual needs: unmapped category+status pairs require a human classification.
+  // They live only in the UI and are never written to wcm_project_needs.
+  const unclassifiedNeeds: ClassifiedNeed[] = (docsQuery.data ?? [])
+    .filter((doc) => resolveCanonicalState(doc, index) === 'UNKNOWN')
+    .map((doc) => ({
+      virtual: true,
+      derived: 'NEEDS_STEFANO' as const,
+      latestCommand: null,
+      need: {
+        id: `unclassified::${doc.project_id}::${doc.document_id}`,
+        project_id: doc.project_id,
+        need_id: `unclassified::${doc.document_id}`,
+        title: `Stato da classificare · ${doc.title}`,
+        need_type: 'STATE_CLASSIFICATION',
+        status: 'OPEN',
+        reason: `category=${doc.category ?? '—'} · status=${doc.status ?? '—'} non è mappato a uno stato canonico.`,
+        action_requested:
+          'Classifica lo stato del documento: conferma la proposta, scegli un altro stato canonico o proponi un nuovo stato.',
+        related_document_ids: [doc.document_id],
+        target_tab: 'documents',
+        target_document_id: doc.document_id,
+        sort_order: 0,
+        source_path: null,
+        source_sha: null,
+        updated_at: new Date(0).toISOString(),
+      } satisfies WcmProjectNeed,
+    }));
+
+  const allClassified = [...classified, ...unclassifiedNeeds];
+
   return {
     isLoading,
     error,
     ready,
     openNeeds,
-    classified,
-    needsStefano: classified.filter((c) => c.derived === 'NEEDS_STEFANO'),
-    pendingNeeds: classified.filter((c) => c.derived === 'PENDING_SYSTEM'),
+    classified: allClassified,
+    unclassifiedNeeds,
+    needsStefano: allClassified.filter((c) => c.derived === 'NEEDS_STEFANO'),
+    pendingNeeds: allClassified.filter((c) => c.derived === 'PENDING_SYSTEM'),
     latestByNeed,
   };
 };
