@@ -5,6 +5,8 @@ import {
   type WcmCommandRequest,
 } from '@/hooks/useWcmCommands';
 import { isOpenNeed, useWcmNeeds, type WcmProjectNeed } from '@/hooks/useWcmProjects';
+import { useCanonicalStateIndex } from '@/hooks/useWcmStateMappings';
+import { resolveCanonicalState } from '@/components/wcm/wcmCanonicalState';
 
 export type DerivedNeedState = 'NEEDS_STEFANO' | 'PENDING_SYSTEM';
 
@@ -12,6 +14,8 @@ export type ClassifiedNeed = {
   need: WcmProjectNeed;
   derived: DerivedNeedState;
   latestCommand: WcmCommandRequest | null;
+  /** Derived in the UI from an unmapped state: never written to wcm_project_needs. */
+  virtual?: boolean;
 };
 
 /** All governance commands (owner/admin RLS, read-only). */
@@ -30,10 +34,34 @@ export const useWcmAllCommands = () =>
     },
   });
 
+type MinimalDoc = {
+  project_id: string;
+  document_id: string;
+  title: string;
+  category: string | null;
+  status: string | null;
+};
+
+/** Minimal projection of every document, used to detect unmapped states. */
+export const useWcmAllDocumentStates = () =>
+  useQuery({
+    queryKey: ['wcm-project-documents', 'states'],
+    refetchInterval: 30_000,
+    queryFn: async (): Promise<MinimalDoc[]> => {
+      const { data, error } = await supabase
+        .from('wcm_project_documents')
+        .select('project_id, document_id, title, category, status');
+
+      if (error) throw error;
+      return (data ?? []) as unknown as MinimalDoc[];
+    },
+  });
+
 export const needKey = (projectId: string, needId: string) => `${projectId}::${needId}`;
 
 /** Human-attention badge label for a classified need. */
 export const derivedBadge = (item: ClassifiedNeed) => {
+  if (item.virtual) return 'STATO DA CLASSIFICARE';
   if (item.derived === 'NEEDS_STEFANO') return 'ACTION REQUIRED';
   return item.latestCommand?.status === 'RECORDED'
     ? 'AUTHORITY RECORDED · PENDING WCM'
@@ -50,6 +78,8 @@ export const derivedBadge = (item: ClassifiedNeed) => {
 export const useWcmNeedStates = () => {
   const needsQuery = useWcmNeeds();
   const commandsQuery = useWcmAllCommands();
+  const docsQuery = useWcmAllDocumentStates();
+  const { index } = useCanonicalStateIndex();
 
   const isLoading = needsQuery.isLoading || commandsQuery.isLoading;
   const error = needsQuery.error ?? commandsQuery.error;
@@ -76,14 +106,45 @@ export const useWcmNeedStates = () => {
       })
     : [];
 
+  // Virtual needs: unmapped category+status pairs require a human classification.
+  // They live only in the UI and are never written to wcm_project_needs.
+  const unclassifiedNeeds: ClassifiedNeed[] = (docsQuery.data ?? [])
+    .filter((doc) => resolveCanonicalState(doc, index) === 'UNKNOWN')
+    .map((doc) => ({
+      virtual: true,
+      derived: 'NEEDS_STEFANO' as const,
+      latestCommand: null,
+      need: {
+        id: `unclassified::${doc.project_id}::${doc.document_id}`,
+        project_id: doc.project_id,
+        need_id: `unclassified::${doc.document_id}`,
+        title: `Stato da classificare · ${doc.title}`,
+        need_type: 'STATE_CLASSIFICATION',
+        status: 'OPEN',
+        reason: `category=${doc.category ?? '—'} · status=${doc.status ?? '—'} non è mappato a uno stato canonico.`,
+        action_requested:
+          'Classifica lo stato del documento: conferma la proposta, scegli un altro stato canonico o proponi un nuovo stato.',
+        related_document_ids: [doc.document_id],
+        target_tab: 'documents',
+        target_document_id: doc.document_id,
+        sort_order: 0,
+        source_path: null,
+        source_sha: null,
+        updated_at: new Date(0).toISOString(),
+      } satisfies WcmProjectNeed,
+    }));
+
+  const allClassified = [...classified, ...unclassifiedNeeds];
+
   return {
     isLoading,
     error,
     ready,
     openNeeds,
-    classified,
-    needsStefano: classified.filter((c) => c.derived === 'NEEDS_STEFANO'),
-    pendingNeeds: classified.filter((c) => c.derived === 'PENDING_SYSTEM'),
+    classified: allClassified,
+    unclassifiedNeeds,
+    needsStefano: allClassified.filter((c) => c.derived === 'NEEDS_STEFANO'),
+    pendingNeeds: allClassified.filter((c) => c.derived === 'PENDING_SYSTEM'),
     latestByNeed,
   };
 };

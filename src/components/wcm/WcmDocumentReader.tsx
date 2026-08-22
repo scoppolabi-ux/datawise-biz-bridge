@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import WcmMarkdown from './WcmMarkdown';
 import WcmDocumentActions from './WcmDocumentActions';
 import WcmUnapprovedBadge from './WcmUnapprovedBadge';
+import WcmUnknownStateResolver from './WcmUnknownStateResolver';
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
 
 const Meta = ({ label, value }: { label: string; value: string | null }) => {
@@ -77,6 +78,8 @@ const WcmDocumentReader = ({
           <Meta label="Source path" value={doc.source_path} />
         </div>
       </div>
+
+      <WcmUnknownStateResolver doc={doc} />
     </header>
 
     <div className="p-4 sm:p-6">

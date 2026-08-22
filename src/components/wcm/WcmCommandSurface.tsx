@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useCanonicalStateIndex } from '@/hooks/useWcmStateMappings';
+import { resolveCanonicalState } from './wcmCanonicalState';
 import {
   ACTIVE_COMMAND_STATUSES,
   COMMAND_STATUS_LABELS,
@@ -85,6 +87,7 @@ const WcmCommandSurface = ({
   const { data: commands } = useWcmProjectCommands(need.project_id);
   const { data: project } = useWcmProject(need.project_id);
   const submit = useSubmitWcmCommand();
+  const { index: stateIndex } = useCanonicalStateIndex();
 
   const [open, setOpen] = useState<CommandType | null>(null);
   const [step, setStep] = useState<1 | 2>(1);
@@ -127,6 +130,16 @@ const WcmCommandSurface = ({
   }, [documents, need]);
 
   const targetDoc = open === 'APPROVE_FREEZE' ? approveTarget : changesTarget;
+
+  // Un target con stato non classificato blocca SOLO l'autorità su quell'oggetto.
+  const approveTargetState = approveTarget
+    ? resolveCanonicalState(approveTarget, stateIndex)
+    : null;
+  const changesTargetState = changesTarget
+    ? resolveCanonicalState(changesTarget, stateIndex)
+    : null;
+  const approveBlockedByState = approveTargetState === 'UNKNOWN';
+  const changesBlockedByState = changesTargetState === 'UNKNOWN';
 
   // Authority recorded on an incoherent (non-Candidate) target while the need
   // is still open: the decision exists, WCM application is blocked.
@@ -230,7 +243,7 @@ const WcmCommandSurface = ({
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <Button
           size="sm"
-          disabled={commandsDisabled || !approveTarget}
+          disabled={commandsDisabled || !approveTarget || approveBlockedByState}
           onClick={() => setOpen('APPROVE_FREEZE')}
           className="w-full sm:w-auto"
         >
@@ -240,7 +253,7 @@ const WcmCommandSurface = ({
         <Button
           size="sm"
           variant="outline"
-          disabled={commandsDisabled}
+          disabled={commandsDisabled || changesBlockedByState}
           onClick={() => setOpen('REQUEST_CHANGES')}
           className="w-full border-wcm-line-strong bg-transparent text-wcm-text hover:border-wcm-accent hover:bg-wcm-surface hover:text-wcm-strong sm:w-auto"
         >
@@ -254,6 +267,14 @@ const WcmCommandSurface = ({
           {candidateDocs.length === 0
             ? 'Approva + Freeze non disponibile: nessun documento Candidate (BOARD_CANDIDATE) collegato a questo Need. Un Board Report non può essere il target dell’autorità.'
             : 'Approva + Freeze non disponibile: più documenti Candidate collegati a questo Need, target non univoco.'}
+        </p>
+      )}
+
+      {(approveBlockedByState || changesBlockedByState) && (
+        <p className="mt-2 text-xs text-wcm-dim">
+          Autorità bloccata su questo oggetto: lo stato del documento target non è classificato
+          (STATO DA CLASSIFICARE). Apri il documento e registra il mapping category+status prima di
+          decidere.
         </p>
       )}
 

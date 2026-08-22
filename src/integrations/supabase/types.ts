@@ -107,6 +107,51 @@ export type Database = {
         }
         Relationships: []
       }
+      wcm_document_state_mappings: {
+        Row: {
+          canonical_state: string | null
+          category: string
+          confidence: string | null
+          created_at: string
+          decided_by: string | null
+          decided_by_email: string | null
+          id: string
+          mapping_status: string
+          proposed_state: string | null
+          reason: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          canonical_state?: string | null
+          category: string
+          confidence?: string | null
+          created_at?: string
+          decided_by?: string | null
+          decided_by_email?: string | null
+          id?: string
+          mapping_status?: string
+          proposed_state?: string | null
+          reason?: string | null
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          canonical_state?: string | null
+          category?: string
+          confidence?: string | null
+          created_at?: string
+          decided_by?: string | null
+          decided_by_email?: string | null
+          id?: string
+          mapping_status?: string
+          proposed_state?: string | null
+          reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wcm_method_learning_evidence: {
         Row: {
           changed_paths: Json

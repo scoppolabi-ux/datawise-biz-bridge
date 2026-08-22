@@ -1,14 +1,16 @@
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
-import { isApprovedDocument } from './wcmFormat';
+import { governanceBadgeOf, type ResolvedState } from './wcmCanonicalState';
 
-/** Safe, portable filename derived from title (+ version, + approval marker). */
-export const documentFileName = (doc: {
-  title: string;
-  version?: string | null;
-  document_id: string;
-  status?: string | null;
-  category?: string | null;
-}) => {
+/** Safe, portable filename derived from title (+ version, + governance marker). */
+export const documentFileName = (
+  doc: {
+    title: string;
+    version?: string | null;
+    document_id: string;
+    distribution_ready?: boolean;
+  },
+  state: ResolvedState,
+) => {
   const base = (doc.title || doc.document_id)
     .normalize('NFKD')
     .replace(/[^\w\s.-]+/g, '')
@@ -18,11 +20,9 @@ export const documentFileName = (doc: {
     .slice(0, 80)
     .replace(/^-|-$/g, '');
   const version = doc.version ? `-v${String(doc.version).replace(/[^\w.-]+/g, '')}` : '';
-  const approved = isApprovedDocument({
-    status: doc.status ?? null,
-    category: doc.category ?? null,
-  });
-  const marker = approved ? '' : '-UNAPPROVED';
+  const badge = governanceBadgeOf({ distribution_ready: doc.distribution_ready ?? true }, state);
+  const marker =
+    badge === 'UNAPPROVED' ? '-UNAPPROVED' : badge === 'UNCLASSIFIED' ? '-DA-CLASSIFICARE' : '';
   return `${base || 'documento'}${version}${marker}.txt`;
 };
 
@@ -31,17 +31,17 @@ export const documentDeepLink = (projectId: string, documentId: string) =>
     documentId,
   )}`;
 
-const textFile = (doc: WcmProjectDocument) =>
-  new File([doc.content_markdown ?? ''], documentFileName(doc), {
+const textFile = (doc: WcmProjectDocument, state: ResolvedState) =>
+  new File([doc.content_markdown ?? ''], documentFileName(doc, state), {
     type: 'text/plain;charset=utf-8',
   });
 
-export const downloadDocument = (doc: WcmProjectDocument) => {
+export const downloadDocument = (doc: WcmProjectDocument, state: ResolvedState) => {
   const blob = new Blob([doc.content_markdown ?? ''], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = documentFileName(doc);
+  a.download = documentFileName(doc, state);
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -61,6 +61,7 @@ export type ShareOutcome =
 export const shareDocument = async (
   doc: WcmProjectDocument,
   projectId: string,
+  state: ResolvedState,
 ): Promise<ShareOutcome> => {
   const url = documentDeepLink(projectId, doc.document_id);
   const nav = navigator as Navigator & {
@@ -70,7 +71,7 @@ export const shareDocument = async (
 
   if (doc.content_markdown && nav.share && nav.canShare) {
     try {
-      const file = textFile(doc);
+      const file = textFile(doc, state);
       if (nav.canShare({ files: [file] })) {
         await nav.share({ files: [file], title: doc.title, text: doc.title });
         return { kind: 'file' };

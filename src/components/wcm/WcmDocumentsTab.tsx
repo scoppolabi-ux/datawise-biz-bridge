@@ -1,15 +1,20 @@
 import { ChevronRight, ExternalLink, FileText } from 'lucide-react';
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
+import { useCanonicalStateIndex } from '@/hooks/useWcmStateMappings';
 import WcmDocumentReader from './WcmDocumentReader';
 import WcmDocumentActions from './WcmDocumentActions';
 import WcmUnapprovedBadge from './WcmUnapprovedBadge';
+import { resolveCanonicalState } from './wcmCanonicalState';
 import { BUCKET_LABELS, bucketOf, type DocBucket } from './wcmFormat';
 
 const ORDER: DocBucket[] = [
   'TO_READ',
+  'UNCLASSIFIED',
   'MANUSCRIPT_APPROVED',
   'APPROVED_BASELINE',
+  'WAITING_AUTHORITY',
   'WORKING_EDITORIAL',
+  'CLOSED_SUPPORTING',
   'OTHER',
 ];
 
@@ -75,6 +80,7 @@ const WcmDocumentsTab = ({
   backLabel?: string;
   onBack?: () => void;
 }) => {
+  const { index } = useCanonicalStateIndex();
   const openDoc = documents.find((d) => d.document_id === openDocumentId);
 
   if (openDoc) {
@@ -101,7 +107,7 @@ const WcmDocumentsTab = ({
     <div className="space-y-6">
       {ORDER.map((bucket) => {
         const items = documents
-          .filter((d) => bucketOf(d) === bucket)
+          .filter((d) => bucketOf(d, resolveCanonicalState(d, index)) === bucket)
           .sort((a, b) => Number(b.requires_stefano) - Number(a.requires_stefano));
         if (items.length === 0) return null;
         return (

@@ -1,3 +1,11 @@
+import {
+  governanceBadgeOf,
+  isApprovedState,
+  UNAPPROVED_BADGE_LABEL,
+  UNCLASSIFIED_BADGE_LABEL,
+  type ResolvedState,
+} from './wcmCanonicalState';
+
 export const STATUS_LABELS: Record<string, string> = {
   working: 'Working',
   waiting: 'Waiting',
@@ -63,74 +71,55 @@ export const relativeTime = (value: string | null) => {
 
 /** Document buckets shown in the Documents tab. */
 export type DocBucket =
+  | 'TO_READ'
+  | 'UNCLASSIFIED'
   | 'MANUSCRIPT_APPROVED'
   | 'APPROVED_BASELINE'
-  | 'TO_READ'
+  | 'WAITING_AUTHORITY'
   | 'WORKING_EDITORIAL'
+  | 'CLOSED_SUPPORTING'
   | 'OTHER';
 
 /**
- * Category (when provided by the Projector) is authoritative; title is never used
- * to infer manuscript identity. Status strings are only a fallback.
- * Invariante: un documento con requires_stefano=true finisce SEMPRE in "Da leggere / Board",
- * qualunque sia la category.
+ * Bucket = funzione del canonical state (match esatto category+status) e del
+ * flag esplicito `requires_stefano`. Nessuna euristica su stringhe.
  */
-export const bucketOf = (doc: {
-  requires_stefano: boolean;
-  status: string | null;
-  category: string | null;
-}): DocBucket => {
+export const bucketOf = (
+  doc: { requires_stefano: boolean; category: string | null },
+  state: ResolvedState,
+): DocBucket => {
   if (doc.requires_stefano) return 'TO_READ';
-  const category = (doc.category ?? '').trim().toUpperCase();
-  if (category === 'MANUSCRIPT_APPROVED') return 'MANUSCRIPT_APPROVED';
-  if (category === 'APPROVED_BASELINE' || category === 'APPROVED_FROZEN')
-    return 'APPROVED_BASELINE';
-  if (category === 'WORKING' || category === 'EDITORIAL' || category === 'WORKING_EDITORIAL')
-    return 'WORKING_EDITORIAL';
-
-
-  const s = (doc.status ?? doc.category ?? '').toLowerCase();
-  if (s.includes('approved') || s.includes('frozen')) return 'APPROVED_BASELINE';
-  if (s.includes('working') || s.includes('editorial') || s.includes('draft'))
-    return 'WORKING_EDITORIAL';
+  if (state === 'UNKNOWN') return 'UNCLASSIFIED';
+  if (state === 'APPROVED_FROZEN') {
+    return (doc.category ?? '').trim().toUpperCase() === 'MANUSCRIPT_APPROVED'
+      ? 'MANUSCRIPT_APPROVED'
+      : 'APPROVED_BASELINE';
+  }
+  if (state === 'WAITING_AUTHORITY') return 'WAITING_AUTHORITY';
+  if (state === 'WORKING') return 'WORKING_EDITORIAL';
+  if (state === 'CLOSED' || state === 'SUPERSEDED') return 'CLOSED_SUPPORTING';
   return 'OTHER';
 };
 
 export const BUCKET_LABELS: Record<DocBucket, string> = {
+  TO_READ: 'Da leggere / Board',
+  UNCLASSIFIED: 'Da classificare',
   MANUSCRIPT_APPROVED: 'Manoscritto approvato',
   APPROVED_BASELINE: 'Baseline approvate',
-  TO_READ: 'Da leggere / Board',
+  WAITING_AUTHORITY: 'In attesa di autorità',
   WORKING_EDITORIAL: 'Working / Editorial',
+  CLOSED_SUPPORTING: 'Chiusi / Materiale di supporto',
   OTHER: 'Altri documenti',
 };
 
-/**
- * Approval/governance state of a document, independent from distribution.
- * A document is "approved" only when category/status explicitly says so.
- */
-export const isApprovedDocument = (doc: {
-  status: string | null;
-  category: string | null;
-}): boolean => {
-  const c = (doc.category ?? '').trim().toUpperCase();
-  if (
-    c === 'MANUSCRIPT_APPROVED' ||
-    c === 'APPROVED_BASELINE' ||
-    c === 'APPROVED_FROZEN' ||
-    c === 'LOCKED' ||
-    c === 'PRESERVE'
-  )
-    return true;
-  const s = `${doc.status ?? ''} ${doc.category ?? ''}`.toLowerCase();
-  if (/\b(un ?approved|not[_ -]?approved|candidate|draft|proposal)\b/.test(s)) return false;
-  return /approved|frozen|locked|preserve/.test(s);
-};
+/** Approvazione = solo canonical APPROVED_FROZEN. */
+export const isApprovedDocument = (state: ResolvedState): boolean => isApprovedState(state);
 
-/** True when the doc is shareable but its governance state is not approved. */
-export const isUnapprovedDistribution = (doc: {
-  distribution_ready: boolean;
-  status: string | null;
-  category: string | null;
-}): boolean => doc.distribution_ready && !isApprovedDocument(doc);
+/** True solo per governance working/waiting distribuibile: CLOSED non lo è. */
+export const isUnapprovedDistribution = (
+  doc: { distribution_ready: boolean },
+  state: ResolvedState,
+): boolean => governanceBadgeOf(doc, state) === 'UNAPPROVED';
 
-export const UNAPPROVED_LABEL = 'IN VALUTAZIONE · NON APPROVATO';
+export const UNAPPROVED_LABEL = UNAPPROVED_BADGE_LABEL;
+export const UNCLASSIFIED_LABEL = UNCLASSIFIED_BADGE_LABEL;
