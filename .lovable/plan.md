@@ -1,106 +1,47 @@
-# WCM Canonical States — ricognizione e piano minimo (analisi, nessuna modifica applicata)
+# Diagnosi read-only + piano di allineamento contratto `wcm-projector`
 
-## 1. Inventario reale dei valori (DB, oggi)
+## 1. Esito query analitica (stato HTTP)
 
-`wcm_project_documents` — coppie category/status effettivamente presenti:
+`function_edge_logs` (ultime invocazioni, tutte POST su `/functions/v1/wcm-projector`):
 
-| category | status | righe | requires_stefano | distribution_ready |
-|---|---|---|---|---|
-| MANUSCRIPT_APPROVED | APPROVED_FROZEN_CURRENT | 3 | false | true |
-| MANUSCRIPT_APPROVED | APPROVED_FROZEN_PRESERVE_COMPATIBLE | 3 | false | true |
-| MANUSCRIPT_APPROVED | FROZEN_PRESERVE | 1 | false | true |
-| BOARD_REPORT | BOARD_GATE_CLOSED_SUPPORTING_MATERIAL | 1 | false | true |
-| PRODUCTION_BRIEF | WORKFLOW_ACTIVE_RESUMABLE | 1 | false | true |
-| WORKING_DRAFT | DRAFT_COMPLETED_REVIEW_PENDING | 1 | false | false |
+| Timestamp UTC | Metodo | Status |
+|---|---|---|
+| 2026-08-22 20:55:21 | POST | **400** |
+| 2026-08-22 20:49:49 | POST | 400 |
+| 2026-08-22 20:46:33 | POST | 400 |
 
-Altro:
-- `wcm_project_needs`: **0 righe** (nessun need aperto o chiuso).
-- `wcm_project_roadmap` status: ACTIVE, ACTIVE_MAINTENANCE, ACTIVE_RESUMABLE, DONE, NOT_ELIGIBLE, PLANNED.
-- `wcm_project_status.status`: `active_resume_required` (unico valore) — **non** previsto in `STATUS_LABELS` di `wcmFormat.ts`, quindi già oggi cade nel ramo default "Waiting/ambra".
-- `wcm_command_requests`: solo APPROVE_FREEZE (3 RECORDED, 2 STALE). CHECK constraint limita `command_type` a `APPROVE_FREEZE | REQUEST_CHANGES` e `status` a SUBMITTED/CLAIMED/RECORDED/STALE/REJECTED/FAILED.
+Il terzo tentativo, dopo il merge delle 20:55, è ancora **400**. Nessuna scrittura è avvenuta: tutti i controlli falliti sono pre-write.
 
-## 2. Dove il frontend interpreta status/category
+## 2. Whitelist attuali (da `supabase/functions/wcm-projector/index.ts`)
 
-Cuore euristico: `src/components/wcm/wcmFormat.ts`
-- `bucketOf()` — match esatto su alcune category, poi **fallback substring** su `approved|frozen|working|editorial|draft`.
-- `isApprovedDocument()` — whitelist di category, poi **regex** `/approved|frozen|locked|preserve/` con negazione `/(un ?approved|not approved|candidate|draft|proposal)/`.
-- `isUnapprovedDistribution()` = `distribution_ready && !isApprovedDocument`.
-- `statusClasses()` / `STATUS_LABELS` (progetto) e `roadmapStatusClasses()` / `ROADMAP_STATUS_LABELS` — switch con default silenzioso.
+- `projection` — solo `STATUS_FIELDS` (24 chiavi: project_name, short_description, status, phase, summary, current_focus, next_action, needs_stefano, board_gate_reason, board_gate_action_requested, board_verdict, board_narrative_mass, board_review_summary, progress_summary, documents_to_read_count, repo_url, blocker, heartbeat_cadence, heartbeat_last_run_at, heartbeat_last_outcome, last_material_activity_at, last_material_activity, notes, source). Qualsiasi altra chiave ⇒ `400 Unsupported projection fields`.
+- `board` — solo: needs_stefano, reason, action_requested, verdict, narrative_mass, review_summary.
+- `documents` — document_id, title, category, status, version, source_path, source_url, source_sha, content_markdown, requires_stefano, distribution_ready, sort_order. Obbligatori: document_id, title. `source_path` deve iniziare con `projects/<id>/` e finire in `.md`.
+- `needs` — need_id, title, need_type, status, reason, action_requested, related_document_ids, target_tab, target_document_id, sort_order, source_path, source_sha. Obbligatori: need_id, title.
+- `roadmap` — item_id, label, item_type, status, sequence, parent_id, related_document_id, source_path, notes.
+- `activity` — event_id, occurred_at, event_type, title, description, source_path, source_sha, sort_order (ledger append-only).
+- `execution_workflows` — validati da `execution.ts`: obbligatori `workflow_instance_id`, `workflow`, `status` (enum esatto ACTIVE | INTERRUPTED_RESUMABLE | WAITING_AUTHORITY | BLOCKED | COMPLETED | CANCELLED), `true_stop_condition`, e `resume_required` **booleano obbligatorio**. `source_path` deve stare in `projects/<id>/runtime/workflows/` e finire in `.json`.
 
-Consumatori: `WcmUnapprovedBadge.tsx`, `WcmDocumentsTab.tsx` (bucket + ordinamento), `WcmDocumentReader.tsx`, `WcmDocumentsToReadPage.tsx`, `WcmProjectCard.tsx`, `WcmBoardTab.tsx`, `WcmOverviewTab.tsx`, `WcmRoadmapTab.tsx`.
-Altre interpretazioni (fuori scope, già enum-based): `wcmExecution.ts`, `wcmKnowledge.ts`, `wcmHealthPlanes.ts`.
-Server-side: `supabase/functions/_shared/wcmBoardGate.ts` usa già confronti **esatti** (`BOARD_CANDIDATE`) — è il modello da estendere.
+Chiavi top-level: **non esiste whitelist top-level**. `schema_version`, `derived_execution_state`, `source_execution_fingerprint` sono semplicemente **ignorati** (non causano 400). Sono letti solo: `project_id`, `projection`, `board`, `source_state_sha`, `semantic_fingerprint`, le collezioni, `knowledge_health`, `knowledge_checkpoints`, i flag `*_partial`.
 
-"Needs Stefano" oggi **non** deriva da stringhe: viene dal boolean `requires_stefano` e dai record `wcm_project_needs`. Non va toccato.
+## 3. Causa certa del 400 attuale
 
-## 3. Superficie riutilizzabile per persistere una decisione
+Il renderer aggiunge `execution_status`, `resume_required`, `waiting_authority`, `next_transition` **dentro `.projection`**. Nessuna delle quattro è in `STATUS_FIELDS`: il controllo `unknownKeys` risponde `400 {"error":"Unsupported projection fields","fields":[...]}` prima di ogni scrittura. Questa è la causa determinante, indipendente da tutto il resto.
 
-Non esiste nulla di direttamente riutilizzabile:
-- `wcm_command_requests` è vincolata da CHECK a due soli command_type e il suo ciclo di vita è pull/complete con receipt su GitHub: piegarla a "mapping di stato" richiederebbe comunque una migrazione del CHECK e un nuovo consumer nel worker.
-- Tutte le altre tabelle WCM sono read-model scrivibili solo dal Projector (RLS: nessun INSERT/UPDATE per authenticated).
-- Nessuna persistenza client (localStorage usato solo per la sessione auth).
+Mismatch ulteriori possibili una volta rimosse quelle chiavi (ordine in cui verrebbero incontrati):
+1. `execution_workflows[i].resume_required` mancante o non booleano ⇒ 400.
+2. `status` di workflow fuori enum (es. `RESUME_REQUIRED`, `RUNNING`) ⇒ 400.
+3. `next_transition` come oggetto invece che stringa/null ⇒ 400.
+4. `source_path` di workflow fuori da `projects/<id>/runtime/workflows/*.json` ⇒ 400.
+5. Invariante BOARD_GATE: need OPEN con `action_requested = APPROVE_FREEZE` deve puntare a un documento `category = BOARD_CANDIDATE` ⇒ altrimenti 400 sull'intero payload.
 
-Conclusione: serve **una sola** tabella nuova, minima, oppure — opzione a costo zero infrastrutturale — nessuna persistenza e mapping dichiarato solo nel codice. La richiesta "la decisione deve essere ricordata" implica la tabella.
+## 4. Opzione consigliata (nessuna modifica applicata finora)
 
-## 4. Set canonico minimo proposto (mapping esatto, nessuna euristica)
+Allineare il **renderer lato GitHub**, non il backend: spostare i quattro segnali fuori da `projection`, mappandoli su `execution_workflows[]` (`status`, `resume_required`, `next_transition`) e lasciando `waiting_authority` derivabile da `status = WAITING_AUTHORITY`. Zero modifiche a DB, UI, command surface e whitelist.
 
-Stati canonici documento (5):
+Alternativa, se i quattro segnali devono davvero vivere sulla riga di stato: estendere `STATUS_FIELDS` + colonne in `wcm_project_status` (richiede migrazione DB e aggiornamento read-model).
 
-```text
-APPROVED_FROZEN     documento approvato e congelato (autorità applicata)
-BOARD_SUPPORTING    materiale di supporto di un gate, non oggetto di autorità
-WORKING_DRAFT       lavoro in corso, non approvato
-BOARD_CANDIDATE     candidata congelabile, target legittimo di APPROVE_FREEZE
-UNKNOWN             non riconosciuto → richiede decisione di Stefano
-```
+## 5. Prossimo passo che posso eseguire su approvazione
 
-Mapping esatto dei valori realmente presenti (chiave = `CATEGORY|STATUS`):
-
-| chiave | canonico |
-|---|---|
-| MANUSCRIPT_APPROVED\|APPROVED_FROZEN_CURRENT | APPROVED_FROZEN |
-| MANUSCRIPT_APPROVED\|APPROVED_FROZEN_PRESERVE_COMPATIBLE | APPROVED_FROZEN |
-| MANUSCRIPT_APPROVED\|FROZEN_PRESERVE | APPROVED_FROZEN |
-| BOARD_REPORT\|BOARD_GATE_CLOSED_SUPPORTING_MATERIAL | BOARD_SUPPORTING |
-| PRODUCTION_BRIEF\|WORKFLOW_ACTIVE_RESUMABLE | WORKING_DRAFT |
-| WORKING_DRAFT\|DRAFT_COMPLETED_REVIEW_PENDING | WORKING_DRAFT |
-| (BOARD_CANDIDATE\|*) | BOARD_CANDIDATE (invariante board gate già in uso) |
-| qualsiasi altra coppia | UNKNOWN |
-
-Effetti canonici (deterministici, nessun substring):
-- APPROVED_FROZEN → bucket "Manoscritto approvato", nessun badge, target valido di freeze già registrato.
-- BOARD_SUPPORTING → bucket "Materiale di supporto Board", **nessun** badge "IN VALUTAZIONE", mai target di autorità.
-- WORKING_DRAFT → bucket "Working / Editorial", badge "non approvato" solo se `distribution_ready`.
-- BOARD_CANDIDATE → bucket "Da approvare", target legittimo APPROVE_FREEZE.
-- UNKNOWN → badge neutro "STATO NON RICONOSCIUTO" + blocco delle sole azioni di autorità su quel documento.
-
-## 5. Modifica minima end-to-end proposta (da implementare in un secondo step)
-
-**A. Core deterministico (frontend, nessun DB)**
-- Nuovo `src/components/wcm/wcmCanonicalState.ts`: enum canonico, tabella di mapping esatta sopra, `canonicalStateOf(doc, overrides)`, `effectsOf(canonical)`.
-- `wcmFormat.ts`: `bucketOf` e `isApprovedDocument` delegano al core; **rimossi** i rami regex/substring. Fallback = UNKNOWN, non "approvato" né "non approvato".
-- `WcmUnapprovedBadge.tsx`: tre esiti (nessun badge / "IN VALUTAZIONE · NON APPROVATO" / "STATO NON RICONOSCIUTO").
-
-**B. Superficie di decisione (solo se lo stato è UNKNOWN)**
-- Nuovo `WcmUnknownStateResolver.tsx`, montato inline sulla riga/reader del solo documento interessato: mostra category+status grezzi, proposta di mapping con motivo/confidenza/effetto, scelta alternativa tra i canonici esistenti, oppure "proponi nuova categoria canonica" (che resta una **proposta**, non crea nulla).
-- Blocco locale: solo le azioni di autorità del documento UNKNOWN sono disabilitate; il resto di Mission Control resta operativo.
-
-**C. Persistenza della decisione (minima)**
-- Una sola tabella nuova `wcm_state_mappings` (`category`, `status`, `canonical_state`, `decided_by`, `reason`, `confidence`, `created_at`, unique(category,status)), RLS: SELECT owner/admin, INSERT/UPDATE **solo owner** (Stefano). Nessuna edge function nuova: insert diretto dal client sotto RLS owner.
-- `canonicalStateOf` legge prima la tabella di mapping statica, poi gli override persistiti — o viceversa, da decidere: proposta = statico prima, override solo per chiavi UNKNOWN, così una decisione non può silenziosamente ribaltare un invariante di metodo.
-- Nuova categoria canonica: **non** creabile da UI. La proposta viene registrata come riga con `canonical_state = 'PROPOSED'` e richiede una modifica di codice/metodo per diventare canonica.
-
-**D. Regressione BOARD_REPORT (caso 6)**
-- Test: `{category: BOARD_REPORT, status: BOARD_GATE_CLOSED_SUPPORTING_MATERIAL, distribution_ready: true}` → canonico BOARD_SUPPORTING, `isUnapprovedDistribution === false`, bucket ≠ "Altri documenti". Questo è esattamente il falso positivo osservato oggi sul Capitolo 5 V0.2.
-
-## File e tabelle toccabili
-
-- Nuovi: `src/components/wcm/wcmCanonicalState.ts`, `wcmCanonicalState.test.ts`, `WcmUnknownStateResolver.tsx`; migrazione `wcm_state_mappings` (+ GRANT).
-- Modificati: `wcmFormat.ts`, `WcmUnapprovedBadge.tsx`, `WcmDocumentsTab.tsx`, `WcmDocumentReader.tsx`, `WcmDocumentsToReadPage.tsx`, `useWcmProjects.ts` (hook mapping), eventualmente `WcmCommandSurface.tsx` per il blocco locale.
-- **Non** toccati: Projector, edge functions di comando, `wcm_command_requests`, Needs, Learning, auth, pipeline documentazione.
-
-## Rischi
-
-- Passare al mapping esatto rende UNKNOWN ogni coppia non censita: se il Projector introduce nuovi status, compariranno segnalazioni. È l'effetto voluto, ma va comunicato.
-- Un override persistito che riclassifica un documento come APPROVED_FROZEN sarebbe una forma di autorità fuori GitHub: per questo la proposta limita gli override alle sole chiavi UNKNOWN e non ammette la creazione di nuovi stati canonici da UI.
-- La tabella di mapping è l'unica nuova infrastruttura; se preferisci zero DB, si può partire con solo A+B+D (mapping in codice, nessuna memoria delle decisioni) e aggiungere C dopo.
+- Modifica minima a `supabase/functions/wcm-projector/index.ts`: log strutturato del motivo del 400 nella risposta già presente — è già incluso nel body JSON, quindi in alternativa basta catturare il body del `curl` nel workflow GitHub.
+- Nessun altro intervento finché non indichi quale delle due opzioni al punto 4 preferisci.
