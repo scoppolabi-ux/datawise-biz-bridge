@@ -1,15 +1,20 @@
 import { ChevronRight, ExternalLink, FileText } from 'lucide-react';
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
+import { useCanonicalStateIndex } from '@/hooks/useWcmStateMappings';
 import WcmDocumentReader from './WcmDocumentReader';
 import WcmDocumentActions from './WcmDocumentActions';
 import WcmUnapprovedBadge from './WcmUnapprovedBadge';
+import { resolveCanonicalState } from './wcmCanonicalState';
 import { BUCKET_LABELS, bucketOf, type DocBucket } from './wcmFormat';
 
 const ORDER: DocBucket[] = [
   'TO_READ',
+  'UNCLASSIFIED',
   'MANUSCRIPT_APPROVED',
   'APPROVED_BASELINE',
+  'WAITING_AUTHORITY',
   'WORKING_EDITORIAL',
+  'CLOSED_SUPPORTING',
   'OTHER',
 ];
 
