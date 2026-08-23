@@ -48,3 +48,27 @@ export function parseDerivedExecutionState(raw: unknown): DerivedParseResult {
 
   return { overrides }
 }
+
+export type BoardPartition =
+  | { error: string; fields: string[] }
+  | { fields: Record<string, unknown>; metadata: Record<string, unknown> }
+
+// Splits a board block into persisted fields and accepted-but-unpersisted metadata.
+export function partitionBoardBlock(
+  block: Record<string, unknown>,
+  boardFields: Record<string, string>,
+): BoardPartition {
+  const metadataKeys = BOARD_METADATA_KEYS as readonly string[]
+  const unknown = Object.keys(block).filter(
+    (k) => !(k in boardFields) && !metadataKeys.includes(k),
+  )
+  if (unknown.length > 0) return { error: 'Unsupported board fields', fields: unknown }
+
+  const fields: Record<string, unknown> = {}
+  const metadata: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(block)) {
+    if (metadataKeys.includes(k)) metadata[k] = v
+    else fields[boardFields[k]] = v
+  }
+  return { fields, metadata }
+}
