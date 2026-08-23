@@ -12,13 +12,24 @@ export const STATUS_LABELS: Record<string, string> = {
   waiting_board: 'Waiting Board',
   blocked: 'Blocked',
   paused: 'Paused',
+  active_resume_required: 'Ripresa necessaria',
 };
 
+/** Chiave normalizzata solo su case/trim: nessuna euristica semantica. */
+const statusKey = (status: string | null | undefined) => (status ?? '').trim().toLowerCase();
+
+/** Label esatta se mappata, altrimenti l'enum grezzo (fallback esplicito). */
+export const projectStatusLabel = (status: string | null | undefined): string =>
+  STATUS_LABELS[statusKey(status)] ?? (status ?? '—');
+
 export const statusClasses = (status: string) => {
-  switch (status) {
+  switch (statusKey(status)) {
     case 'working':
       return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
     case 'blocked':
+      return 'bg-wcm-alert/15 text-wcm-alert-fg border-wcm-alert/30';
+    // Tono allineato al segnale RESUME_REQUIRED di Execution Health.
+    case 'active_resume_required':
       return 'bg-wcm-alert/15 text-wcm-alert-fg border-wcm-alert/30';
     case 'paused':
       return 'bg-wcm-dim/15 text-wcm-text border-slate-500/30';
@@ -26,6 +37,55 @@ export const statusClasses = (status: string) => {
       return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
   }
 };
+
+/** Outcome heartbeat canonici brevi → label umane. Match ESATTO, nessuna substring. */
+export const HEARTBEAT_OUTCOME_LABELS: Record<string, string> = {
+  ok: 'Esito conforme',
+  resume_required: 'Ripresa necessaria',
+  waiting_authority: 'In attesa di autorità',
+  blocked_board: 'Stop governato · Board',
+  blocked: 'Bloccato',
+  failed: 'Fallito',
+  no_work: 'Nessun lavoro da svolgere',
+};
+
+export const HEARTBEAT_OUTCOME_UNKNOWN_LABEL = 'Esito non riconosciuto';
+
+export type HeartbeatOutcomeDisplay = {
+  /** Testo mostrato in UI. */
+  label: string;
+  /** Valore tecnico grezzo, da esporre solo via title/dettagli. */
+  raw: string | null;
+  known: boolean;
+};
+
+/**
+ * Resa dell'esito heartbeat: solo mapping esatto sul vocabolario canonico.
+ * Per valori fuori vocabolario non si deduce alcun significato.
+ */
+export const heartbeatOutcomeDisplay = (
+  value: string | null | undefined,
+): HeartbeatOutcomeDisplay | null => {
+  const raw = (value ?? '').trim();
+  if (raw === '') return null;
+  const label = HEARTBEAT_OUTCOME_LABELS[raw.toLowerCase()];
+  return label
+    ? { label, raw, known: true }
+    : { label: HEARTBEAT_OUTCOME_UNKNOWN_LABEL, raw, known: false };
+};
+
+/**
+ * Le phase sono enum tecnici liberi: nella card primaria si mostra solo una
+ * phase compatta. Criterio puramente presentazionale (lunghezza), nessuna
+ * interpretazione del contenuto: le phase lunghe restano nei dettagli tecnici.
+ */
+export const COMPACT_PHASE_MAX_LENGTH = 24;
+
+export const isCompactPhase = (phase: string | null | undefined): boolean => {
+  const value = (phase ?? '').trim();
+  return value !== '' && value.length <= COMPACT_PHASE_MAX_LENGTH;
+};
+
 
 export const ROADMAP_STATUS_LABELS: Record<string, string> = {
   DONE: 'Done',
