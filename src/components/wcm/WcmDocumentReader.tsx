@@ -1,6 +1,6 @@
 import { ArrowLeft, ExternalLink, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import WcmMarkdown from './WcmMarkdown';
+import WcmDocumentBody from './WcmDocumentBody';
 import WcmDocumentActions from './WcmDocumentActions';
 import WcmUnapprovedBadge from './WcmUnapprovedBadge';
 import WcmUnknownStateResolver from './WcmUnknownStateResolver';
@@ -83,15 +83,9 @@ const WcmDocumentReader = ({
     </header>
 
     <div className="p-4 sm:p-6">
-      {doc.content_markdown ? (
-        <WcmMarkdown content={doc.content_markdown} />
-      ) : (
-        <p className="rounded-lg border border-wcm-line bg-wcm-bg/50 p-4 text-sm text-wcm-muted">
-          Contenuto non ancora sincronizzato nel read-model.
-          {doc.source_url && ' Usa "Apri il sorgente su GitHub" per leggere l\'originale.'}
-        </p>
-      )}
+      <WcmDocumentBody projectId={projectId} doc={doc} />
     </div>
+
   </div>
 );
 
