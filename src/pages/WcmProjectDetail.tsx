@@ -161,7 +161,7 @@ const WcmProjectDetail = () => {
                   statusClasses(project.status),
                 )}
               >
-                {STATUS_LABELS[project.status] ?? project.status}
+                {projectStatusLabel(project.status)}
               </span>
             )}
             {project?.repo_url && (
