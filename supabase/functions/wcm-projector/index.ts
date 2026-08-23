@@ -12,7 +12,9 @@ import { validateBoardGateTargets, type BoardGateDoc } from '../_shared/wcmBoard
 import {
   BOARD_METADATA_KEYS,
   parseDerivedExecutionState,
+  partitionBoardBlock,
 } from './derivedExecutionState.ts'
+
 
 
 
