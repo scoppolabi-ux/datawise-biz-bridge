@@ -595,6 +595,10 @@ Deno.serve(async (req) => {
     created,
     project_id: projectId,
     updated_fields: Object.keys(updates),
+    // Accepted at the boundary, intentionally not persisted (no dedicated columns).
+    board_metadata: boardMetadata,
+    derived_execution_overrides: derivedOverrides,
+
 
     collections: collectionResults,
     // DEC-012 — explicit observation stats for the execution read-model.
