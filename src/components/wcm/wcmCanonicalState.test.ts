@@ -30,7 +30,20 @@ const mappings: WcmStateMapping[] = [
     proposed_state: 'ARCHIVED_REFERENCE',
     mapping_status: 'PENDING',
   },
+  {
+    category: 'BOARD_CANDIDATE',
+    status: 'BOARD_GATE_OPEN_CANDIDATE',
+    canonical_state: 'WAITING_AUTHORITY',
+    mapping_status: 'ACTIVE',
+  },
+  {
+    category: 'BOARD_REPORT',
+    status: 'BOARD_GATE_OPEN_SUPPORTING_MATERIAL',
+    canonical_state: 'CLOSED',
+    mapping_status: 'ACTIVE',
+  },
 ] as WcmStateMapping[];
+
 
 const index = buildMappingIndex(mappings);
 
