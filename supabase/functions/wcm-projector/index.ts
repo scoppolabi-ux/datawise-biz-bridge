@@ -265,30 +265,20 @@ Deno.serve(async (req) => {
   }
 
   // Board metadata accepted at the boundary but not persisted (no column).
-  const boardMetadata: Record<string, unknown> = {}
+  let boardMetadata: Record<string, unknown> = {}
 
   if (body.board !== undefined) {
     const board = body.board
     if (!board || typeof board !== 'object' || Array.isArray(board)) {
       return json({ error: 'board must be an object' }, 400)
     }
-    const b = board as Record<string, unknown>
-    const metadataKeys = BOARD_METADATA_KEYS as readonly string[]
-    const unknownBoard = Object.keys(b).filter(
-      (k) => !(k in BOARD_FIELDS) && !metadataKeys.includes(k),
-    )
-    if (unknownBoard.length > 0) {
-      return json({ error: 'Unsupported board fields', fields: unknownBoard }, 400)
-    }
-    for (const [k, v] of Object.entries(b)) {
-      if (metadataKeys.includes(k)) {
-        boardMetadata[k] = normalize(v)
-        continue
-      }
-      // Board block wins over stale projection snapshot values.
-      incoming[BOARD_FIELDS[k]] = v
-    }
+    const partition = partitionBoardBlock(board as Record<string, unknown>, BOARD_FIELDS)
+    if ('error' in partition) return json(partition, 400)
+    boardMetadata = partition.metadata
+    // Board block wins over stale projection snapshot values.
+    Object.assign(incoming, partition.fields)
   }
+
 
   // --- Deterministic operational overrides (exact enums only) ---
   let derivedOverrides: Record<string, unknown> = {}
