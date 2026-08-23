@@ -262,21 +262,44 @@ Deno.serve(async (req) => {
     Object.assign(incoming, p)
   }
 
+  // Board metadata accepted at the boundary but not persisted (no column).
+  const boardMetadata: Record<string, unknown> = {}
+
   if (body.board !== undefined) {
     const board = body.board
     if (!board || typeof board !== 'object' || Array.isArray(board)) {
       return json({ error: 'board must be an object' }, 400)
     }
     const b = board as Record<string, unknown>
-    const unknownBoard = Object.keys(b).filter((k) => !(k in BOARD_FIELDS))
+    const metadataKeys = BOARD_METADATA_KEYS as readonly string[]
+    const unknownBoard = Object.keys(b).filter(
+      (k) => !(k in BOARD_FIELDS) && !metadataKeys.includes(k),
+    )
     if (unknownBoard.length > 0) {
       return json({ error: 'Unsupported board fields', fields: unknownBoard }, 400)
     }
-    for (const [k, v] of Object.entries(b)) incoming[BOARD_FIELDS[k]] = v
+    for (const [k, v] of Object.entries(b)) {
+      if (metadataKeys.includes(k)) {
+        boardMetadata[k] = normalize(v)
+        continue
+      }
+      // Board block wins over stale projection snapshot values.
+      incoming[BOARD_FIELDS[k]] = v
+    }
+  }
+
+  // --- Deterministic operational overrides (exact enums only) ---
+  let derivedOverrides: Record<string, unknown> = {}
+  if (body.derived_execution_state !== undefined && body.derived_execution_state !== null) {
+    const parsedDerived = parseDerivedExecutionState(body.derived_execution_state)
+    if ('error' in parsedDerived) return json(parsedDerived, 400)
+    derivedOverrides = parsedDerived.overrides
+    Object.assign(incoming, derivedOverrides)
   }
 
   if (sourceStateSha !== null) incoming.source_state_sha = sourceStateSha
   if (semanticFingerprint !== null) incoming.semantic_fingerprint = semanticFingerprint
+
 
   // --- Collections validation ---
   const collectionPayloads: Partial<
