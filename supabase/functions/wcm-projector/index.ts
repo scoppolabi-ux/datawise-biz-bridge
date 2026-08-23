@@ -10,9 +10,12 @@ import { parseExecutionWorkflows } from './execution.ts'
 import { rowNeedsUpsert, selectChangedCheckpoints } from './knowledgeDiff.ts'
 import { validateBoardGateTargets, type BoardGateDoc } from '../_shared/wcmBoardGate.ts'
 import {
+  NEED_METADATA_KEYS,
   parseDerivedExecutionState,
   partitionBoardBlock,
+  partitionCollectionItem,
 } from './derivedExecutionState.ts'
+
 
 
 
@@ -324,10 +327,14 @@ Deno.serve(async (req) => {
         return json({ error: `${name}[${index}] must be an object` }, 400)
       }
       const obj = item as Record<string, unknown>
-      const unknown = Object.keys(obj).filter((k) => !cfg.fields.includes(k))
-      if (unknown.length > 0) {
-        return json({ error: `Unsupported ${name} fields`, index, fields: unknown }, 400)
+      // Needs carry command-surface metadata with no dedicated columns: accept
+      // and ignore it. Every other unknown key is still rejected.
+      const metadataKeys = name === 'needs' ? (NEED_METADATA_KEYS as readonly string[]) : []
+      const partition = partitionCollectionItem(obj, cfg.fields, metadataKeys)
+      if ('error' in partition) {
+        return json({ error: `Unsupported ${name} fields`, index, fields: partition.fields }, 400)
       }
+
       for (const req of cfg.required) {
         if (normalize(obj[req]) === null) {
           return json({ error: `${name}[${index}].${req} is required` }, 400)

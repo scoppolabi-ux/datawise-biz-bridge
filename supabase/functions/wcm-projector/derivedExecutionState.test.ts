@@ -3,6 +3,8 @@ import {
   BOARD_METADATA_KEYS,
   parseDerivedExecutionState,
   partitionBoardBlock,
+  NEED_METADATA_KEYS,
+  partitionCollectionItem,
 } from './derivedExecutionState.ts';
 
 describe('DEC-014 · derived_execution_state', () => {
@@ -140,5 +142,82 @@ describe('DEC-014 · scenario WAITING_AUTHORITY completo', () => {
     expect(incoming.phase).toBe('BOARD_DECISION');
     expect(incoming.needs_stefano).toBe(true);
     expect(incoming.board_gate_action_requested).toBe('APPROVE_FREEZE');
+  });
+});
+
+const NEED_FIELDS = [
+  'need_id',
+  'title',
+  'need_type',
+  'status',
+  'reason',
+  'action_requested',
+  'related_document_ids',
+  'target_tab',
+  'target_document_id',
+  'sort_order',
+  'source_path',
+  'source_sha',
+];
+
+describe('DEC-014 · needs metadata di command surface', () => {
+  const boardGateNeed = {
+    need_id: 'chapter-07-v0-2-board-decision',
+    title: 'Board Gate Capitolo 7 V0.2',
+    need_type: 'BOARD_GATE',
+    status: 'OPEN',
+    reason: 'BOARD_GATE_OPENED',
+    action_requested: 'APPROVE_FREEZE',
+    related_document_ids: ['chapter-07-v0-2'],
+    target_tab: 'board',
+    target_document_id: 'chapter-07-v0-2',
+    sort_order: 1,
+    source_path: 'projects/prima-di-noi/state/needs.json',
+    source_sha: 'abc123',
+    command_options: ['APPROVE_FREEZE', 'REQUEST_CHANGES'],
+    workflow_instance_id: 'WF-007',
+  };
+
+  it('accetta command_options e workflow_instance_id ed esclude i metadata dalla riga', () => {
+    const result = partitionCollectionItem(boardGateNeed, NEED_FIELDS, NEED_METADATA_KEYS);
+    if ('error' in result) throw new Error('need rifiutato');
+    expect(result.metadata).toEqual({
+      command_options: ['APPROVE_FREEZE', 'REQUEST_CHANGES'],
+      workflow_instance_id: 'WF-007',
+    });
+    expect(Object.keys(result.persisted).sort()).toEqual(
+      [
+        'action_requested',
+        'need_id',
+        'need_type',
+        'reason',
+        'related_document_ids',
+        'sort_order',
+        'source_path',
+        'source_sha',
+        'status',
+        'target_document_id',
+        'target_tab',
+        'title',
+      ],
+    );
+    // target invariant preserved: Board Gate still points at the candidate.
+    expect(result.persisted.target_document_id).toBe('chapter-07-v0-2');
+  });
+
+  it('rifiuta ancora una chiave need davvero sconosciuta', () => {
+    expect(
+      partitionCollectionItem(
+        { ...boardGateNeed, chiave_ignota: true },
+        NEED_FIELDS,
+        NEED_METADATA_KEYS,
+      ),
+    ).toEqual({ error: 'Unsupported fields', fields: ['chiave_ignota'] });
+  });
+
+  it('non applica i metadata dei needs alle altre collection', () => {
+    expect(
+      partitionCollectionItem({ document_id: 'x', command_options: [] }, ['document_id'], []),
+    ).toEqual({ error: 'Unsupported fields', fields: ['command_options'] });
   });
 });

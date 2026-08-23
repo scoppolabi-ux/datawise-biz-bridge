@@ -8,6 +8,37 @@ export const BOARD_METADATA_KEYS = [
   'workflow_instance_id',
 ] as const
 
+// Metadata keys accepted on `needs[]` items but NOT persisted (no column).
+// The renderer emits them for the command surface; the read-model ignores them.
+export const NEED_METADATA_KEYS = ['command_options', 'workflow_instance_id'] as const
+
+export type CollectionItemPartition =
+  | { error: 'Unsupported fields'; fields: string[] }
+  | { persisted: Record<string, unknown>; metadata: Record<string, unknown> }
+
+// Splits a collection item into persisted fields and accepted-but-unpersisted metadata.
+// Any key that is neither a known field nor declared metadata is rejected.
+export function partitionCollectionItem(
+  item: Record<string, unknown>,
+  fields: readonly string[],
+  metadataKeys: readonly string[],
+): CollectionItemPartition {
+  const unknown = Object.keys(item).filter(
+    (k) => !fields.includes(k) && !metadataKeys.includes(k),
+  )
+  if (unknown.length > 0) return { error: 'Unsupported fields', fields: unknown }
+
+  const persisted: Record<string, unknown> = {}
+  const metadata: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(item)) {
+    if (metadataKeys.includes(k)) metadata[k] = v
+    else persisted[k] = v
+  }
+  return { persisted, metadata }
+}
+
+
+
 // Exact execution_status → canonical project status.
 export const EXECUTION_STATUS_TO_PROJECT_STATUS: Record<string, string> = {
   WAITING_AUTHORITY: 'waiting_board',
