@@ -30,7 +30,20 @@ const mappings: WcmStateMapping[] = [
     proposed_state: 'ARCHIVED_REFERENCE',
     mapping_status: 'PENDING',
   },
+  {
+    category: 'BOARD_CANDIDATE',
+    status: 'BOARD_GATE_OPEN_CANDIDATE',
+    canonical_state: 'WAITING_AUTHORITY',
+    mapping_status: 'ACTIVE',
+  },
+  {
+    category: 'BOARD_REPORT',
+    status: 'BOARD_GATE_OPEN_SUPPORTING_MATERIAL',
+    canonical_state: 'CLOSED',
+    mapping_status: 'ACTIVE',
+  },
 ] as WcmStateMapping[];
+
 
 const index = buildMappingIndex(mappings);
 
@@ -86,5 +99,27 @@ describe('canonical state suggestion', () => {
     // la proposta non deve mai classificare il documento
     expect(resolveCanonicalState(doc, index)).toBe('UNKNOWN');
     expect(authorityAllowed(resolveCanonicalState(doc, index))).toBe(false);
+  });
+});
+
+describe('baseline runtime states del projector deterministico', () => {
+  it('classifica BOARD_CANDIDATE | BOARD_GATE_OPEN_CANDIDATE come WAITING_AUTHORITY', () => {
+    const doc = { category: 'BOARD_CANDIDATE', status: 'BOARD_GATE_OPEN_CANDIDATE' };
+    const state = resolveCanonicalState(doc, index);
+    expect(state).toBe('WAITING_AUTHORITY');
+    expect(bucketOf({ requires_stefano: false, category: doc.category }, state)).not.toBe(
+      'UNCLASSIFIED',
+    );
+    expect(authorityAllowed(state)).toBe(true);
+  });
+
+  it('classifica BOARD_REPORT | BOARD_GATE_OPEN_SUPPORTING_MATERIAL come CLOSED senza badge', () => {
+    const doc = { category: 'BOARD_REPORT', status: 'BOARD_GATE_OPEN_SUPPORTING_MATERIAL' };
+    const state = resolveCanonicalState(doc, index);
+    expect(state).toBe('CLOSED');
+    expect(governanceBadgeOf({ distribution_ready: true }, state)).toBe('NONE');
+    expect(bucketOf({ requires_stefano: false, category: doc.category }, state)).toBe(
+      'CLOSED_SUPPORTING',
+    );
   });
 });
