@@ -137,8 +137,9 @@ const WcmProjectCard = ({
         </div>
 
 
+        <WcmKnowledgeTrafficLight health={knowledgeHealth} showSynapses />
+
         <div className="flex flex-wrap items-center gap-2">
-          <WcmKnowledgeHealthBadge health={knowledgeHealth} showSynapses />
           <WcmExecutionSignal
             workflows={executionWorkflows}
             projectId={project.project_id}
