@@ -101,3 +101,25 @@ describe('canonical state suggestion', () => {
     expect(authorityAllowed(resolveCanonicalState(doc, index))).toBe(false);
   });
 });
+
+describe('baseline runtime states del projector deterministico', () => {
+  it('classifica BOARD_CANDIDATE | BOARD_GATE_OPEN_CANDIDATE come WAITING_AUTHORITY', () => {
+    const doc = { category: 'BOARD_CANDIDATE', status: 'BOARD_GATE_OPEN_CANDIDATE' };
+    const state = resolveCanonicalState(doc, index);
+    expect(state).toBe('WAITING_AUTHORITY');
+    expect(bucketOf({ requires_stefano: false, category: doc.category }, state)).not.toBe(
+      'UNCLASSIFIED',
+    );
+    expect(authorityAllowed(state)).toBe(true);
+  });
+
+  it('classifica BOARD_REPORT | BOARD_GATE_OPEN_SUPPORTING_MATERIAL come CLOSED senza badge', () => {
+    const doc = { category: 'BOARD_REPORT', status: 'BOARD_GATE_OPEN_SUPPORTING_MATERIAL' };
+    const state = resolveCanonicalState(doc, index);
+    expect(state).toBe('CLOSED');
+    expect(governanceBadgeOf({ distribution_ready: true }, state)).toBe('NONE');
+    expect(bucketOf({ requires_stefano: false, category: doc.category }, state)).toBe(
+      'CLOSED_SUPPORTING',
+    );
+  });
+});
