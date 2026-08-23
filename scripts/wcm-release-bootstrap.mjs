@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 /**
- * WCM Documentation Center V0.9 — CONTROLLED BOOTSTRAP release.
+ * WCM Documentation Center — CONTROLLED BOOTSTRAP release.
  *
- * This path exists only to publish the initial V0.2 release from the exact
- * master snapshots authorized by Stefano (stored under
- * scripts/wcm-documentation/bootstrap/) together with their GitHub blob SHAs.
+ * Used when the UI runtime cannot read the private WCM-LAB repository.
+ * Exact authorized master snapshots are stored under
+ * scripts/wcm-documentation/bootstrap/ together with their GitHub blob SHAs.
  *
- * It does NOT replace `scripts/wcm-release.mjs`: the token-based GitHub
- * pipeline remains the normal, forward path and is untouched. Both paths share
- * the same parser, the same DOCX/PDF renderers and the same qaCheck gate, so a
- * bootstrap release is byte-for-byte comparable to a fetched one.
+ * This does NOT change source-of-truth semantics: WCM-LAB/main remains
+ * authoritative and generated DOCX/PDF are derived distribution artifacts.
  */
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -53,7 +51,6 @@ async function main() {
     const meta = {
       title: doc.title,
       audience: doc.audience,
-      // Bootstrap: the authorized configuration wins over heuristic detection.
       version: doc.version,
       master_date: doc.master_date ?? detected.master_date,
       status: doc.status,
@@ -76,6 +73,9 @@ async function main() {
 
     entries.push({
       document_id: doc.document_id,
+      scope: doc.scope ?? 'wcm',
+      project_id: doc.project_id ?? null,
+      project_label: doc.project_label ?? null,
       title: doc.title,
       audience: doc.audience,
       description: doc.description,
@@ -92,6 +92,9 @@ async function main() {
       download_filename_docx: `${doc.download_basename}.docx`,
       download_filename_pdf: `${doc.download_basename}.pdf`,
       qa_status,
+      visual_qa_status: doc.visual_qa_status ?? 'PENDING',
+      docx_page_count: Number.isInteger(doc.docx_page_count) ? doc.docx_page_count : null,
+      pdf_page_count: Number.isInteger(doc.pdf_page_count) ? doc.pdf_page_count : null,
     });
     process.stdout.write(`ok (${sha.slice(0, 7)}, docx ${docxBuffer.length}B, pdf ${pdfBuffer.length}B)\n`);
   }
@@ -103,7 +106,7 @@ async function main() {
     path.join(outDir, 'manifest.json'),
     `${JSON.stringify(
       {
-        manifest_version: '0.9',
+        manifest_version: '1.0',
         release_mode: 'BOOTSTRAP_AUTHORIZED_SNAPSHOT',
         source_of_truth: `https://github.com/${REPO_OWNER}/${REPO_NAME} (${REPO_REF})`,
         generated_at: releasedAt,
