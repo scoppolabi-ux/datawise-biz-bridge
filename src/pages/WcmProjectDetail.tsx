@@ -12,7 +12,7 @@ import {
   useWcmRoadmap,
 } from '@/hooks/useWcmProjects';
 import { useWcmProjectCommands } from '@/hooks/useWcmCommands';
-import { STATUS_LABELS, statusClasses } from '@/components/wcm/wcmFormat';
+import { projectStatusLabel, statusClasses } from '@/components/wcm/wcmFormat';
 
 import WcmOverviewTab from '@/components/wcm/WcmOverviewTab';
 import WcmDocumentsTab from '@/components/wcm/WcmDocumentsTab';
