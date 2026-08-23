@@ -14,7 +14,13 @@ import type { WcmKnowledgeHealth } from '@/hooks/useWcmKnowledgeHealth';
 import type { WcmExecutionWorkflow } from '@/hooks/useWcmExecutionWorkflows';
 import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
 import WcmExecutionSignal from './WcmExecutionSignal';
-import { STATUS_LABELS, statusClasses, relativeTime } from './wcmFormat';
+import {
+  heartbeatOutcomeDisplay,
+  isCompactPhase,
+  projectStatusLabel,
+  relativeTime,
+  statusClasses,
+} from './wcmFormat';
 
 
 
