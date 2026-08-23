@@ -61,6 +61,7 @@ const WcmProjectCard = ({
 
 
   const heartbeat = relativeTime(project.heartbeat_last_run_at);
+  const outcome = heartbeatOutcomeDisplay(project.heartbeat_last_outcome);
   const toRead = project.documents_to_read_count ?? 0;
 
   return (
