@@ -10,9 +10,12 @@ import { parseExecutionWorkflows } from './execution.ts'
 import { rowNeedsUpsert, selectChangedCheckpoints } from './knowledgeDiff.ts'
 import { validateBoardGateTargets, type BoardGateDoc } from '../_shared/wcmBoardGate.ts'
 import {
+  NEED_METADATA_KEYS,
   parseDerivedExecutionState,
   partitionBoardBlock,
+  partitionCollectionItem,
 } from './derivedExecutionState.ts'
+
 
 
 
