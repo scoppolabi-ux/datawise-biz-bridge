@@ -9,6 +9,13 @@ import {
 import { parseExecutionWorkflows } from './execution.ts'
 import { rowNeedsUpsert, selectChangedCheckpoints } from './knowledgeDiff.ts'
 import { validateBoardGateTargets, type BoardGateDoc } from '../_shared/wcmBoardGate.ts'
+import {
+  parseDerivedExecutionState,
+  partitionBoardBlock,
+} from './derivedExecutionState.ts'
+
+
+
 
 
 
@@ -257,21 +264,34 @@ Deno.serve(async (req) => {
     Object.assign(incoming, p)
   }
 
+  // Board metadata accepted at the boundary but not persisted (no column).
+  let boardMetadata: Record<string, unknown> = {}
+
   if (body.board !== undefined) {
     const board = body.board
     if (!board || typeof board !== 'object' || Array.isArray(board)) {
       return json({ error: 'board must be an object' }, 400)
     }
-    const b = board as Record<string, unknown>
-    const unknownBoard = Object.keys(b).filter((k) => !(k in BOARD_FIELDS))
-    if (unknownBoard.length > 0) {
-      return json({ error: 'Unsupported board fields', fields: unknownBoard }, 400)
-    }
-    for (const [k, v] of Object.entries(b)) incoming[BOARD_FIELDS[k]] = v
+    const partition = partitionBoardBlock(board as Record<string, unknown>, BOARD_FIELDS)
+    if ('error' in partition) return json(partition, 400)
+    boardMetadata = partition.metadata
+    // Board block wins over stale projection snapshot values.
+    Object.assign(incoming, partition.fields)
+  }
+
+
+  // --- Deterministic operational overrides (exact enums only) ---
+  let derivedOverrides: Record<string, unknown> = {}
+  if (body.derived_execution_state !== undefined && body.derived_execution_state !== null) {
+    const parsedDerived = parseDerivedExecutionState(body.derived_execution_state)
+    if ('error' in parsedDerived) return json(parsedDerived, 400)
+    derivedOverrides = parsedDerived.overrides
+    Object.assign(incoming, derivedOverrides)
   }
 
   if (sourceStateSha !== null) incoming.source_state_sha = sourceStateSha
   if (semanticFingerprint !== null) incoming.semantic_fingerprint = semanticFingerprint
+
 
   // --- Collections validation ---
   const collectionPayloads: Partial<
@@ -567,6 +587,10 @@ Deno.serve(async (req) => {
     created,
     project_id: projectId,
     updated_fields: Object.keys(updates),
+    // Accepted at the boundary, intentionally not persisted (no dedicated columns).
+    board_metadata: boardMetadata,
+    derived_execution_overrides: derivedOverrides,
+
 
     collections: collectionResults,
     // DEC-012 — explicit observation stats for the execution read-model.
