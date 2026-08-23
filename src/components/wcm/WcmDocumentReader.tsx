@@ -1,6 +1,6 @@
 import { ArrowLeft, ExternalLink, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import WcmMarkdown from './WcmMarkdown';
+import WcmDocumentBody from './WcmDocumentBody';
 import WcmDocumentActions from './WcmDocumentActions';
 import WcmUnapprovedBadge from './WcmUnapprovedBadge';
 import WcmUnknownStateResolver from './WcmUnknownStateResolver';
