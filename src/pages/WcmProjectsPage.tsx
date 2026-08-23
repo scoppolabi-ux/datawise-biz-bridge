@@ -45,12 +45,12 @@ const WcmProjectsPage = () => {
                 to={`/wcm/${project.project_id}`}
                 className="block rounded-xl border border-wcm-line bg-wcm-surface/60 p-4 transition-colors hover:border-wcm-accent/50 hover:bg-wcm-panel/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-wcm-accent"
               >
-                <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+                <div className="flex flex-col gap-2">
                   <div className="min-w-0">
-                    <h2 className="text-sm font-semibold text-wcm-strong sm:text-base">
+                    <h2 className="line-clamp-2 break-words text-sm font-semibold leading-snug text-wcm-strong sm:text-base">
                       {project.project_name}
                     </h2>
-                    <p className="mt-0.5 font-mono text-[11px] text-wcm-dim">
+                    <p className="mt-0.5 truncate font-mono text-[11px] text-wcm-dim">
                       {project.project_id}
                     </p>
                   </div>
@@ -61,9 +61,9 @@ const WcmProjectsPage = () => {
                         statusClasses(project.status),
                       )}
                     >
-                      {STATUS_LABELS[project.status] ?? project.status}
+                      {projectStatusLabel(project.status)}
                     </span>
-                    {project.phase && (
+                    {isCompactPhase(project.phase) && (
                       <span className="rounded-md border border-wcm-line-strong bg-wcm-panel/60 px-2 py-0.5 font-mono text-[11px] text-wcm-text">
                         {project.phase}
                       </span>
