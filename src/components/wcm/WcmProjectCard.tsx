@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import type { WcmProjectStatus } from '@/hooks/useWcmProjects';
 import type { WcmKnowledgeHealth } from '@/hooks/useWcmKnowledgeHealth';
 import type { WcmExecutionWorkflow } from '@/hooks/useWcmExecutionWorkflows';
-import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
+import WcmKnowledgeTrafficLight from './WcmKnowledgeTrafficLight';
 import WcmExecutionSignal from './WcmExecutionSignal';
 import {
   heartbeatOutcomeDisplay,
