@@ -3,7 +3,11 @@ import { canDownload, parseManifest, statusLabel, type WcmReleaseDocument } from
 
 const base: WcmReleaseDocument = {
   document_id: 'wcm-user-manual',
+  scope: 'GENERAL',
+  project_id: null,
+  project_label: null,
   title: 'WCM User Manual',
+
   audience: 'Operatori Mission Control',
   description: 'Manuale operativo',
   version: 'V0.1',
@@ -19,7 +23,11 @@ const base: WcmReleaseDocument = {
   download_filename_docx: 'WCM_User_Manual_V0_1.docx',
   download_filename_pdf: 'WCM_User_Manual_V0_1.pdf',
   qa_status: 'BUILD_PASS',
+  visual_qa_status: 'PASS',
+  docx_page_count: null,
+  pdf_page_count: null,
 };
+
 
 describe('parseManifest', () => {
   it('parses a well formed manifest', () => {
