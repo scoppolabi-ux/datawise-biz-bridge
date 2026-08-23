@@ -2,7 +2,11 @@ import { Link } from 'react-router-dom';
 import { AlertTriangle, ArrowRight, FileText, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import WcmPageShell from '@/components/wcm/WcmPageShell';
-import { STATUS_LABELS, statusClasses } from '@/components/wcm/wcmFormat';
+import {
+  isCompactPhase,
+  projectStatusLabel,
+  statusClasses,
+} from '@/components/wcm/wcmFormat';
 import { isOpenNeed, useWcmNeeds, useWcmProjects } from '@/hooks/useWcmProjects';
 
 const WcmProjectsPage = () => {
