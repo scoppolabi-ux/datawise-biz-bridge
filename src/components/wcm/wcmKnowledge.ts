@@ -30,8 +30,62 @@ export const healthClasses = (status: WcmHealthStatus) => {
 
 export const normalizeHealthStatus = (value: string | null | undefined): WcmHealthStatus => {
   const s = (value ?? '').trim().toUpperCase();
+  if (s === 'CURRENT') return 'HEALTHY';
   if (s === 'HEALTHY' || s === 'DEGRADED' || s === 'STALE' || s === 'CRITICAL') return s;
   return 'UNKNOWN';
+};
+
+/**
+ * Semaforo Knowledge Health: mapping ESATTO status -> colore + label.
+ * Nessuna inferenza: ogni valore non mappato resta neutro.
+ */
+export type KnowledgeTrafficLight = {
+  tone: 'green' | 'amber' | 'red' | 'neutral';
+  label: string;
+  dotClass: string;
+  wrapClass: string;
+};
+
+export const knowledgeTrafficLight = (status: WcmHealthStatus): KnowledgeTrafficLight => {
+  switch (status) {
+    case 'HEALTHY':
+      return {
+        tone: 'green',
+        label: 'Conoscenza in salute',
+        dotClass: 'bg-emerald-400',
+        wrapClass: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200',
+      };
+    case 'DEGRADED':
+    case 'STALE':
+      return {
+        tone: 'amber',
+        label: 'Conoscenza da monitorare',
+        dotClass: 'bg-amber-400',
+        wrapClass: 'border-amber-500/40 bg-amber-500/10 text-amber-200',
+      };
+    case 'CRITICAL':
+      return {
+        tone: 'red',
+        label: 'Conoscenza bloccante',
+        dotClass: 'bg-wcm-alert-fg',
+        wrapClass: 'border-wcm-alert/40 bg-wcm-alert/10 text-wcm-alert-fg',
+      };
+    default:
+      return {
+        tone: 'neutral',
+        label: 'Knowledge Health non disponibile',
+        dotClass: 'bg-wcm-dim',
+        wrapClass: 'border-wcm-line-strong bg-wcm-panel/60 text-wcm-muted',
+      };
+  }
+};
+
+/** Punteggio strutturato, solo se realmente presente e finito. */
+export const knowledgeScoreOf = (
+  health: WcmKnowledgeHealth | null | undefined,
+): number | null => {
+  const raw = health?.knowledge_integrity_score;
+  return typeof raw === 'number' && Number.isFinite(raw) ? raw : null;
 };
 
 /**

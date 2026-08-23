@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import type { WcmProjectStatus } from '@/hooks/useWcmProjects';
 import type { WcmKnowledgeHealth } from '@/hooks/useWcmKnowledgeHealth';
 import type { WcmExecutionWorkflow } from '@/hooks/useWcmExecutionWorkflows';
-import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
+import WcmKnowledgeTrafficLight from './WcmKnowledgeTrafficLight';
 import WcmExecutionSignal from './WcmExecutionSignal';
 import {
   heartbeatOutcomeDisplay,
@@ -137,8 +137,9 @@ const WcmProjectCard = ({
         </div>
 
 
+        <WcmKnowledgeTrafficLight health={knowledgeHealth} showSynapses />
+
         <div className="flex flex-wrap items-center gap-2">
-          <WcmKnowledgeHealthBadge health={knowledgeHealth} showSynapses />
           <WcmExecutionSignal
             workflows={executionWorkflows}
             projectId={project.project_id}
