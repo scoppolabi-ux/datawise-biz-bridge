@@ -14,7 +14,13 @@ import type { WcmKnowledgeHealth } from '@/hooks/useWcmKnowledgeHealth';
 import type { WcmExecutionWorkflow } from '@/hooks/useWcmExecutionWorkflows';
 import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
 import WcmExecutionSignal from './WcmExecutionSignal';
-import { STATUS_LABELS, statusClasses, relativeTime } from './wcmFormat';
+import {
+  heartbeatOutcomeDisplay,
+  isCompactPhase,
+  projectStatusLabel,
+  relativeTime,
+  statusClasses,
+} from './wcmFormat';
 
 
 
@@ -55,15 +61,16 @@ const WcmProjectCard = ({
 
 
   const heartbeat = relativeTime(project.heartbeat_last_run_at);
+  const outcome = heartbeatOutcomeDisplay(project.heartbeat_last_outcome);
   const toRead = project.documents_to_read_count ?? 0;
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-wcm-line bg-wcm-surface/60 transition-colors hover:border-wcm-line-strong">
       <header className="border-b border-wcm-line p-4">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-2">
           <div className="min-w-0">
             <Link to={`/wcm/${project.project_id}`} className="group">
-              <h2 className="truncate text-base font-semibold text-wcm-strong group-hover:text-wcm-accent">
+              <h2 className="line-clamp-2 break-words text-base font-semibold leading-snug text-wcm-strong group-hover:text-wcm-accent">
                 {project.project_name}
               </h2>
             </Link>
@@ -71,16 +78,16 @@ const WcmProjectCard = ({
               {project.project_id}
             </p>
           </div>
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <span
               className={cn(
                 'rounded-md border px-2 py-0.5 text-[11px] font-medium',
                 statusClasses(project.status),
               )}
             >
-              {STATUS_LABELS[project.status] ?? project.status}
+              {projectStatusLabel(project.status)}
             </span>
-            {project.phase && (
+            {isCompactPhase(project.phase) && (
               <span className="rounded-md border border-wcm-line-strong bg-wcm-panel/60 px-2 py-0.5 font-mono text-[11px] text-wcm-text">
                 {project.phase}
               </span>
@@ -117,14 +124,18 @@ const WcmProjectCard = ({
               <Clock className="h-3 w-3" />
               Heartbeat
             </div>
-            <p className="mt-0.5 truncate text-xs text-wcm-text">
-              {heartbeat ?? '—'}
-              {project.heartbeat_last_outcome && (
-                <span className="text-wcm-dim"> · {project.heartbeat_last_outcome}</span>
-              )}
-            </p>
+            <p className="mt-0.5 truncate text-xs text-wcm-text">{heartbeat ?? '—'}</p>
+            {outcome && (
+              <p
+                className="mt-0.5 truncate text-[11px] text-wcm-dim"
+                title={outcome.known ? undefined : outcome.raw ?? undefined}
+              >
+                {outcome.label}
+              </p>
+            )}
           </div>
         </div>
+
 
         <div className="flex flex-wrap items-center gap-2">
           <WcmKnowledgeHealthBadge health={knowledgeHealth} showSynapses />
