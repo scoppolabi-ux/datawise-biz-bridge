@@ -1,13 +1,17 @@
 /**
- * WCM Documentation Center V0.9 — presentation helpers.
+ * WCM Documentation Center — presentation helpers.
  *
- * Read-only: the manifest and the release assets are static build-time
- * artifacts produced by `scripts/wcm-release.mjs`. Nothing here writes to
- * GitHub or to the backend.
+ * Read-only: manifest and release assets are static build-time artifacts.
+ * Nothing here writes to GitHub or to the backend.
  */
+
+export type WcmDocumentScope = 'wcm' | 'project';
 
 export type WcmReleaseDocument = {
   document_id: string;
+  scope: WcmDocumentScope;
+  project_id: string | null;
+  project_label: string | null;
   title: string;
   audience: string;
   description: string;
@@ -24,6 +28,9 @@ export type WcmReleaseDocument = {
   download_filename_docx: string | null;
   download_filename_pdf: string | null;
   qa_status: string;
+  visual_qa_status: string;
+  docx_page_count: number | null;
+  pdf_page_count: number | null;
 };
 
 export type WcmReleaseManifest = {
@@ -38,7 +45,6 @@ export const MANIFEST_PATH = 'wcm/documentation/releases/manifest.json';
 export const SOURCE_OF_TRUTH_NOTE =
   'GitHub main è la source of truth. Word e PDF sono release derivate: il download non equivale ad approvazione né ad autorità.';
 
-/** Resolve a release path against the app base URL (works on subpath deploys). */
 export function assetUrl(releasePath: string): string {
   const base = (import.meta.env?.BASE_URL ?? '/').replace(/\/+$/, '');
   return `${base}/${releasePath.replace(/^\/+/, '')}`;
@@ -47,11 +53,9 @@ export function assetUrl(releasePath: string): string {
 const str = (value: unknown): string | null =>
   typeof value === 'string' && value.trim() ? value.trim() : null;
 
-/**
- * Strict manifest parsing: a document is kept only when its identity and its
- * markdown snapshot are present. Missing DOCX/PDF entries are surfaced as
- * `null` so the UI can hide the download instead of faking it.
- */
+const intOrNull = (value: unknown): number | null =>
+  typeof value === 'number' && Number.isInteger(value) && value >= 0 ? value : null;
+
 export function parseManifest(raw: unknown): WcmReleaseManifest | null {
   if (!raw || typeof raw !== 'object') return null;
   const data = raw as Record<string, unknown>;
@@ -65,8 +69,14 @@ export function parseManifest(raw: unknown): WcmReleaseManifest | null {
     const markdown_path = str(d.markdown_path);
     if (!document_id || !markdown_path) continue;
 
+    const scopeRaw = (str(d.scope) ?? 'wcm').toLowerCase();
+    const scope: WcmDocumentScope = scopeRaw === 'project' ? 'project' : 'wcm';
+
     documents.push({
       document_id,
+      scope,
+      project_id: scope === 'project' ? str(d.project_id) : null,
+      project_label: scope === 'project' ? str(d.project_label) : null,
       title: str(d.title) ?? document_id,
       audience: str(d.audience) ?? '',
       description: str(d.description) ?? '',
@@ -83,6 +93,9 @@ export function parseManifest(raw: unknown): WcmReleaseManifest | null {
       download_filename_docx: str(d.download_filename_docx),
       download_filename_pdf: str(d.download_filename_pdf),
       qa_status: (str(d.qa_status) ?? 'UNKNOWN').toUpperCase(),
+      visual_qa_status: (str(d.visual_qa_status) ?? 'PENDING').toUpperCase(),
+      docx_page_count: intOrNull(d.docx_page_count),
+      pdf_page_count: intOrNull(d.pdf_page_count),
     });
   }
 
@@ -94,9 +107,13 @@ export function parseManifest(raw: unknown): WcmReleaseManifest | null {
   };
 }
 
-/** A download is offered only for a QA-passed asset that actually exists. */
+/**
+ * Binary downloads are exposed only after structural build QA AND explicit
+ * visual QA have both passed. This prevents uninspected release artifacts from
+ * being presented as distributable.
+ */
 export function canDownload(doc: WcmReleaseDocument, format: 'docx' | 'pdf'): boolean {
-  if (doc.qa_status !== 'BUILD_PASS') return false;
+  if (doc.qa_status !== 'BUILD_PASS' || doc.visual_qa_status !== 'PASS') return false;
   return Boolean(format === 'docx' ? doc.docx_path : doc.pdf_path);
 }
 
