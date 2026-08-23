@@ -3,7 +3,7 @@ import { canDownload, parseManifest, statusLabel, type WcmReleaseDocument } from
 
 const base: WcmReleaseDocument = {
   document_id: 'wcm-user-manual',
-  scope: 'GENERAL',
+  scope: 'wcm',
   project_id: null,
   project_label: null,
   title: 'WCM User Manual',
