@@ -300,3 +300,53 @@ Deno.test('learning_inbox still rejects truly unknown top-level keys and invalid
   assert('error' in parseLearningInbox({ events: [], review_window: 'not-an-object' }))
   assert('error' in parseLearningInbox({ events: [], classification_notes: ['nope'] }))
 })
+
+// ------------------------------------------------- source_ref regression
+
+Deno.test('learning_inbox accepts canonical source_ref and maps it exactly to the row', () => {
+  const parsed = parseLearningInbox({
+    schema_version: 1,
+    events: [
+      {
+        event_id: 'evt-ecef7b114b080003',
+        detected_at: '2026-08-22T09:00:00Z',
+        source_sha: 'bbb',
+        source_ref: 'commit-prefix:abc1234',
+        source_type: 'PROJECT_DELTA',
+        summary: 'Delta già coperto',
+        changed_paths: ['projects/prima-di-noi/x.md'],
+        review_status: 'DUPLICATE',
+        reviewed_at: '2026-08-22T10:00:00Z',
+        review_note: 'Already covered by WCM-LRN-005',
+        linked_learning_ids: ['WCM-LRN-005'],
+      },
+      {
+        event_id: 'evt-no-ref',
+        summary: 'No source_ref supplied',
+        changed_paths: [],
+      },
+    ],
+  })
+  assert(!('error' in parsed))
+  if ('error' in parsed) return
+  assertEquals(parsed.rows.length, 2)
+  assertEquals(parsed.rows[0].source_ref, 'commit-prefix:abc1234')
+  // Absent from source -> null, never inferred from source_sha or anything else.
+  assertEquals(parsed.rows[1].source_ref, null)
+})
+
+Deno.test('learning_inbox normalizes blank source_ref to null (trim/null only)', () => {
+  const parsed = parseLearningInbox({
+    events: [{ event_id: 'EV-X', source_ref: '   ', changed_paths: [] }],
+  })
+  assert(!('error' in parsed))
+  if ('error' in parsed) return
+  assertEquals(parsed.rows[0].source_ref, null)
+})
+
+Deno.test('learning_inbox still rejects truly unknown evidence keys', () => {
+  const parsed = parseLearningInbox({
+    events: [{ event_id: 'EV-Y', source_ref: 'commit-prefix:abc1234', weird_key: true }],
+  })
+  assert('error' in parsed)
+})
