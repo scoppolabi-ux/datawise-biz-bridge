@@ -432,7 +432,7 @@ Deno.test('method_change_gates defaults absent status to OPEN', () => {
 })
 
 Deno.test('method_change_gates rejects unknown status fail-closed', () => {
-  for (const status of ['PENDING', 'VALIDATED', 'open', 'APPROVED ', 'DONE']) {
+  for (const status of ['PENDING', 'VALIDATED', 'open', 'DONE', 'CHANGE_REQUESTED']) {
     const parsed = parseMethodChangeGates({
       gates: [
         { gate_id: 'WCM-GATE-001', gate_type: 'WCM_CHANGE_GATE', title: 'Gate', status },
