@@ -196,9 +196,25 @@ export function parseLearningInbox(
     events = input
   } else if (isObject(input)) {
     const unknown = Object.keys(input).filter(
-      (k) => !['schema_version', 'updated_at', 'cursor_sha', 'events'].includes(k),
+      (k) =>
+        ![
+          'schema_version',
+          'updated_at',
+          'cursor_sha',
+          'review_window',
+          'classification_notes',
+          'events',
+        ].includes(k),
     )
     if (unknown.length > 0) return { error: 'Unsupported learning_inbox fields', fields: unknown }
+    for (const key of ['review_window', 'classification_notes'] as const) {
+      const value = input[key]
+      if (value !== undefined && value !== null && !isObject(value)) {
+        return { error: `learning_inbox.${key} must be an object or null` }
+      }
+      // Canonical source metadata: preserved as metadata only, never a DB column.
+      metadata[key] = value ?? null
+    }
     metadata.schema_version = input.schema_version ?? null
     metadata.updated_at = input.updated_at ?? null
     metadata.cursor_sha = input.cursor_sha ?? null
