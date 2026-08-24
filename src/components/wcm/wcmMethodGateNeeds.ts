@@ -1,5 +1,9 @@
 import type { WcmMethodChangeGate } from '@/hooks/useWcmMethodLearning';
 import type { WcmProjectNeed } from '@/hooks/useWcmProjects';
+import {
+  hasActiveMethodCommand,
+  type WcmMethodCommandRequest,
+} from '@/hooks/useWcmMethodCommands';
 
 /**
  * Exact need_type for global Method Change Gates surfaced in the
@@ -16,6 +20,17 @@ export const WCM_GATE_TARGET_PATH = '/wcm/learning';
 
 export const isMethodGateNeed = (need: WcmProjectNeed): boolean =>
   need.need_type === WCM_CHANGE_GATE;
+
+/**
+ * Human attention vs system-pending classification for an OPEN global gate.
+ * An active method command (SUBMITTED/CLAIMED/RECORDED) means the authority
+ * is already recorded and pending machine execution: no further click is
+ * required, but the gate stays visible until it leaves OPEN.
+ */
+export const gateNeedDerivedState = (
+  latestMethodCommand: WcmMethodCommandRequest | null | undefined,
+): 'NEEDS_STEFANO' | 'PENDING_SYSTEM' =>
+  hasActiveMethodCommand(latestMethodCommand) ? 'PENDING_SYSTEM' : 'NEEDS_STEFANO';
 
 /**
  * Maps a global Method Change Gate onto the virtual-need shape used by the
