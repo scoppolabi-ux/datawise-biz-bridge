@@ -174,6 +174,7 @@ const EVIDENCE_KEYS = [
   'event_id',
   'detected_at',
   'source_sha',
+  'source_ref',
   'source_committed_at',
   'source_type',
   'summary',
@@ -245,6 +246,9 @@ export function parseLearningInbox(
       event_id: normalize(item.event_id),
       detected_at: normalize(item.detected_at),
       source_sha: normalize(item.source_sha),
+      // Canonical source ref (e.g. `commit-prefix:...`): mapped exactly from
+      // source with trim/null normalization only, never inferred.
+      source_ref: normalize(item.source_ref),
       source_committed_at: normalize(item.source_committed_at),
       source_type: normalize(item.source_type),
       summary: normalize(item.summary),
