@@ -367,6 +367,26 @@ const parseGateRevision = (value: unknown): number | null => {
   return value
 }
 
+/**
+ * Exact allowed lifecycle for GLOBAL method change gates. Absent status
+ * defaults to OPEN (legacy baseline); any supplied status outside this set
+ * fails closed. No fuzzy interpretation.
+ */
+const GATE_STATUSES = [
+  'OPEN',
+  'APPROVED',
+  'CHANGES_REQUESTED',
+  'REJECTED',
+  'EXECUTED',
+  'CLOSED',
+] as readonly string[]
+
+const parseGateStatus = (value: unknown): string | null => {
+  const status = normalize(value)
+  if (status === null) return 'OPEN'
+  return GATE_STATUSES.includes(status) ? status : null
+}
+
 export function parseMethodChangeGates(
   input: unknown,
 ): { rows: Record<string, unknown>[]; metadata: Record<string, unknown> } | ParseError {
@@ -417,13 +437,17 @@ export function parseMethodChangeGates(
     if (revision === null) {
       return { error: 'revision must be a positive integer >= 1', index }
     }
+    const status = parseGateStatus(item.status)
+    if (status === null) {
+      return { error: 'status must be one of OPEN, APPROVED, CHANGES_REQUESTED, REJECTED, EXECUTED, CLOSED', index }
+    }
 
     rows.push({
       gate_id: normalize(item.gate_id),
       gate_type: gateType,
       learning_id: normalize(item.learning_id),
       title: normalize(item.title),
-      status: normalize(item.status) ?? 'OPEN',
+      status,
       authority_required: normalize(item.authority_required),
       procedure_refs: procedureRefs,
       impact_preview_refs: impactRefs,

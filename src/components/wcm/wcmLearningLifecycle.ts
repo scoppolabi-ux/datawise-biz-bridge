@@ -48,6 +48,7 @@ export const learningStatusLabel = (raw: string | null | undefined): string => {
 const GATE_STATUS_LABELS: Record<string, string> = {
   OPEN: 'APERTO',
   APPROVED: 'APPROVATO',
+  CHANGES_REQUESTED: 'MODIFICHE RICHIESTE',
   REJECTED: 'RESPINTO',
   EXECUTED: 'ESEGUITO',
   CLOSED: 'CHIUSO',
