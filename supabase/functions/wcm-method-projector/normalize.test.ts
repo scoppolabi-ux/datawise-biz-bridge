@@ -402,3 +402,42 @@ Deno.test('method_change_gates still rejects truly unknown gate keys', () => {
   })
   assert('error' in parsed)
 })
+
+Deno.test('method_change_gates accepts every allowed status exactly', () => {
+  const statuses = ['OPEN', 'APPROVED', 'CHANGES_REQUESTED', 'REJECTED', 'EXECUTED', 'CLOSED']
+  for (const status of statuses) {
+    const parsed = parseMethodChangeGates({
+      gates: [
+        {
+          gate_id: 'WCM-GATE-001',
+          gate_type: 'WCM_CHANGE_GATE',
+          title: 'Gate',
+          status,
+        },
+      ],
+    })
+    assert(!('error' in parsed), `status ${status} must parse`)
+    if ('error' in parsed) return
+    assertEquals(parsed.rows[0].status, status)
+  }
+})
+
+Deno.test('method_change_gates defaults absent status to OPEN', () => {
+  const parsed = parseMethodChangeGates({
+    gates: [{ gate_id: 'WCM-GATE-001', gate_type: 'WCM_CHANGE_GATE', title: 'Gate' }],
+  })
+  assert(!('error' in parsed))
+  if ('error' in parsed) return
+  assertEquals(parsed.rows[0].status, 'OPEN')
+})
+
+Deno.test('method_change_gates rejects unknown status fail-closed', () => {
+  for (const status of ['PENDING', 'VALIDATED', 'open', 'DONE', 'CHANGE_REQUESTED']) {
+    const parsed = parseMethodChangeGates({
+      gates: [
+        { gate_id: 'WCM-GATE-001', gate_type: 'WCM_CHANGE_GATE', title: 'Gate', status },
+      ],
+    })
+    assert('error' in parsed, `status ${JSON.stringify(status)} must be rejected`)
+  }
+})
