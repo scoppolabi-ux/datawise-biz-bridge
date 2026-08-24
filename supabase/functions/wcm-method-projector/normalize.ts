@@ -383,8 +383,9 @@ const GATE_STATUSES = [
 
 const parseGateStatus = (value: unknown): string | null => {
   const status = normalize(value)
-  if (status === null) return 'OPEN'
-  return GATE_STATUSES.includes(status) ? status : null
+  if (status === null || status === undefined) return 'OPEN'
+  const s = status as string
+  return GATE_STATUSES.includes(s) ? s : null
 }
 
 export function parseMethodChangeGates(
