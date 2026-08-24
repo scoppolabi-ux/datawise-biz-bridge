@@ -125,7 +125,9 @@ async function buildPdfBlob(doc: WcmArtifactSource): Promise<Blob> {
   const meta = artifactMeta(doc);
 
   return new Promise<Blob>((resolve, reject) => {
-    const pdf = new PDFDocument(PDF_OPTIONS(meta)) as unknown as {
+    // `font: null` skips pdfkit's standard-font bootstrap: the browser build
+    // ships no AFM metrics and we always render with the embedded DejaVu set.
+    const pdf = new PDFDocument({ ...PDF_OPTIONS(meta), font: null }) as unknown as {
       registerFont: (name: string, data: ArrayBuffer | Uint8Array) => void;
       on: (event: string, handler: (value?: unknown) => void) => void;
       end: () => void;
