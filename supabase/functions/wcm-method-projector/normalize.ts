@@ -467,7 +467,14 @@ export function parseMethodChangeGates(
     }
     const status = parseGateStatus(item.status)
     if (status === null) {
-      return { error: 'status must be one of OPEN, APPROVED, CHANGES_REQUESTED, REJECTED, EXECUTED, CLOSED', index }
+      return { error: 'status must be one of OPEN, AUTHORITY_APPROVED, CHANGES_REQUESTED, REJECTED, EXECUTED', index }
+    }
+    const decisionCommandType = parseDecisionCommandType(item.decision_command_type)
+    if (decisionCommandType === undefined) {
+      return {
+        error: 'decision_command_type must be one of APPROVE_CHANGE_GATE, REQUEST_CHANGES, REJECT_CHANGE_GATE or null',
+        index,
+      }
     }
 
     rows.push({
@@ -485,6 +492,10 @@ export function parseMethodChangeGates(
       source_path: normalize(item.source_path),
       source_sha: normalize(item.source_sha),
       revision,
+      decision_command_id: normalize(item.decision_command_id),
+      decision_command_type: decisionCommandType,
+      decision_note: normalize(item.decision_note),
+      authority_receipt_path: normalize(item.authority_receipt_path),
       sort_order: typeof item.sort_order === 'number' ? item.sort_order : index,
     })
   }
