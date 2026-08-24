@@ -178,10 +178,9 @@ export const useWcmNeedStates = () => {
     .filter(isOpenGate)
     .map((gate) => {
       const latestMethod = latestMethodByGate.get(gate.gate_id) ?? null;
-      const active = hasActiveMethodCommand(latestMethod);
       return {
         virtual: true,
-        derived: active ? ('PENDING_SYSTEM' as const) : ('NEEDS_STEFANO' as const),
+        derived: gateNeedDerivedState(latestMethod),
         latestCommand: null,
         latestMethodCommand: latestMethod,
         need: methodGateToNeed(gate),

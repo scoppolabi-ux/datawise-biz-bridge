@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  gateNeedDerivedState,
   isMethodGateNeed,
   methodGateToNeed,
   needScopeLabel,
@@ -9,6 +10,7 @@ import {
 } from './wcmMethodGateNeeds';
 import { needTargetPath, type WcmProjectNeed } from '@/hooks/useWcmProjects';
 import type { WcmMethodChangeGate } from '@/hooks/useWcmMethodLearning';
+import type { WcmMethodCommandRequest } from '@/hooks/useWcmMethodCommands';
 
 const gate: WcmMethodChangeGate = {
   id: 'uuid-1',
