@@ -440,13 +440,17 @@ const WcmLearningPage = () => {
                       </ul>
                     </div>
                   )}
+                  {open && (
+                    <WcmMethodGateCommands gate={gate} commands={methodCommands ?? []} />
+                  )}
                 </li>
               );
             })}
           </ul>
           <p className="mt-3 rounded-lg border border-wcm-line bg-wcm-bg/40 p-3 text-[11px] leading-relaxed text-wcm-dim">
-            Esecuzione dell’autorità non disponibile in Mission Control: la decisione sul gate si
-            esprime su GitHub (sorgente di verità). I gate aperti compaiono anche in
+            I comandi di autorità registrano la decisione autenticata in Mission Control; la
+            promozione del learning e la modifica della baseline avvengono solo su GitHub
+            (sorgente di verità), tramite il workflow WCM-LAB. I gate aperti compaiono anche in
             «Needs Stefano» come <span className="font-mono">WCM_CHANGE_GATE</span>.
           </p>
         </Section>
