@@ -350,3 +350,55 @@ Deno.test('learning_inbox still rejects truly unknown evidence keys', () => {
   })
   assert('error' in parsed)
 })
+
+// ------------------------------------------------- gate revision regression
+
+Deno.test('method_change_gates accepts explicit positive integer revision', () => {
+  const parsed = parseMethodChangeGates({
+    schema_version: 1,
+    gates: [
+      {
+        gate_id: 'WCM-GATE-001',
+        gate_type: 'WCM_CHANGE_GATE',
+        learning_id: 'WCM-LRN-004',
+        title: 'Promozione WCM-LRN-004',
+        status: 'OPEN',
+        authority_required: 'STEFANO_OWNER',
+        procedure_refs: ['PROC-004'],
+        impact_preview_refs: [],
+        revision: 3,
+        source_sha: 'abc123',
+      },
+    ],
+  })
+  assert(!('error' in parsed))
+  if ('error' in parsed) return
+  assertEquals(parsed.rows[0].revision, 3)
+  assertEquals(parsed.rows[0].source_sha, 'abc123')
+})
+
+Deno.test('method_change_gates defaults absent revision to 1 (legacy baseline)', () => {
+  const parsed = parseMethodChangeGates({
+    gates: [{ gate_id: 'WCM-GATE-002', title: 'Legacy gate' }],
+  })
+  assert(!('error' in parsed))
+  if ('error' in parsed) return
+  assertEquals(parsed.rows[0].revision, 1)
+  assertEquals(parsed.rows[0].status, 'OPEN')
+})
+
+Deno.test('method_change_gates rejects non-positive or non-integer revision', () => {
+  for (const revision of [0, -1, 1.5, '2', NaN]) {
+    const parsed = parseMethodChangeGates({
+      gates: [{ gate_id: 'WCM-GATE-003', title: 'Bad revision', revision }],
+    })
+    assert('error' in parsed, `revision ${String(revision)} must be rejected`)
+  }
+})
+
+Deno.test('method_change_gates still rejects truly unknown gate keys', () => {
+  const parsed = parseMethodChangeGates({
+    gates: [{ gate_id: 'WCM-GATE-004', title: 'Unknown key', weird_key: true }],
+  })
+  assert('error' in parsed)
+})

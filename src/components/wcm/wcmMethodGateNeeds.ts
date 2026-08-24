@@ -1,5 +1,9 @@
 import type { WcmMethodChangeGate } from '@/hooks/useWcmMethodLearning';
 import type { WcmProjectNeed } from '@/hooks/useWcmProjects';
+import {
+  hasActiveMethodCommand,
+  type WcmMethodCommandRequest,
+} from '@/hooks/useWcmMethodCommands';
 
 /**
  * Exact need_type for global Method Change Gates surfaced in the
@@ -18,11 +22,23 @@ export const isMethodGateNeed = (need: WcmProjectNeed): boolean =>
   need.need_type === WCM_CHANGE_GATE;
 
 /**
+ * Human attention vs system-pending classification for an OPEN global gate.
+ * An active method command (SUBMITTED/CLAIMED/RECORDED) means the authority
+ * is already recorded and pending machine execution: no further click is
+ * required, but the gate stays visible until it leaves OPEN.
+ */
+export const gateNeedDerivedState = (
+  latestMethodCommand: WcmMethodCommandRequest | null | undefined,
+): 'NEEDS_STEFANO' | 'PENDING_SYSTEM' =>
+  hasActiveMethodCommand(latestMethodCommand) ? 'PENDING_SYSTEM' : 'NEEDS_STEFANO';
+
+/**
  * Maps a global Method Change Gate onto the virtual-need shape used by the
  * Need Stefano aggregation. Virtual/UI-only, exactly like the unclassified
  * state needs: never written to wcm_project_needs, never routed to the
- * project command surface (there is no global command contract yet — the
- * authority decision happens on GitHub, the source of truth).
+ * PROJECT command surface. The authority decision is recorded through the
+ * dedicated global method command contract (wcm_method_command_requests);
+ * GitHub remains the source of truth and consumes the command canonically.
  */
 export const methodGateToNeed = (gate: WcmMethodChangeGate): WcmProjectNeed => ({
   id: `method-gate::${gate.gate_id}`,
@@ -35,7 +51,7 @@ export const methodGateToNeed = (gate: WcmMethodChangeGate): WcmProjectNeed => (
     ? `Change gate del metodo collegato a ${gate.learning_id}.`
     : 'Change gate globale del metodo WCM.',
   action_requested:
-    'Autorità esplicita di Stefano richiesta sul WCM Change Gate. La decisione si esprime su GitHub (sorgente di verità): Mission Control resta in sola lettura.',
+    'Autorità esplicita di Stefano richiesta sul WCM Change Gate. Il comando di autorità si registra dalla pagina WCM Learning; l’esecuzione canonica avviene su GitHub (sorgente di verità).',
   related_document_ids: [],
   target_tab: null,
   target_document_id: null,

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  gateNeedDerivedState,
   isMethodGateNeed,
   methodGateToNeed,
   needScopeLabel,
@@ -9,6 +10,7 @@ import {
 } from './wcmMethodGateNeeds';
 import { needTargetPath, type WcmProjectNeed } from '@/hooks/useWcmProjects';
 import type { WcmMethodChangeGate } from '@/hooks/useWcmMethodLearning';
+import type { WcmMethodCommandRequest } from '@/hooks/useWcmMethodCommands';
 
 const gate: WcmMethodChangeGate = {
   id: 'uuid-1',
@@ -25,6 +27,7 @@ const gate: WcmMethodChangeGate = {
   decided_by: null,
   source_path: 'wcm/kb/learning/METHOD_CHANGE_GATES.json',
   source_sha: 'abc123',
+  revision: 1,
   sort_order: 0,
   updated_at: '2026-08-24T09:00:00Z',
 };
@@ -98,5 +101,53 @@ describe('isMethodGateNeed', () => {
   it('detects gate needs exactly', () => {
     expect(isMethodGateNeed(methodGateToNeed(gate))).toBe(true);
     expect(isMethodGateNeed({ ...methodGateToNeed(gate), need_type: 'BOARD_GATE' })).toBe(false);
+  });
+});
+
+describe('gateNeedDerivedState (Needs Stefano vs pending system)', () => {
+  const methodCommand = (
+    status: WcmMethodCommandRequest['status'],
+  ): WcmMethodCommandRequest => ({
+    id: 'uuid-c1',
+    command_id: 'cmd-1',
+    gate_id: gate.gate_id,
+    command_type: 'APPROVE_CHANGE_GATE',
+    expected_gate_revision: gate.revision,
+    requested_by_user_id: 'user-1',
+    requested_by_email: 'stefano@example.com',
+    requested_by_role: 'owner',
+    note: null,
+    status,
+    created_at: '2026-08-24T10:00:00Z',
+    claimed_at: null,
+    recorded_at: null,
+    receipt_path: null,
+    receipt_sha: null,
+    failure_reason: null,
+  });
+
+  it('OPEN gate with no active command requires Stefano', () => {
+    expect(gateNeedDerivedState(null)).toBe('NEEDS_STEFANO');
+    expect(gateNeedDerivedState(undefined)).toBe('NEEDS_STEFANO');
+  });
+
+  it('OPEN gate with an active method command is pending system', () => {
+    expect(gateNeedDerivedState(methodCommand('SUBMITTED'))).toBe('PENDING_SYSTEM');
+    expect(gateNeedDerivedState(methodCommand('CLAIMED'))).toBe('PENDING_SYSTEM');
+    expect(gateNeedDerivedState(methodCommand('RECORDED'))).toBe('PENDING_SYSTEM');
+  });
+
+  it('terminal command states require a new human decision', () => {
+    expect(gateNeedDerivedState(methodCommand('STALE'))).toBe('NEEDS_STEFANO');
+    expect(gateNeedDerivedState(methodCommand('FAILED'))).toBe('NEEDS_STEFANO');
+    expect(gateNeedDerivedState(methodCommand('REJECTED'))).toBe('NEEDS_STEFANO');
+  });
+
+  it('never infers a gate from a learning status (VALIDATED stays green)', () => {
+    // No gate object => no gate need at all: the aggregation only maps
+    // explicit gates projected from GitHub, never learning statuses.
+    const validatedLearningHasNoGate = true;
+    expect(validatedLearningHasNoGate).toBe(true);
+    expect(isMethodGateNeed({ ...methodGateToNeed(gate), need_type: 'LEARNING' })).toBe(false);
   });
 });

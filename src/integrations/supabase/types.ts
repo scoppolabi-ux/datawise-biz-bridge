@@ -165,6 +165,7 @@ export type Database = {
           learning_id: string | null
           opened_at: string | null
           procedure_refs: Json
+          revision: number
           sort_order: number
           source_path: string | null
           source_sha: string | null
@@ -184,6 +185,7 @@ export type Database = {
           learning_id?: string | null
           opened_at?: string | null
           procedure_refs?: Json
+          revision?: number
           sort_order?: number
           source_path?: string | null
           source_sha?: string | null
@@ -203,11 +205,72 @@ export type Database = {
           learning_id?: string | null
           opened_at?: string | null
           procedure_refs?: Json
+          revision?: number
           sort_order?: number
           source_path?: string | null
           source_sha?: string | null
           status?: string
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wcm_method_command_requests: {
+        Row: {
+          claimed_at: string | null
+          command_id: string
+          command_type: string
+          created_at: string
+          expected_gate_revision: number
+          failure_reason: string | null
+          gate_id: string
+          id: string
+          note: string | null
+          receipt_path: string | null
+          receipt_sha: string | null
+          recorded_at: string | null
+          requested_by_email: string
+          requested_by_role: string
+          requested_by_user_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          command_id: string
+          command_type: string
+          created_at?: string
+          expected_gate_revision: number
+          failure_reason?: string | null
+          gate_id: string
+          id?: string
+          note?: string | null
+          receipt_path?: string | null
+          receipt_sha?: string | null
+          recorded_at?: string | null
+          requested_by_email: string
+          requested_by_role: string
+          requested_by_user_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          claimed_at?: string | null
+          command_id?: string
+          command_type?: string
+          created_at?: string
+          expected_gate_revision?: number
+          failure_reason?: string | null
+          gate_id?: string
+          id?: string
+          note?: string | null
+          receipt_path?: string | null
+          receipt_sha?: string | null
+          recorded_at?: string | null
+          requested_by_email?: string
+          requested_by_role?: string
+          requested_by_user_id?: string
+          status?: string
           updated_at?: string
         }
         Relationships: []
