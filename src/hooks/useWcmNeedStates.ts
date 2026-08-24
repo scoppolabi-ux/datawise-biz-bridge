@@ -6,7 +6,6 @@ import {
 } from '@/hooks/useWcmCommands';
 import {
   latestMethodCommandByGate,
-  hasActiveMethodCommand,
   useWcmMethodCommands,
   type WcmMethodCommandRequest,
 } from '@/hooks/useWcmMethodCommands';
