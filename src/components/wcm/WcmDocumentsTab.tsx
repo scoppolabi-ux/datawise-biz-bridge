@@ -1,4 +1,4 @@
-import { ChevronRight, ExternalLink, FileText } from 'lucide-react';
+import { ChevronRight, FileText } from 'lucide-react';
 import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
 import { useCanonicalStateIndex } from '@/hooks/useWcmStateMappings';
 import WcmDocumentReader from './WcmDocumentReader';
@@ -27,11 +27,11 @@ const DocRow = ({
   projectId: string;
   onOpen: () => void;
 }) => (
-  <li className="flex items-center gap-2 border-b border-wcm-line/70 last:border-0">
+  <li className="border-b border-wcm-line/70 last:border-0">
     <button
       type="button"
       onClick={onOpen}
-      className="flex min-w-0 flex-1 items-start gap-3 p-4 text-left transition-colors hover:bg-wcm-panel/40"
+      className="flex w-full min-w-0 items-start gap-3 p-4 pb-2 text-left transition-colors hover:bg-wcm-panel/40"
     >
       <FileText className="mt-0.5 h-4 w-4 shrink-0 text-wcm-dim" />
       <span className="min-w-0 flex-1">
@@ -48,20 +48,12 @@ const DocRow = ({
       </span>
       <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-wcm-dim" />
     </button>
-    <div className="mr-3 flex shrink-0 items-center gap-1.5">
-      <WcmDocumentActions doc={doc} projectId={projectId} />
-      {doc.source_url && (
-        <a
-          href={doc.source_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Apri il sorgente su GitHub"
-          className="shrink-0 rounded-md p-2 text-wcm-dim transition-colors hover:bg-wcm-panel hover:text-wcm-text"
-        >
-          <ExternalLink className="h-3.5 w-3.5" />
-        </a>
-      )}
-    </div>
+    <WcmDocumentActions
+      doc={doc}
+      projectId={projectId}
+      onOpen={onOpen}
+      className="px-4 pb-3 pl-11"
+    />
   </li>
 );
 
