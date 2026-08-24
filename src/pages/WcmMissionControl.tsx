@@ -10,6 +10,7 @@ import {
 } from '@/hooks/useWcmProjects';
 import { derivedBadge, useWcmNeedStates } from '@/hooks/useWcmNeedStates';
 import { COMMAND_STATUS_LABELS } from '@/hooks/useWcmCommands';
+import { needScopeLabel } from '@/components/wcm/wcmMethodGateNeeds';
 import { useWcmKnowledgeHealthAll } from '@/hooks/useWcmKnowledgeHealth';
 import { useWcmExecutionWorkflowsAll } from '@/hooks/useWcmExecutionWorkflows';
 
@@ -177,7 +178,7 @@ const WcmMissionControl = () => {
                             >
                               <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                                 <span className="text-sm font-semibold text-wcm-strong">
-                                  {project?.project_name ?? need.project_id}
+                                  {needScopeLabel(need, project?.project_name)}
                                 </span>
                                 <span className="flex flex-wrap items-center gap-2 text-[11px] text-wcm-dim">
                                   {need.need_type && <span>{need.need_type}</span>}

@@ -94,6 +94,7 @@ const RECORD_KEYS = [
   'record_path',
   'created_at',
   'last_reviewed_at',
+  'promoted_at',
   'confidence',
   'generalizability',
   'origin_refs',
@@ -153,6 +154,9 @@ export function parseLearningLedger(
       // in a dedicated column so it never collides with the row bookkeeping one.
       origin_created_at: normalize(item.created_at),
       last_reviewed_at: normalize(item.last_reviewed_at),
+      // Semantic promotion instant: supplied by the GitHub source, never
+      // inferred from row bookkeeping (updated_at) on this side.
+      promoted_at: normalize(item.promoted_at),
       confidence: normalize(item.confidence),
       generalizability: normalize(item.generalizability),
       origin_refs: originRefs,
@@ -304,3 +308,100 @@ export function parseMethodRelationships(
   }
   return { rows, metadata }
 }
+
+// ------------------------------------------------------------------ gates
+
+/**
+ * Global Method Change Gates (e.g. promotion of a VALIDATED learning that
+ * canonically requires PROC-004 + explicit Stefano authority).
+ *
+ * Gates are EXPLICIT structured objects supplied by the GitHub source. This
+ * layer never infers a gate from a learning status such as VALIDATED.
+ */
+const GATE_KEYS = [
+  'gate_id',
+  'gate_type',
+  'learning_id',
+  'title',
+  'status',
+  'authority_required',
+  'procedure_refs',
+  'impact_preview_refs',
+  'opened_at',
+  'decided_at',
+  'decided_by',
+  'source_path',
+  'sort_order',
+] as readonly string[]
+
+export function parseMethodChangeGates(
+  input: unknown,
+): { rows: Record<string, unknown>[]; metadata: Record<string, unknown> } | ParseError {
+  let gates: unknown
+  const metadata: Record<string, unknown> = {}
+
+  if (Array.isArray(input)) {
+    gates = input
+  } else if (isObject(input)) {
+    const unknown = Object.keys(input).filter(
+      (k) => !['schema_version', 'updated_at', 'gates'].includes(k),
+    )
+    if (unknown.length > 0) {
+      return { error: 'Unsupported method_change_gates fields', fields: unknown }
+    }
+    metadata.schema_version = input.schema_version ?? null
+    metadata.updated_at = input.updated_at ?? null
+    gates = input.gates ?? []
+  } else {
+    return { error: 'method_change_gates must be an object or an array' }
+  }
+
+  if (!Array.isArray(gates)) return { error: 'method_change_gates.gates must be an array' }
+
+  const rows: Record<string, unknown>[] = []
+  for (const [index, item] of gates.entries()) {
+    if (!isObject(item)) {
+      return { error: 'method_change_gates.gates item must be an object', index }
+    }
+    const unknown = Object.keys(item).filter((k) => !GATE_KEYS.includes(k))
+    if (unknown.length > 0) return { error: 'Unsupported gate fields', index, fields: unknown }
+    if (normalize(item.gate_id) === null) {
+      return { error: 'method_change_gates.gates item requires gate_id', index }
+    }
+    if (normalize(item.title) === null) {
+      return { error: 'method_change_gates.gates item requires title', index }
+    }
+    const gateType = normalize(item.gate_type) ?? 'WCM_CHANGE_GATE'
+    if (gateType !== 'WCM_CHANGE_GATE') {
+      return { error: 'gate_type must be WCM_CHANGE_GATE', index }
+    }
+    const procedureRefs = item.procedure_refs === undefined ? [] : asJsonArray(item.procedure_refs)
+    if (procedureRefs === null) return { error: 'procedure_refs must be an array', index }
+    const impactRefs =
+      item.impact_preview_refs === undefined ? [] : asJsonArray(item.impact_preview_refs)
+    if (impactRefs === null) return { error: 'impact_preview_refs must be an array', index }
+
+    rows.push({
+      gate_id: normalize(item.gate_id),
+      gate_type: gateType,
+      learning_id: normalize(item.learning_id),
+      title: normalize(item.title),
+      status: normalize(item.status) ?? 'OPEN',
+      authority_required: normalize(item.authority_required),
+      procedure_refs: procedureRefs,
+      impact_preview_refs: impactRefs,
+      opened_at: normalize(item.opened_at),
+      decided_at: normalize(item.decided_at),
+      decided_by: normalize(item.decided_by),
+      source_path: normalize(item.source_path),
+      sort_order: typeof item.sort_order === 'number' ? item.sort_order : index,
+    })
+  }
+  return { rows, metadata }
+}
+
+// -------------------------------------------------------------- snapshots
+
+/** Ids present in the read-model but absent from the authoritative snapshot. */
+export const computeStaleKeys = (existing: string[], keep: string[]): string[] =>
+  existing.filter((k) => !keep.includes(k))

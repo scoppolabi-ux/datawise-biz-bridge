@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, GraduationCap, Info, Loader2 } from 'lucide-react';
+import { ChevronDown, GraduationCap, Info, Loader2, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import WcmPageShell from '@/components/wcm/WcmPageShell';
 import { HEALTH_LABELS, healthClasses, normalizeHealthStatus } from '@/components/wcm/wcmKnowledge';
@@ -9,10 +9,17 @@ import {
   learningMetric,
   useWcmLearningEvidence,
   useWcmLearningRecords,
+  useWcmMethodChangeGates,
   useWcmMethodLearningHealth,
   useWcmMethodRelations,
   type WcmLearningRecord,
 } from '@/hooks/useWcmMethodLearning';
+import {
+  evidenceStatusLabel,
+  gateStatusLabel,
+  isOpenGate,
+  learningStatusLabel,
+} from '@/components/wcm/wcmLearningLifecycle';
 import {
   localizeComponentKey,
   localizeEvidenceSummary,
@@ -59,6 +66,8 @@ const learningStatusClasses = (status: string | null) => {
       return 'bg-wcm-accent/15 text-wcm-accent border-wcm-accent/40';
     case 'VALIDATED':
       return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+    case 'WAITING_AUTHORITY':
+      return 'bg-violet-500/15 text-violet-300 border-violet-500/30';
     case 'CANDIDATE':
       return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
     case 'OBSERVING':
@@ -89,13 +98,30 @@ const relationStatusClasses = (status: string | null) => {
 
 const reviewStatusClasses = (status: string | null) => {
   const s = (status ?? '').toUpperCase();
-  if (s === 'PENDING' || s === 'PENDING_REVIEW' || s === 'OPEN') {
+  if (s === 'PENDING' || s === 'PENDING_REVIEW' || s === 'NEEDS_MORE_EVIDENCE' || s === 'OPEN') {
     return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
   }
-  if (s === 'REVIEWED' || s === 'CLOSED' || s === 'ACCEPTED') {
+  if (s === 'LINKED' || s === 'REVIEWED' || s === 'CLOSED' || s === 'ACCEPTED') {
     return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
   }
+  if (s === 'DUPLICATE') {
+    return 'bg-sky-500/10 text-sky-300 border-sky-500/30';
+  }
   return 'bg-wcm-dim/15 text-wcm-muted border-wcm-line-strong';
+};
+
+const gateStatusClasses = (status: string | null) => {
+  switch ((status ?? '').toUpperCase()) {
+    case 'OPEN':
+      return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
+    case 'APPROVED':
+    case 'EXECUTED':
+      return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+    case 'REJECTED':
+      return 'bg-wcm-alert/15 text-wcm-alert-fg border-wcm-alert/30';
+    default:
+      return 'bg-wcm-dim/15 text-wcm-muted border-wcm-line-strong';
+  }
 };
 
 const LearningRow = ({
@@ -123,12 +149,13 @@ const LearningRow = ({
               {record.learning_id}
             </span>
             <span
+              title={record.status ? `Stato canonico: ${record.status}` : undefined}
               className={cn(
                 'rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider',
                 learningStatusClasses(record.status),
               )}
             >
-              {record.status ?? 'UNKNOWN'}
+              {learningStatusLabel(record.status)}
             </span>
           </span>
           <span className="mt-1 block text-sm font-medium text-wcm-strong">
@@ -139,6 +166,11 @@ const LearningRow = ({
             <span>Generalizzabilità: {text(record.generalizability)}</span>
             <span>Origini: {origins.length}</span>
             <span>Promosso in: {promoted.length}</span>
+            {(record.status ?? '').toUpperCase() === 'PROMOTED' && record.promoted_at && (
+              <span className="font-medium text-wcm-accent">
+                Promosso il: {formatDateTime(record.promoted_at)}
+              </span>
+            )}
           </span>
         </span>
         <ChevronDown
@@ -202,6 +234,8 @@ const LearningRow = ({
             <p>Condizione di riesame: {text(localizeRevisitTrigger(record.revisit_trigger, record.learning_id))}</p>
             <p>Creato: {record.origin_created_at ? formatDateTime(record.origin_created_at) : NO_DATA}</p>
             <p>Ultima revisione: {record.last_reviewed_at ? formatDateTime(record.last_reviewed_at) : NO_DATA}</p>
+            <p>Promosso il: {record.promoted_at ? formatDateTime(record.promoted_at) : NO_DATA}</p>
+            <p>Stato canonico: <span className="font-mono">{text(record.status)}</span></p>
           </div>
         </div>
       )}
@@ -214,6 +248,7 @@ const WcmLearningPage = () => {
   const { data: records, isLoading: recordsLoading } = useWcmLearningRecords();
   const { data: evidence } = useWcmLearningEvidence();
   const { data: relations } = useWcmMethodRelations();
+  const { data: gates } = useWcmMethodChangeGates();
 
   const status = normalizeHealthStatus(health?.health_status);
   const metrics = health?.metrics;
@@ -336,9 +371,87 @@ const WcmLearningPage = () => {
         ))}
       </section>
 
+      {gates && gates.length > 0 && (
+        <Section
+          title="Method Change Gate · Autorità di metodo"
+          hint="Gate espliciti proiettati da GitHub. Nessun gate viene dedotto dallo stato di un learning (es. VALIDATED): l’autorità di Stefano è richiesta solo quando esiste un gate strutturato."
+        >
+          <ul className="space-y-2">
+            {gates.map((gate) => {
+              const procedures = asStringList(gate.procedure_refs);
+              const impact = asStringList(gate.impact_preview_refs);
+              const open = isOpenGate(gate);
+              return (
+                <li
+                  key={gate.id}
+                  className={cn(
+                    'rounded-lg border p-3',
+                    open
+                      ? 'border-amber-500/40 bg-amber-500/5'
+                      : 'border-wcm-line bg-wcm-bg/40',
+                  )}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-wcm-dim">
+                      <ShieldAlert
+                        className={cn('h-3.5 w-3.5', open ? 'text-amber-300' : 'text-wcm-dim')}
+                      />
+                      {gate.gate_id}
+                      {gate.learning_id && (
+                        <span className="text-wcm-accent">· {gate.learning_id}</span>
+                      )}
+                    </span>
+                    <span
+                      title={`Stato canonico: ${gate.status}`}
+                      className={cn(
+                        'rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider',
+                        gateStatusClasses(gate.status),
+                      )}
+                    >
+                      {gateStatusLabel(gate.status)}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm font-medium text-wcm-strong">{gate.title}</p>
+                  <div className="mt-1.5 grid gap-1 text-[11px] text-wcm-dim sm:grid-cols-2">
+                    <p>Autorità richiesta: {text(gate.authority_required)}</p>
+                    <p>Procedure: {procedures.length ? procedures.join(', ') : NO_DATA}</p>
+                    <p>Aperto il: {gate.opened_at ? formatDateTime(gate.opened_at) : NO_DATA}</p>
+                    <p>
+                      Deciso il:{' '}
+                      {gate.decided_at
+                        ? `${formatDateTime(gate.decided_at)}${gate.decided_by ? ` · ${gate.decided_by}` : ''}`
+                        : NO_DATA}
+                    </p>
+                  </div>
+                  {impact.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-wcm-dim">
+                        Impact Preview
+                      </p>
+                      <ul className="mt-1 space-y-0.5 font-mono text-[11px] text-wcm-text">
+                        {impact.map((ref) => (
+                          <li key={ref} className="break-all">
+                            {ref}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-3 rounded-lg border border-wcm-line bg-wcm-bg/40 p-3 text-[11px] leading-relaxed text-wcm-dim">
+            Esecuzione dell’autorità non disponibile in Mission Control: la decisione sul gate si
+            esprime su GitHub (sorgente di verità). I gate aperti compaiono anche in
+            «Needs Stefano» come <span className="font-mono">WCM_CHANGE_GATE</span>.
+          </p>
+        </Section>
+      )}
+
       <Section
-        title="Learning recenti"
-        hint="Lo stato registrato è preservato: un learning PROMOTED non equivale a verità empirica validata."
+        title="Learning · ciclo di vita del metodo"
+        hint="Ciclo di vita del learning, distinto dalla pipeline di review delle evidence. Lo stato registrato è preservato: un learning PROMOSSO non equivale a verità empirica validata."
       >
         {!records || records.length === 0 ? (
           <p className="text-sm text-wcm-muted">Nessun learning record proiettato.</p>
@@ -351,7 +464,10 @@ const WcmLearningPage = () => {
         )}
       </Section>
 
-      <Section title="Evidence / Review" hint="Storico completo degli eventi, inclusi quelli già revisionati.">
+      <Section
+        title="Evidence · ciclo di vita review"
+        hint="Pipeline di revisione delle evidence — ciclo di vita distinto da quello dei learning. Storico completo degli eventi, inclusi quelli già revisionati."
+      >
         {!evidence || evidence.length === 0 ? (
           <p className="text-sm text-wcm-muted">Nessuna evidence proiettata.</p>
         ) : (
@@ -365,12 +481,13 @@ const WcmLearningPage = () => {
                       {event.event_id} · {text(event.source_type)}
                     </span>
                     <span
+                      title={event.review_status ? `Stato canonico: ${event.review_status}` : undefined}
                       className={cn(
                         'rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider',
                         reviewStatusClasses(event.review_status),
                       )}
                     >
-                      {event.review_status ?? 'UNKNOWN'}
+                      {evidenceStatusLabel(event.review_status)}
                     </span>
                   </div>
                   <p className="mt-1 text-sm text-wcm-text">
