@@ -404,7 +404,7 @@ Deno.test('method_change_gates still rejects truly unknown gate keys', () => {
 })
 
 Deno.test('method_change_gates accepts every allowed status exactly', () => {
-  const statuses = ['OPEN', 'APPROVED', 'CHANGES_REQUESTED', 'REJECTED', 'EXECUTED', 'CLOSED']
+  const statuses = ['OPEN', 'AUTHORITY_APPROVED', 'CHANGES_REQUESTED', 'REJECTED', 'EXECUTED']
   for (const status of statuses) {
     const parsed = parseMethodChangeGates({
       gates: [
@@ -432,7 +432,7 @@ Deno.test('method_change_gates defaults absent status to OPEN', () => {
 })
 
 Deno.test('method_change_gates rejects unknown status fail-closed', () => {
-  for (const status of ['PENDING', 'VALIDATED', 'open', 'DONE', 'CHANGE_REQUESTED']) {
+  for (const status of ['PENDING', 'VALIDATED', 'open', 'DONE', 'CHANGE_REQUESTED', 'APPROVED', 'CLOSED']) {
     const parsed = parseMethodChangeGates({
       gates: [
         { gate_id: 'WCM-GATE-001', gate_type: 'WCM_CHANGE_GATE', title: 'Gate', status },
@@ -440,4 +440,92 @@ Deno.test('method_change_gates rejects unknown status fail-closed', () => {
     })
     assert('error' in parsed, `status ${JSON.stringify(status)} must be rejected`)
   }
+})
+
+// ------------------------------------- gate authority decision metadata (exact)
+
+Deno.test('method_change_gates accepts exact optional decision fields', () => {
+  const parsed = parseMethodChangeGates({
+    gates: [
+      {
+        gate_id: 'WCM-GATE-001',
+        gate_type: 'WCM_CHANGE_GATE',
+        title: 'Gate con decisione registrata',
+        status: 'AUTHORITY_APPROVED',
+        revision: 2,
+        decision_command_id: 'cmd-2026-08-24-001',
+        decision_command_type: 'APPROVE_CHANGE_GATE',
+        decision_note: 'Approvato da Stefano',
+        authority_receipt_path: 'wcm/kb/learning/receipts/cmd-2026-08-24-001.json',
+      },
+    ],
+  })
+  assert(!('error' in parsed))
+  if ('error' in parsed) return
+  const gate = parsed.rows[0]
+  assertEquals(gate.decision_command_id, 'cmd-2026-08-24-001')
+  assertEquals(gate.decision_command_type, 'APPROVE_CHANGE_GATE')
+  assertEquals(gate.decision_note, 'Approvato da Stefano')
+  assertEquals(gate.authority_receipt_path, 'wcm/kb/learning/receipts/cmd-2026-08-24-001.json')
+})
+
+Deno.test('method_change_gates accepts every exact decision_command_type', () => {
+  for (const type of ['APPROVE_CHANGE_GATE', 'REQUEST_CHANGES', 'REJECT_CHANGE_GATE']) {
+    const parsed = parseMethodChangeGates({
+      gates: [
+        {
+          gate_id: 'WCM-GATE-001',
+          gate_type: 'WCM_CHANGE_GATE',
+          title: 'Gate',
+          decision_command_type: type,
+        },
+      ],
+    })
+    assert(!('error' in parsed), `decision_command_type ${type} must parse`)
+    if ('error' in parsed) return
+    assertEquals(parsed.rows[0].decision_command_type, type)
+  }
+})
+
+Deno.test('method_change_gates defaults absent decision fields to null', () => {
+  const parsed = parseMethodChangeGates({
+    gates: [{ gate_id: 'WCM-GATE-001', gate_type: 'WCM_CHANGE_GATE', title: 'Gate' }],
+  })
+  assert(!('error' in parsed))
+  if ('error' in parsed) return
+  const gate = parsed.rows[0]
+  assertEquals(gate.decision_command_id, null)
+  assertEquals(gate.decision_command_type, null)
+  assertEquals(gate.decision_note, null)
+  assertEquals(gate.authority_receipt_path, null)
+})
+
+Deno.test('method_change_gates rejects unknown decision_command_type fail-closed', () => {
+  for (const type of ['APPROVE', 'APPROVE_BOARD', 'approve_change_gate', 'EXECUTE', 42]) {
+    const parsed = parseMethodChangeGates({
+      gates: [
+        {
+          gate_id: 'WCM-GATE-001',
+          gate_type: 'WCM_CHANGE_GATE',
+          title: 'Gate',
+          decision_command_type: type,
+        },
+      ],
+    })
+    assert('error' in parsed, `decision_command_type ${JSON.stringify(type)} must be rejected`)
+  }
+})
+
+Deno.test('method_change_gates rejects unknown decision-related keys fail-closed', () => {
+  const parsed = parseMethodChangeGates({
+    gates: [
+      {
+        gate_id: 'WCM-GATE-001',
+        gate_type: 'WCM_CHANGE_GATE',
+        title: 'Gate',
+        decision_receipt_sha: 'abc123',
+      },
+    ],
+  })
+  assert('error' in parsed)
 })
