@@ -4,6 +4,12 @@ import {
   ACTIVE_COMMAND_STATUSES,
   type WcmCommandRequest,
 } from '@/hooks/useWcmCommands';
+import {
+  latestMethodCommandByGate,
+  hasActiveMethodCommand,
+  useWcmMethodCommands,
+  type WcmMethodCommandRequest,
+} from '@/hooks/useWcmMethodCommands';
 import { isOpenNeed, useWcmNeeds, type WcmProjectNeed } from '@/hooks/useWcmProjects';
 import { useWcmMethodChangeGates } from '@/hooks/useWcmMethodLearning';
 import { useCanonicalStateIndex } from '@/hooks/useWcmStateMappings';
@@ -17,6 +23,11 @@ export type ClassifiedNeed = {
   need: WcmProjectNeed;
   derived: DerivedNeedState;
   latestCommand: WcmCommandRequest | null;
+  /**
+   * Latest GLOBAL method command for WCM_CHANGE_GATE needs (separate domain
+   * from project commands; never mixed into latestCommand).
+   */
+  latestMethodCommand?: WcmMethodCommandRequest | null;
   /**
    * Derived in the UI (unmapped document state or global method change gate):
    * never written to wcm_project_needs, never routed to the command surface.
@@ -67,7 +78,14 @@ export const needKey = (projectId: string, needId: string) => `${projectId}::${n
 
 /** Human-attention badge label for a classified need. */
 export const derivedBadge = (item: ClassifiedNeed) => {
-  if (item.need.need_type === WCM_CHANGE_GATE) return 'AUTORITÀ RICHIESTA';
+  if (item.need.need_type === WCM_CHANGE_GATE) {
+    if (item.derived === 'PENDING_SYSTEM') {
+      return item.latestMethodCommand?.status === 'RECORDED'
+        ? 'AUTORITÀ REGISTRATA · IN ATTESA WCM'
+        : 'DECISIONE INVIATA · IN ATTESA';
+    }
+    return 'AUTORITÀ RICHIESTA';
+  }
   if (item.virtual) return 'STATO DA CLASSIFICARE';
   if (item.derived === 'NEEDS_STEFANO') return 'ACTION REQUIRED';
   return item.latestCommand?.status === 'RECORDED'
