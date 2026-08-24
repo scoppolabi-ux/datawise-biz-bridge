@@ -62,6 +62,8 @@ export type WcmMethodChangeGate = {
   decided_by: string | null;
   source_path: string | null;
   source_sha: string | null;
+  /** Explicit integer revision: the ONLY optimistic-concurrency authority. */
+  revision: number;
   sort_order: number;
   updated_at: string;
 };

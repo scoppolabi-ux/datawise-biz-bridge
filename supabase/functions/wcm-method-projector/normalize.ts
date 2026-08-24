@@ -351,8 +351,21 @@ const GATE_KEYS = [
   'decided_at',
   'decided_by',
   'source_path',
+  'source_sha',
+  'revision',
   'sort_order',
 ] as readonly string[]
+
+/**
+ * Explicit integer gate revision, the ONLY optimistic-concurrency authority
+ * for method change gate commands. Must be a positive integer >= 1; absent
+ * means the legacy pre-revision baseline, defaulted to 1.
+ */
+const parseGateRevision = (value: unknown): number | null => {
+  if (value === undefined || value === null) return 1
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 1) return null
+  return value
+}
 
 export function parseMethodChangeGates(
   input: unknown,
@@ -400,6 +413,10 @@ export function parseMethodChangeGates(
     const impactRefs =
       item.impact_preview_refs === undefined ? [] : asJsonArray(item.impact_preview_refs)
     if (impactRefs === null) return { error: 'impact_preview_refs must be an array', index }
+    const revision = parseGateRevision(item.revision)
+    if (revision === null) {
+      return { error: 'revision must be a positive integer >= 1', index }
+    }
 
     rows.push({
       gate_id: normalize(item.gate_id),
@@ -414,6 +431,8 @@ export function parseMethodChangeGates(
       decided_at: normalize(item.decided_at),
       decided_by: normalize(item.decided_by),
       source_path: normalize(item.source_path),
+      source_sha: normalize(item.source_sha),
+      revision,
       sort_order: typeof item.sort_order === 'number' ? item.sort_order : index,
     })
   }

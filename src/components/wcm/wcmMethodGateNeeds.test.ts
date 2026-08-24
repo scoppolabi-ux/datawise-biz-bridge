@@ -25,6 +25,7 @@ const gate: WcmMethodChangeGate = {
   decided_by: null,
   source_path: 'wcm/kb/learning/METHOD_CHANGE_GATES.json',
   source_sha: 'abc123',
+  revision: 1,
   sort_order: 0,
   updated_at: '2026-08-24T09:00:00Z',
 };

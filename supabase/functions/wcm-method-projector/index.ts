@@ -119,6 +119,14 @@ Deno.serve(async (req) => {
     const parsed = parseMethodChangeGates(body.method_change_gates)
     if ('error' in parsed) return json(parsed, 400)
     gateRows = parsed.rows
+    // Provenance only: when a gate row carries no source_sha, inherit the
+    // top-level GitHub snapshot SHA. This is NEVER a concurrency authority —
+    // optimistic concurrency uses the explicit integer `revision` only.
+    if (sourceSha) {
+      for (const row of gateRows) {
+        if (row.source_sha == null) row.source_sha = sourceSha
+      }
+    }
   }
 
   const supabase = createClient(
