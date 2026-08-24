@@ -15,7 +15,11 @@ import { useWcmMethodChangeGates } from '@/hooks/useWcmMethodLearning';
 import { useCanonicalStateIndex } from '@/hooks/useWcmStateMappings';
 import { resolveCanonicalState } from '@/components/wcm/wcmCanonicalState';
 import { isOpenGate } from '@/components/wcm/wcmLearningLifecycle';
-import { methodGateToNeed, WCM_CHANGE_GATE } from '@/components/wcm/wcmMethodGateNeeds';
+import {
+  gateNeedDerivedState,
+  methodGateToNeed,
+  WCM_CHANGE_GATE,
+} from '@/components/wcm/wcmMethodGateNeeds';
 
 export type DerivedNeedState = 'NEEDS_STEFANO' | 'PENDING_SYSTEM';
 
