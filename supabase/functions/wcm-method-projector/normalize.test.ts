@@ -241,3 +241,62 @@ Deno.test('computeStaleKeys flags read-model rows missing from the snapshot', ()
   assertEquals(computeStaleKeys(['a'], ['a', 'b']), [])
   assertEquals(computeStaleKeys([], ['a']), [])
 })
+
+Deno.test('learning_inbox accepts canonical review_window and classification_notes metadata', () => {
+  const parsed = parseLearningInbox({
+    schema_version: 1,
+    updated_at: '2026-08-24T09:00:00Z',
+    cursor_sha: 'deadbeef',
+    review_window: { from_sha: 'aaa', to_sha: 'bbb', pending_after_review: 0 },
+    classification_notes: { mode: 'PROJECT_DELTA', note: 'classificazione euristica' },
+    events: [
+      {
+        event_id: 'evt-ecef7b114b080003',
+        detected_at: '2026-08-22T09:00:00Z',
+        source_sha: 'bbb',
+        source_type: 'PROJECT_DELTA',
+        summary: 'Delta già coperto',
+        changed_paths: ['projects/prima-di-noi/x.md'],
+        review_status: 'DUPLICATE',
+        reviewed_at: '2026-08-22T10:00:00Z',
+        review_note: 'Already covered by WCM-LRN-005',
+        linked_learning_ids: ['WCM-LRN-005'],
+      },
+    ],
+  })
+  assert(!('error' in parsed))
+  if ('error' in parsed) return
+  assertEquals(parsed.rows.length, 1)
+  assertEquals(parsed.rows[0].review_status, 'DUPLICATE')
+  // Canonical metadata preserved as metadata only.
+  assertEquals(
+    (parsed.metadata.review_window as Record<string, unknown>).pending_after_review,
+    0,
+  )
+  assertEquals(
+    (parsed.metadata.classification_notes as Record<string, unknown>).mode,
+    'PROJECT_DELTA',
+  )
+  // Never leaked into DB evidence columns.
+  assertEquals('review_window' in parsed.rows[0], false)
+  assertEquals('classification_notes' in parsed.rows[0], false)
+})
+
+Deno.test('learning_inbox accepts null/absent review_window and classification_notes', () => {
+  const parsed = parseLearningInbox({
+    cursor_sha: 'aaa',
+    review_window: null,
+    classification_notes: null,
+    events: [],
+  })
+  assert(!('error' in parsed))
+  if ('error' in parsed) return
+  assertEquals(parsed.metadata.review_window, null)
+  assertEquals(parsed.metadata.classification_notes, null)
+})
+
+Deno.test('learning_inbox still rejects truly unknown top-level keys and invalid metadata types', () => {
+  assert('error' in parseLearningInbox({ events: [], totally_unknown: 1 }))
+  assert('error' in parseLearningInbox({ events: [], review_window: 'not-an-object' }))
+  assert('error' in parseLearningInbox({ events: [], classification_notes: ['nope'] }))
+})
