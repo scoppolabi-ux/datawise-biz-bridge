@@ -14,6 +14,8 @@ import {
   useWcmMethodRelations,
   type WcmLearningRecord,
 } from '@/hooks/useWcmMethodLearning';
+import { useWcmMethodCommands } from '@/hooks/useWcmMethodCommands';
+import WcmMethodGateCommands from '@/components/wcm/WcmMethodGateCommands';
 import {
   evidenceStatusLabel,
   gateStatusLabel,
@@ -249,6 +251,7 @@ const WcmLearningPage = () => {
   const { data: evidence } = useWcmLearningEvidence();
   const { data: relations } = useWcmMethodRelations();
   const { data: gates } = useWcmMethodChangeGates();
+  const { data: methodCommands } = useWcmMethodCommands();
 
   const status = normalizeHealthStatus(health?.health_status);
   const metrics = health?.metrics;
