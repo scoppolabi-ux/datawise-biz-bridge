@@ -105,10 +105,16 @@ export const useWcmNeedStates = () => {
   const commandsQuery = useWcmAllCommands();
   const docsQuery = useWcmAllDocumentStates();
   const gatesQuery = useWcmMethodChangeGates();
+  const methodCommandsQuery = useWcmMethodCommands();
   const { index } = useCanonicalStateIndex();
 
-  const isLoading = needsQuery.isLoading || commandsQuery.isLoading || gatesQuery.isLoading;
-  const error = needsQuery.error ?? commandsQuery.error ?? gatesQuery.error;
+  const isLoading =
+    needsQuery.isLoading ||
+    commandsQuery.isLoading ||
+    gatesQuery.isLoading ||
+    methodCommandsQuery.isLoading;
+  const error =
+    needsQuery.error ?? commandsQuery.error ?? gatesQuery.error ?? methodCommandsQuery.error;
   const ready = Boolean(needsQuery.data && commandsQuery.data && gatesQuery.data);
 
   const openNeeds = (needsQuery.data ?? []).filter(isOpenNeed);
