@@ -64,6 +64,11 @@ export type WcmMethodChangeGate = {
   source_sha: string | null;
   /** Explicit integer revision: the ONLY optimistic-concurrency authority. */
   revision: number;
+  /** Authority decision metadata, recorded by the GitHub authority recorder. */
+  decision_command_id: string | null;
+  decision_command_type: 'APPROVE_CHANGE_GATE' | 'REQUEST_CHANGES' | 'REJECT_CHANGE_GATE' | null;
+  decision_note: string | null;
+  authority_receipt_path: string | null;
   sort_order: number;
   updated_at: string;
 };
