@@ -168,16 +168,25 @@ export const useWcmNeedStates = () => {
 
   // Global Method Change Gates: explicit structured gates projected from
   // GitHub. An OPEN gate requires Stefano's authority. Virtual/UI-only: never
-  // written to wcm_project_needs and never sent to the project command
-  // surface — the authority decision happens on GitHub (source of truth).
+  // written to wcm_project_needs and never sent to the PROJECT command
+  // surface. The dedicated global method command contract classifies an OPEN
+  // gate with an active method command (SUBMITTED/CLAIMED/RECORDED) as
+  // pending-system: it stays visible until the gate leaves OPEN, but no
+  // further click is required.
+  const latestMethodByGate = latestMethodCommandByGate(methodCommandsQuery.data ?? []);
   const gateNeeds: ClassifiedNeed[] = (gatesQuery.data ?? [])
     .filter(isOpenGate)
-    .map((gate) => ({
-      virtual: true,
-      derived: 'NEEDS_STEFANO' as const,
-      latestCommand: null,
-      need: methodGateToNeed(gate),
-    }));
+    .map((gate) => {
+      const latestMethod = latestMethodByGate.get(gate.gate_id) ?? null;
+      const active = hasActiveMethodCommand(latestMethod);
+      return {
+        virtual: true,
+        derived: active ? ('PENDING_SYSTEM' as const) : ('NEEDS_STEFANO' as const),
+        latestCommand: null,
+        latestMethodCommand: latestMethod,
+        need: methodGateToNeed(gate),
+      };
+    });
 
   const allClassified = [...gateNeeds, ...classified, ...unclassifiedNeeds];
 
