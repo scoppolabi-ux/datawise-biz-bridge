@@ -44,14 +44,17 @@ export const learningStatusLabel = (raw: string | null | undefined): string => {
   return LEARNING_STATUS_LABELS[key] ?? raw;
 };
 
-/* ------------------------------------------------------- change gate lifecycle */
+/* ------------------------------------------------------- change gate lifecycle
+ * Exact canonical statuses only. AUTHORITY_APPROVED means the authority
+ * decision has been RECORDED by the GitHub authority recorder — the baseline
+ * is NOT yet modified (that terminal state is EXECUTED).
+ */
 const GATE_STATUS_LABELS: Record<string, string> = {
   OPEN: 'APERTO',
-  APPROVED: 'APPROVATO',
+  AUTHORITY_APPROVED: 'AUTORITÀ APPROVATA',
   CHANGES_REQUESTED: 'MODIFICHE RICHIESTE',
-  REJECTED: 'RESPINTO',
+  REJECTED: 'RIFIUTATO',
   EXECUTED: 'ESEGUITO',
-  CLOSED: 'CHIUSO',
 };
 
 export const gateStatusLabel = (raw: string | null | undefined): string => {

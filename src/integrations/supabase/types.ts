@@ -154,10 +154,14 @@ export type Database = {
       }
       wcm_method_change_gates: {
         Row: {
+          authority_receipt_path: string | null
           authority_required: string | null
           created_at: string
           decided_at: string | null
           decided_by: string | null
+          decision_command_id: string | null
+          decision_command_type: string | null
+          decision_note: string | null
           gate_id: string
           gate_type: string
           id: string
@@ -174,10 +178,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          authority_receipt_path?: string | null
           authority_required?: string | null
           created_at?: string
           decided_at?: string | null
           decided_by?: string | null
+          decision_command_id?: string | null
+          decision_command_type?: string | null
+          decision_note?: string | null
           gate_id: string
           gate_type?: string
           id?: string
@@ -194,10 +202,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          authority_receipt_path?: string | null
           authority_required?: string | null
           created_at?: string
           decided_at?: string | null
           decided_by?: string | null
+          decision_command_id?: string | null
+          decision_command_type?: string | null
+          decision_note?: string | null
           gate_id?: string
           gate_type?: string
           id?: string

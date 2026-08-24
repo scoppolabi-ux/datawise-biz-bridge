@@ -118,7 +118,8 @@ const gateStatusClasses = (status: string | null) => {
       return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
     case 'CHANGES_REQUESTED':
       return 'bg-amber-600/15 text-amber-200 border-amber-600/40';
-    case 'APPROVED':
+    case 'AUTHORITY_APPROVED':
+      return 'bg-violet-500/15 text-violet-300 border-violet-500/30';
     case 'EXECUTED':
       return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
     case 'REJECTED':
@@ -440,6 +441,44 @@ const WcmLearningPage = () => {
                           </li>
                         ))}
                       </ul>
+                    </div>
+                  )}
+                  {!open && (
+                    <div className="mt-2 rounded-lg border border-wcm-line bg-wcm-bg/40 p-2.5 text-[11px] text-wcm-dim">
+                      {(gate.status ?? '').toUpperCase() === 'AUTHORITY_APPROVED' && (
+                        <p className="mb-1.5 text-violet-300">
+                          Decisione di autorità registrata. La baseline di metodo NON è ancora
+                          modificata: l’esecuzione avviene solo su GitHub (sorgente di verità).
+                        </p>
+                      )}
+                      <p className="text-[10px] font-semibold uppercase tracking-wider">
+                        Decisione di autorità
+                      </p>
+                      <div className="mt-1 grid gap-1 sm:grid-cols-2">
+                        <p>
+                          Comando:{' '}
+                          <span className="font-mono text-wcm-text">
+                            {text(gate.decision_command_id)}
+                          </span>
+                        </p>
+                        <p>
+                          Tipo:{' '}
+                          <span className="font-mono text-wcm-text">
+                            {text(gate.decision_command_type)}
+                          </span>
+                        </p>
+                        <p className="sm:col-span-2">
+                          Ricevuta:{' '}
+                          <span className="break-all font-mono text-wcm-text">
+                            {text(gate.authority_receipt_path)}
+                          </span>
+                        </p>
+                        {gate.decision_note && (
+                          <p className="sm:col-span-2 text-wcm-muted">
+                            Nota: {gate.decision_note}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   )}
                   {open && (

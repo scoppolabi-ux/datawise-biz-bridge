@@ -56,12 +56,17 @@ describe('learning lifecycle labels', () => {
 });
 
 describe('method change gate lifecycle labels', () => {
-  it('maps exact gate statuses', () => {
+  it('maps every exact allowed gate status', () => {
     expect(gateStatusLabel('OPEN')).toBe('APERTO');
-    expect(gateStatusLabel('APPROVED')).toBe('APPROVATO');
-    expect(gateStatusLabel('REJECTED')).toBe('RESPINTO');
+    expect(gateStatusLabel('AUTHORITY_APPROVED')).toBe('AUTORITÀ APPROVATA');
+    expect(gateStatusLabel('CHANGES_REQUESTED')).toBe('MODIFICHE RICHIESTE');
+    expect(gateStatusLabel('REJECTED')).toBe('RIFIUTATO');
     expect(gateStatusLabel('EXECUTED')).toBe('ESEGUITO');
-    expect(gateStatusLabel('CLOSED')).toBe('CHIUSO');
+  });
+
+  it('does NOT reuse legacy statuses removed from the exact contract', () => {
+    expect(gateStatusLabel('APPROVED')).toBe('APPROVED');
+    expect(gateStatusLabel('CLOSED')).toBe('CLOSED');
   });
 
   it('passes unknown statuses through unchanged', () => {
