@@ -31,11 +31,37 @@ export type WcmLearningRecord = {
   record_path: string | null;
   origin_created_at: string | null;
   last_reviewed_at: string | null;
+  /** Semantic promotion instant, supplied by GitHub source only. */
+  promoted_at: string | null;
   confidence: string | null;
   generalizability: string | null;
   origin_refs: unknown;
   promoted_to: unknown;
   revisit_trigger: string | null;
+  sort_order: number;
+  updated_at: string;
+};
+
+/**
+ * Global Method Change Gate (read-model). Gates exist ONLY when the GitHub
+ * source projects an explicit structured gate object — the app never infers
+ * authority requirements from a learning status such as VALIDATED.
+ */
+export type WcmMethodChangeGate = {
+  id: string;
+  gate_id: string;
+  gate_type: string;
+  learning_id: string | null;
+  title: string;
+  status: string;
+  authority_required: string | null;
+  procedure_refs: unknown;
+  impact_preview_refs: unknown;
+  opened_at: string | null;
+  decided_at: string | null;
+  decided_by: string | null;
+  source_path: string | null;
+  source_sha: string | null;
   sort_order: number;
   updated_at: string;
 };
@@ -127,6 +153,20 @@ export const useWcmMethodRelations = () =>
         .order('sort_order', { ascending: true });
       if (error) throw error;
       return (data ?? []) as unknown as WcmMethodRelation[];
+    },
+  });
+
+/** Global Method Change Gates — read-only observation, exact statuses. */
+export const useWcmMethodChangeGates = () =>
+  useQuery({
+    queryKey: ['wcm-method-change-gates'],
+    refetchInterval: REFETCH,
+    queryFn: async (): Promise<WcmMethodChangeGate[]> => {
+      const { data, error } = await table('wcm_method_change_gates')
+        .select('*')
+        .order('sort_order', { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as unknown as WcmMethodChangeGate[];
     },
   });
 

@@ -104,6 +104,10 @@ export const isOpenNeed = (need: WcmProjectNeed) =>
 
 /** Deep link target for a need, reusing the existing project detail params. */
 export const needTargetPath = (need: WcmProjectNeed) => {
+  // Global method-plane gates open WCM Learning, never a project tab.
+  // (Literal kept in sync with WCM_CHANGE_GATE in wcmMethodGateNeeds.ts —
+  // hooks must not import from components.)
+  if (need.need_type === 'WCM_CHANGE_GATE') return '/wcm/learning';
   if (need.target_document_id) {
     return `/wcm/${need.project_id}?tab=documents&document=${encodeURIComponent(
       need.target_document_id,

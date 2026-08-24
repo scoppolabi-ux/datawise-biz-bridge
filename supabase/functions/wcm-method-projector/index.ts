@@ -2,8 +2,10 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { createRemoteJWKSet, jwtVerify } from 'npm:jose@5'
 import {
+  computeStaleKeys,
   parseLearningInbox,
   parseLearningLedger,
+  parseMethodChangeGates,
   parseMethodHealth,
   parseMethodRelationships,
 } from './normalize.ts'
@@ -24,6 +26,7 @@ const TOP_LEVEL_KEYS = [
   'learning_ledger',
   'learning_inbox',
   'method_relationships',
+  'method_change_gates',
   // optional source metadata
   'source_sha',
   'source_ref',
@@ -111,6 +114,13 @@ Deno.serve(async (req) => {
     relationRows = parsed.rows
   }
 
+  let gateRows: Record<string, unknown>[] | null = null
+  if (body.method_change_gates !== undefined && body.method_change_gates !== null) {
+    const parsed = parseMethodChangeGates(body.method_change_gates)
+    if ('error' in parsed) return json(parsed, 400)
+    gateRows = parsed.rows
+  }
+
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
@@ -126,9 +136,11 @@ Deno.serve(async (req) => {
     healthUpserted = true
   }
 
-  // Canonical snapshot semantics for records/relations: an item removed from the
-  // canonical ledger is removed from the read-model. Evidence is append/upsert-only
-  // so reviewed history can never be lost.
+  // Full authoritative snapshot semantics for every collection: GitHub main is
+  // the source of truth, so the read-model must CONVERGE. Upserts update rows
+  // keyed by their stable logical id (e.g. an evidence event whose review
+  // moved PENDING -> DUPLICATE is updated in place), and rows absent from the
+  // snapshot are removed. Nothing stays stale.
   const upsertSnapshot = async (
     table: string,
     key: string,
@@ -144,9 +156,10 @@ Deno.serve(async (req) => {
       const keep = rows.map((r) => String(r[key]))
       const { data: existing, error: exErr } = await supabase.from(table).select(key)
       if (exErr) throw new Error(`Read ${table} failed: ${exErr.message}`)
-      const stale = (existing ?? [])
-        .map((r) => String((r as Record<string, unknown>)[key]))
-        .filter((k) => !keep.includes(k))
+      const stale = computeStaleKeys(
+        (existing ?? []).map((r) => String((r as Record<string, unknown>)[key])),
+        keep,
+      )
       if (stale.length > 0) {
         const { error: delErr } = await supabase.from(table).delete().in(key, stale)
         if (delErr) throw new Error(`Delete ${table} failed: ${delErr.message}`)
@@ -171,7 +184,7 @@ Deno.serve(async (req) => {
         'wcm_method_learning_evidence',
         'event_id',
         evidenceRows,
-        false,
+        true,
       )
     }
     if (relationRows) {
@@ -179,6 +192,14 @@ Deno.serve(async (req) => {
         'wcm_method_learning_relations',
         'relation_id',
         relationRows,
+        true,
+      )
+    }
+    if (gateRows) {
+      counts.method_change_gates = await upsertSnapshot(
+        'wcm_method_change_gates',
+        'gate_id',
+        gateRows,
         true,
       )
     }

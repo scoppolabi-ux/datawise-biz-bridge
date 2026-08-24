@@ -3,6 +3,7 @@ import { AlertTriangle, ArrowRight, Clock, FileText, Loader2 } from 'lucide-reac
 import WcmPageShell from '@/components/wcm/WcmPageShell';
 import { needTargetPath, useWcmProjects } from '@/hooks/useWcmProjects';
 import { withReturnTo } from '@/components/wcm/wcmReturnTo';
+import { needScopeLabel } from '@/components/wcm/wcmMethodGateNeeds';
 import {
   derivedBadge,
   useWcmNeedStates,
@@ -47,7 +48,7 @@ const WcmNeedsPage = () => {
         >
           <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
             <span className="text-xs font-semibold uppercase tracking-[0.16em] text-wcm-dim">
-              {project?.project_name ?? need.project_id}
+              {needScopeLabel(need, project?.project_name)}
             </span>
             <div className="flex flex-wrap items-center gap-1.5">
               <span

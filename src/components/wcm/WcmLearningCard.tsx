@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
-import { ChevronRight, GraduationCap } from 'lucide-react';
+import { ChevronRight, GraduationCap, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HEALTH_LABELS, healthClasses, normalizeHealthStatus } from './wcmKnowledge';
+import { isOpenGate } from './wcmLearningLifecycle';
 import {
   learningMetric,
   useWcmLearningRecords,
+  useWcmMethodChangeGates,
   useWcmMethodLearningHealth,
 } from '@/hooks/useWcmMethodLearning';
 
@@ -24,6 +26,7 @@ const Stat = ({ label, value }: { label: string; value: number | string }) => (
 const WcmLearningCard = () => {
   const { data: health, isLoading } = useWcmMethodLearningHealth();
   const { data: records } = useWcmLearningRecords();
+  const { data: gates } = useWcmMethodChangeGates();
 
   const status = normalizeHealthStatus(health?.health_status);
   const metrics = health?.metrics;
@@ -35,6 +38,7 @@ const WcmLearningCard = () => {
   const candidate = learningMetric(metrics, 'candidate_learning') ?? count('CANDIDATE');
   const observing = learningMetric(metrics, 'observing_learning') ?? count('OBSERVING');
   const pendingEvidence = learningMetric(metrics, 'pending_evidence');
+  const openGates = (gates ?? []).filter(isOpenGate);
 
   const show = (value: number | null) => (value === null ? '—' : value);
 
@@ -76,8 +80,14 @@ const WcmLearningCard = () => {
         <Stat label="Promossi" value={show(promoted)} />
         <Stat label="Candidati" value={show(candidate)} />
         <Stat label="In osservazione" value={show(observing)} />
-        <Stat label="Evidence pending" value={show(pendingEvidence)} />
+        <Stat label="Evidence da revisionare" value={show(pendingEvidence)} />
       </div>
+      {openGates.length > 0 && (
+        <p className="mt-3 flex items-center gap-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-amber-300">
+          <ShieldAlert className="h-3.5 w-3.5" />
+          {openGates.length} change gate in attesa di autorità
+        </p>
+      )}
     </Link>
   );
 };

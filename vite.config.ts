@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -23,5 +24,14 @@ export default defineConfig(({ mode }) => ({
       "wcm-doc-engine/docx": path.resolve(__dirname, "./scripts/wcm-documentation/docx.mjs"),
       "wcm-doc-engine/pdf-render": path.resolve(__dirname, "./scripts/wcm-documentation/pdfRender.mjs"),
     },
+  },
+  test: {
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      // Deno-native edge function tests (https: imports) run via the Supabase
+      // edge function test runner, not vitest.
+      'supabase/functions/wcm-method-projector/normalize.test.ts',
+    ],
   },
 }));

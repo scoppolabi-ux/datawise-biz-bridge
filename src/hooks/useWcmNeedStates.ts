@@ -5,8 +5,11 @@ import {
   type WcmCommandRequest,
 } from '@/hooks/useWcmCommands';
 import { isOpenNeed, useWcmNeeds, type WcmProjectNeed } from '@/hooks/useWcmProjects';
+import { useWcmMethodChangeGates } from '@/hooks/useWcmMethodLearning';
 import { useCanonicalStateIndex } from '@/hooks/useWcmStateMappings';
 import { resolveCanonicalState } from '@/components/wcm/wcmCanonicalState';
+import { isOpenGate } from '@/components/wcm/wcmLearningLifecycle';
+import { methodGateToNeed, WCM_CHANGE_GATE } from '@/components/wcm/wcmMethodGateNeeds';
 
 export type DerivedNeedState = 'NEEDS_STEFANO' | 'PENDING_SYSTEM';
 
@@ -14,7 +17,10 @@ export type ClassifiedNeed = {
   need: WcmProjectNeed;
   derived: DerivedNeedState;
   latestCommand: WcmCommandRequest | null;
-  /** Derived in the UI from an unmapped state: never written to wcm_project_needs. */
+  /**
+   * Derived in the UI (unmapped document state or global method change gate):
+   * never written to wcm_project_needs, never routed to the command surface.
+   */
   virtual?: boolean;
 };
 
@@ -61,6 +67,7 @@ export const needKey = (projectId: string, needId: string) => `${projectId}::${n
 
 /** Human-attention badge label for a classified need. */
 export const derivedBadge = (item: ClassifiedNeed) => {
+  if (item.need.need_type === WCM_CHANGE_GATE) return 'AUTORITÀ RICHIESTA';
   if (item.virtual) return 'STATO DA CLASSIFICARE';
   if (item.derived === 'NEEDS_STEFANO') return 'ACTION REQUIRED';
   return item.latestCommand?.status === 'RECORDED'
@@ -79,11 +86,12 @@ export const useWcmNeedStates = () => {
   const needsQuery = useWcmNeeds();
   const commandsQuery = useWcmAllCommands();
   const docsQuery = useWcmAllDocumentStates();
+  const gatesQuery = useWcmMethodChangeGates();
   const { index } = useCanonicalStateIndex();
 
-  const isLoading = needsQuery.isLoading || commandsQuery.isLoading;
-  const error = needsQuery.error ?? commandsQuery.error;
-  const ready = Boolean(needsQuery.data && commandsQuery.data);
+  const isLoading = needsQuery.isLoading || commandsQuery.isLoading || gatesQuery.isLoading;
+  const error = needsQuery.error ?? commandsQuery.error ?? gatesQuery.error;
+  const ready = Boolean(needsQuery.data && commandsQuery.data && gatesQuery.data);
 
   const openNeeds = (needsQuery.data ?? []).filter(isOpenNeed);
 
@@ -134,7 +142,20 @@ export const useWcmNeedStates = () => {
       } satisfies WcmProjectNeed,
     }));
 
-  const allClassified = [...classified, ...unclassifiedNeeds];
+  // Global Method Change Gates: explicit structured gates projected from
+  // GitHub. An OPEN gate requires Stefano's authority. Virtual/UI-only: never
+  // written to wcm_project_needs and never sent to the project command
+  // surface — the authority decision happens on GitHub (source of truth).
+  const gateNeeds: ClassifiedNeed[] = (gatesQuery.data ?? [])
+    .filter(isOpenGate)
+    .map((gate) => ({
+      virtual: true,
+      derived: 'NEEDS_STEFANO' as const,
+      latestCommand: null,
+      need: methodGateToNeed(gate),
+    }));
+
+  const allClassified = [...gateNeeds, ...classified, ...unclassifiedNeeds];
 
   return {
     isLoading,
@@ -143,6 +164,7 @@ export const useWcmNeedStates = () => {
     openNeeds,
     classified: allClassified,
     unclassifiedNeeds,
+    gateNeeds,
     needsStefano: allClassified.filter((c) => c.derived === 'NEEDS_STEFANO'),
     pendingNeeds: allClassified.filter((c) => c.derived === 'PENDING_SYSTEM'),
     latestByNeed,

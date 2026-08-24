@@ -152,6 +152,66 @@ export type Database = {
         }
         Relationships: []
       }
+      wcm_method_change_gates: {
+        Row: {
+          authority_required: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          gate_id: string
+          gate_type: string
+          id: string
+          impact_preview_refs: Json
+          learning_id: string | null
+          opened_at: string | null
+          procedure_refs: Json
+          sort_order: number
+          source_path: string | null
+          source_sha: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          authority_required?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          gate_id: string
+          gate_type?: string
+          id?: string
+          impact_preview_refs?: Json
+          learning_id?: string | null
+          opened_at?: string | null
+          procedure_refs?: Json
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          authority_required?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          gate_id?: string
+          gate_type?: string
+          id?: string
+          impact_preview_refs?: Json
+          learning_id?: string | null
+          opened_at?: string | null
+          procedure_refs?: Json
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wcm_method_learning_evidence: {
         Row: {
           changed_paths: Json
@@ -273,6 +333,7 @@ export type Database = {
           learning_id: string
           origin_created_at: string | null
           origin_refs: Json
+          promoted_at: string | null
           promoted_to: Json
           record_path: string | null
           revisit_trigger: string | null
@@ -290,6 +351,7 @@ export type Database = {
           learning_id: string
           origin_created_at?: string | null
           origin_refs?: Json
+          promoted_at?: string | null
           promoted_to?: Json
           record_path?: string | null
           revisit_trigger?: string | null
@@ -307,6 +369,7 @@ export type Database = {
           learning_id?: string
           origin_created_at?: string | null
           origin_refs?: Json
+          promoted_at?: string | null
           promoted_to?: Json
           record_path?: string | null
           revisit_trigger?: string | null
