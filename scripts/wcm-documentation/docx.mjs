@@ -214,9 +214,11 @@ function metaTable(meta) {
 }
 
 /**
- * @returns {Promise<Buffer>} the DOCX release buffer
+ * Build the docx Document model. Runtime-agnostic: Node packs it to a Buffer,
+ * the browser packs the very same model to a Blob.
+ * @returns {import('docx').Document}
  */
-export async function buildDocx({ blocks, meta }) {
+export function buildDocxDocument({ blocks, meta }) {
   orderedState = { index: 0, active: false };
   const documentTitle = blocks.find((b) => b.type === 'heading' && b.depth === 1);
   const body = [
@@ -367,5 +369,12 @@ export async function buildDocx({ blocks, meta }) {
     ],
   });
 
-  return Packer.toBuffer(doc);
+  return doc;
+}
+
+/**
+ * @returns {Promise<Buffer>} the DOCX release buffer (Node release pipeline)
+ */
+export async function buildDocx({ blocks, meta }) {
+  return Packer.toBuffer(buildDocxDocument({ blocks, meta }));
 }

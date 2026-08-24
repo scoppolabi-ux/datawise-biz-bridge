@@ -1,80 +1,68 @@
-import type { WcmProjectDocument } from '@/hooks/useWcmProjects';
-import { governanceBadgeOf, type ResolvedState } from './wcmCanonicalState';
+import type { ResolvedState } from './wcmCanonicalState';
+import {
+  MIME,
+  artifactFileName,
+  type WcmArtifact,
+  type WcmArtifactFormat,
+  type WcmArtifactSource,
+} from '@/lib/wcmArtifacts';
 
-/** Safe, portable filename derived from title (+ version, + governance marker). */
+/** Canonical artifact filename (Word / PDF). No plain-text distribution. */
 export const documentFileName = (
-  doc: {
-    title: string;
-    version?: string | null;
-    document_id: string;
-    distribution_ready?: boolean;
-  },
+  doc: WcmArtifactSource,
   state: ResolvedState,
-) => {
-  const base = (doc.title || doc.document_id)
-    .normalize('NFKD')
-    .replace(/[^\w\s.-]+/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .slice(0, 80)
-    .replace(/^-|-$/g, '');
-  const version = doc.version ? `-v${String(doc.version).replace(/[^\w.-]+/g, '')}` : '';
-  const badge = governanceBadgeOf({ distribution_ready: doc.distribution_ready ?? true }, state);
-  const marker =
-    badge === 'UNAPPROVED' ? '-UNAPPROVED' : badge === 'UNCLASSIFIED' ? '-DA-CLASSIFICARE' : '';
-  return `${base || 'documento'}${version}${marker}.txt`;
-};
+  format: WcmArtifactFormat = 'pdf',
+) => artifactFileName(doc, state, format);
 
 export const documentDeepLink = (projectId: string, documentId: string) =>
   `${window.location.origin}/wcm/${projectId}?tab=documents&document=${encodeURIComponent(
     documentId,
   )}`;
 
-const textFile = (doc: WcmProjectDocument, state: ResolvedState) =>
-  new File([doc.content_markdown ?? ''], documentFileName(doc, state), {
-    type: 'text/plain;charset=utf-8',
-  });
-
-export const downloadDocument = (doc: WcmProjectDocument, state: ResolvedState) => {
-  const blob = new Blob([doc.content_markdown ?? ''], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = documentFileName(doc, state);
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-};
-
 export type ShareOutcome =
-  | { kind: 'file' }
+  | { kind: 'file'; format: WcmArtifactFormat }
   | { kind: 'link' }
   | { kind: 'whatsapp' }
   | { kind: 'cancelled' }
   | { kind: 'error'; message: string };
 
+type ShareNavigator = Navigator & {
+  canShare?: (data?: ShareData) => boolean;
+  share?: (data: ShareData) => Promise<void>;
+};
+
+/** Pure decision helper: which artifact should be attached, if any. */
+export const preferredShareFormat = (
+  available: WcmArtifactFormat[],
+): WcmArtifactFormat | null =>
+  available.includes('pdf') ? 'pdf' : available.includes('docx') ? 'docx' : null;
+
+const toFile = (artifact: WcmArtifact) =>
+  new File([artifact.blob], artifact.filename, { type: MIME[artifact.format] });
+
 /**
- * Level 2 Web Share (real .txt file) first, then link share, then WhatsApp deep link.
+ * Web Share L2 with a real Word/PDF artifact when the platform allows it,
+ * otherwise share the in-app deep link, otherwise WhatsApp.
  */
 export const shareDocument = async (
-  doc: WcmProjectDocument,
+  doc: { title: string; document_id: string },
   projectId: string,
-  state: ResolvedState,
+  options: {
+    /** Lazily builds an artifact; omitted when no artifact can be produced. */
+    buildArtifact?: (format: WcmArtifactFormat) => Promise<WcmArtifact>;
+    availableFormats?: WcmArtifactFormat[];
+  } = {},
 ): Promise<ShareOutcome> => {
   const url = documentDeepLink(projectId, doc.document_id);
-  const nav = navigator as Navigator & {
-    canShare?: (data?: ShareData) => boolean;
-    share?: (data: ShareData) => Promise<void>;
-  };
+  const nav = navigator as ShareNavigator;
+  const format = preferredShareFormat(options.availableFormats ?? []);
 
-  if (doc.content_markdown && nav.share && nav.canShare) {
+  if (format && options.buildArtifact && nav.share && nav.canShare) {
     try {
-      const file = textFile(doc, state);
+      const file = toFile(await options.buildArtifact(format));
       if (nav.canShare({ files: [file] })) {
         await nav.share({ files: [file], title: doc.title, text: doc.title });
-        return { kind: 'file' };
+        return { kind: 'file', format };
       }
     } catch (err) {
       if ((err as DOMException)?.name === 'AbortError') return { kind: 'cancelled' };

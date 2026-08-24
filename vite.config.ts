@@ -17,6 +17,11 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Shared WCM document engine, reused by the Node release pipeline and
+      // by the in-app Word/PDF distribution artifacts.
+      "wcm-doc-engine/markdown": path.resolve(__dirname, "./scripts/wcm-documentation/markdown.mjs"),
+      "wcm-doc-engine/docx": path.resolve(__dirname, "./scripts/wcm-documentation/docx.mjs"),
+      "wcm-doc-engine/pdf-render": path.resolve(__dirname, "./scripts/wcm-documentation/pdfRender.mjs"),
     },
   },
 }));

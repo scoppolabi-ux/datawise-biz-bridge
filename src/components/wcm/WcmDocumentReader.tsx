@@ -1,4 +1,4 @@
-import { ArrowLeft, ExternalLink, FileText } from 'lucide-react';
+import { ArrowLeft, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WcmDocumentBody from './WcmDocumentBody';
 import WcmDocumentActions from './WcmDocumentActions';
@@ -53,20 +53,7 @@ const WcmDocumentReader = ({
             <WcmUnapprovedBadge doc={doc} className="mt-2" />
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <WcmDocumentActions doc={doc} projectId={projectId} variant="reader" />
-          {doc.source_url && (
-            <a
-              href={doc.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex shrink-0 items-center gap-2 rounded-md border border-wcm-line-strong px-3 py-1.5 text-xs text-wcm-text transition-colors hover:bg-wcm-panel hover:text-wcm-strong"
-            >
-              <ExternalLink className="h-3.5 w-3.5" />
-              Apri il sorgente su GitHub
-            </a>
-          )}
-        </div>
+        <WcmDocumentActions doc={doc} projectId={projectId} variant="reader" />
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
