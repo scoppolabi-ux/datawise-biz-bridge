@@ -1,0 +1,1 @@
+ALTER TABLE public.wcm_method_learning_evidence ADD COLUMN IF NOT EXISTS source_ref text;

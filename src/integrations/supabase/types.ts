@@ -226,6 +226,7 @@ export type Database = {
           reviewed_at: string | null
           sort_order: number
           source_committed_at: string | null
+          source_ref: string | null
           source_sha: string | null
           source_type: string | null
           summary: string | null
@@ -244,6 +245,7 @@ export type Database = {
           reviewed_at?: string | null
           sort_order?: number
           source_committed_at?: string | null
+          source_ref?: string | null
           source_sha?: string | null
           source_type?: string | null
           summary?: string | null
@@ -262,6 +264,7 @@ export type Database = {
           reviewed_at?: string | null
           sort_order?: number
           source_committed_at?: string | null
+          source_ref?: string | null
           source_sha?: string | null
           source_type?: string | null
           summary?: string | null
