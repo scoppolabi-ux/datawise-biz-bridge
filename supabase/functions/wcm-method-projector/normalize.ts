@@ -354,6 +354,12 @@ const GATE_KEYS = [
   'source_sha',
   'revision',
   'sort_order',
+  // Authority decision metadata, recorded by the canonical GitHub authority
+  // recorder after an authority command. Optional, exact keys only.
+  'decision_command_id',
+  'decision_command_type',
+  'decision_note',
+  'authority_receipt_path',
 ] as readonly string[]
 
 /**
@@ -371,14 +377,17 @@ const parseGateRevision = (value: unknown): number | null => {
  * Exact allowed lifecycle for GLOBAL method change gates. Absent status
  * defaults to OPEN (legacy baseline); any supplied status outside this set
  * fails closed. No fuzzy interpretation.
+ *
+ * AUTHORITY_APPROVED means the authority decision has been RECORDED by the
+ * GitHub authority recorder — it does NOT mean the baseline is already
+ * modified (that is EXECUTED).
  */
 const GATE_STATUSES = [
   'OPEN',
-  'APPROVED',
+  'AUTHORITY_APPROVED',
   'CHANGES_REQUESTED',
   'REJECTED',
   'EXECUTED',
-  'CLOSED',
 ] as readonly string[]
 
 const parseGateStatus = (value: unknown): string | null => {
@@ -386,6 +395,24 @@ const parseGateStatus = (value: unknown): string | null => {
   if (status === null || status === undefined) return 'OPEN'
   const s = status as string
   return GATE_STATUSES.includes(s) ? s : null
+}
+
+/**
+ * Exact allowed authority command types recorded on a gate decision.
+ * Null/absent is valid (no decision yet); any other non-null value fails
+ * closed.
+ */
+const DECISION_COMMAND_TYPES = [
+  'APPROVE_CHANGE_GATE',
+  'REQUEST_CHANGES',
+  'REJECT_CHANGE_GATE',
+] as readonly string[]
+
+const parseDecisionCommandType = (value: unknown): string | null | undefined => {
+  const normalized = normalize(value)
+  if (normalized === null || normalized === undefined) return null
+  const s = normalized as string
+  return DECISION_COMMAND_TYPES.includes(s) ? s : undefined
 }
 
 export function parseMethodChangeGates(
