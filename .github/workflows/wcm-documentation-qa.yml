@@ -28,15 +28,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .wcm-release-deps
-          cd .wcm-release-deps
+          rm -rf wcm-release-deps node_modules
+          mkdir -p wcm-release-deps
+          cd wcm-release-deps
           npm init -y >/dev/null 2>&1
           npm install --no-audit --no-fund --save-exact \
             docx@9.7.1 \
             pdfkit@0.20.1 \
             marked@18.0.10
           cd ..
-          ln -s .wcm-release-deps/node_modules node_modules
+          ln -s wcm-release-deps/node_modules node_modules
 
       - name: Generate controlled documentation release
         run: node scripts/wcm-release-bootstrap.mjs
