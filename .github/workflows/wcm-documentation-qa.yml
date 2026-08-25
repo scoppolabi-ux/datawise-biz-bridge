@@ -1,0 +1,68 @@
+name: WCM Documentation Artifact QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wcm-documentation-qa.yml'
+      - 'scripts/wcm-release-bootstrap.mjs'
+      - 'scripts/wcm-documentation/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install isolated release dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .wcm-release-deps
+          cd .wcm-release-deps
+          npm init -y >/dev/null 2>&1
+          npm install --no-audit --no-fund --save-exact \
+            docx@9.7.1 \
+            pdfkit@0.20.1 \
+            marked@18.0.10
+          cd ..
+          ln -s .wcm-release-deps/node_modules node_modules
+
+      - name: Generate controlled documentation release
+        run: node scripts/wcm-release-bootstrap.mjs
+
+      - name: Verify expected release files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s public/wcm/documentation/releases/manifest.json
+          for id in \
+            wcm-technical-reference \
+            wcm-executive-client-guide \
+            wcm-user-manual \
+            prima-di-noi-technical-reference \
+            prima-di-noi-executive-editorial-partner-guide \
+            prima-di-noi-user-manual
+          do
+            test -s "public/wcm/documentation/releases/${id}.md"
+            test -s "public/wcm/documentation/releases/${id}.docx"
+            test -s "public/wcm/documentation/releases/${id}.pdf"
+          done
+
+      - name: Upload QA release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wcm-documentation-release-qa
+          path: public/wcm/documentation/releases/
+          if-no-files-found: error
+          retention-days: 7
