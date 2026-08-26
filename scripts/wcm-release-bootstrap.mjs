@@ -13,7 +13,15 @@ import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { DOCUMENTS, RELEASE_DIR, REPO_NAME, REPO_OWNER, REPO_REF } from './wcm-documentation/config.mjs';
+import {
+  BOOKS,
+  DOCUMENTS,
+  RELEASE_DIR,
+  REPO_NAME,
+  REPO_OWNER,
+  REPO_REF,
+  STATIC_ASSETS,
+} from './wcm-documentation/config.mjs';
 import { extractMetadata, parseMarkdownBlocks } from './wcm-documentation/markdown.mjs';
 import { buildDocx } from './wcm-documentation/docx.mjs';
 import { buildPdf } from './wcm-documentation/pdf.mjs';
@@ -35,11 +43,23 @@ async function loadMaster(doc) {
   return { markdown, sha: doc.bootstrap_sha };
 }
 
+async function loadStaticAsset(asset) {
+  if (!asset.bootstrap_file || !SHA_RE.test(asset.source_sha ?? '')) {
+    throw new Error(`Static asset bootstrap non valido: ${asset.release_path ?? asset.bootstrap_file}`);
+  }
+  const data = await readFile(path.join(BOOTSTRAP_DIR, asset.bootstrap_file));
+  if (!data.length) throw new Error(`Static asset vuoto: ${asset.bootstrap_file}`);
+  return data;
+}
+
+const releaseRelativeDir = (doc) => (doc.release_subdir ?? '').replace(/^\/+|\/+$/g, '');
+
 async function main() {
   const releasedAt = new Date().toISOString();
   const outDir = path.resolve(RELEASE_DIR);
   const entries = [];
   const writes = [];
+  const base = RELEASE_DIR.replace(/^public\/?/, '');
 
   for (const doc of DOCUMENTS) {
     process.stdout.write(`→ ${doc.document_id} … `);
@@ -63,16 +83,21 @@ async function main() {
     const docxBuffer = await buildDocx({ blocks, meta });
     const pdfBuffer = await buildPdf({ blocks, meta });
     const qa_status = qaCheck({ markdown, docx: docxBuffer, pdf: pdfBuffer });
+    const subdir = releaseRelativeDir(doc);
+    const fileBase = subdir ? path.join(outDir, subdir) : outDir;
+    const publicBase = subdir ? `${base}/${subdir}` : base;
 
-    const base = RELEASE_DIR.replace(/^public/, '');
     writes.push(
-      [path.join(outDir, `${doc.document_id}.md`), markdown],
-      [path.join(outDir, `${doc.document_id}.docx`), docxBuffer],
-      [path.join(outDir, `${doc.document_id}.pdf`), pdfBuffer],
+      [path.join(fileBase, `${doc.document_id}.md`), markdown],
+      [path.join(fileBase, `${doc.document_id}.docx`), docxBuffer],
+      [path.join(fileBase, `${doc.document_id}.pdf`), pdfBuffer],
     );
 
     entries.push({
       document_id: doc.document_id,
+      document_kind: doc.document_kind ?? 'manual',
+      book_id: doc.book_id ?? null,
+      chapter_number: Number.isInteger(doc.chapter_number) ? doc.chapter_number : null,
       scope: doc.scope ?? 'wcm',
       project_id: doc.project_id ?? null,
       project_label: doc.project_label ?? null,
@@ -86,9 +111,9 @@ async function main() {
       source_sha: sha,
       source_sha_short: meta.source_sha_short,
       released_at: releasedAt,
-      markdown_path: `${base}/${doc.document_id}.md`,
-      docx_path: `${base}/${doc.document_id}.docx`,
-      pdf_path: `${base}/${doc.document_id}.pdf`,
+      markdown_path: `${publicBase}/${doc.document_id}.md`,
+      docx_path: `${publicBase}/${doc.document_id}.docx`,
+      pdf_path: `${publicBase}/${doc.document_id}.pdf`,
       download_filename_docx: `${doc.download_basename}.docx`,
       download_filename_pdf: `${doc.download_basename}.pdf`,
       qa_status,
@@ -99,17 +124,33 @@ async function main() {
     process.stdout.write(`ok (${sha.slice(0, 7)}, docx ${docxBuffer.length}B, pdf ${pdfBuffer.length}B)\n`);
   }
 
+  for (const asset of STATIC_ASSETS ?? []) {
+    process.stdout.write(`→ asset ${asset.release_path} … `);
+    const data = await loadStaticAsset(asset);
+    writes.push([path.join(outDir, asset.release_path), data]);
+    process.stdout.write(`ok (${asset.source_sha.slice(0, 7)}, ${data.length}B)\n`);
+  }
+
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
-  for (const [file, data] of writes) await writeFile(file, data);
+  for (const [file, data] of writes) {
+    await mkdir(path.dirname(file), { recursive: true });
+    await writeFile(file, data);
+  }
   await writeFile(
     path.join(outDir, 'manifest.json'),
     `${JSON.stringify(
       {
-        manifest_version: '1.0',
+        manifest_version: '1.1',
         release_mode: 'BOOTSTRAP_AUTHORIZED_SNAPSHOT',
         source_of_truth: `https://github.com/${REPO_OWNER}/${REPO_NAME} (${REPO_REF})`,
         generated_at: releasedAt,
+        books: BOOKS ?? [],
+        static_assets: (STATIC_ASSETS ?? []).map((asset) => ({
+          release_path: `${base}/${asset.release_path}`,
+          source_path: asset.source_path,
+          source_sha: asset.source_sha,
+        })),
         documents: entries,
       },
       null,
@@ -117,10 +158,10 @@ async function main() {
     )}\n`,
   );
 
-  const files = (await readdir(outDir)).sort();
+  const files = (await readdir(outDir, { recursive: true })).sort();
   console.log(`\nRelease directory: ${RELEASE_DIR}`);
   console.log(files.map((f) => `  · ${f}`).join('\n'));
-  console.log(`\n${entries.length} documenti · QA: ${entries.map((e) => e.qa_status).join(', ')}`);
+  console.log(`\n${entries.length} documenti · ${BOOKS?.length ?? 0} libri · QA: ${entries.map((e) => e.qa_status).join(', ')}`);
 }
 
 main().catch((error) => {
