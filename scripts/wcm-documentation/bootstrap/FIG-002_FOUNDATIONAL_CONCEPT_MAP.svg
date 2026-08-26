@@ -14,6 +14,7 @@
   <rect width="1200" height="720" fill="#ffffff"/>
   <text x="60" y="62" class="title">I mattoni fondamentali del WCM</text>
   <text x="60" y="94" class="sub">Cinque famiglie di concetti che trasformano una richiesta in lavoro governato, persistente e verificabile.</text>
+
   <rect x="45" y="130" width="1110" height="94" class="band" fill="#eff6ff" stroke="#bfdbfe"/>
   <text x="70" y="162" class="bandtitle">1 · SIGNIFICATO</text>
   <rect x="260" y="146" width="180" height="58" class="box"/><text x="350" y="181" text-anchor="middle" class="label">Dato</text>
@@ -21,6 +22,7 @@
   <rect x="505" y="146" width="180" height="58" class="box"/><text x="595" y="181" text-anchor="middle" class="label">Informazione</text>
   <path d="M685 175 H745" class="arrow"/>
   <rect x="750" y="146" width="180" height="58" class="box"/><text x="840" y="181" text-anchor="middle" class="label">Conoscenza</text>
+
   <rect x="45" y="238" width="1110" height="108" class="band" fill="#f8fafc" stroke="#cbd5e1"/>
   <text x="70" y="270" class="bandtitle">2 · GOVERNANCE</text>
   <rect x="245" y="254" width="200" height="66" class="box"/><text x="345" y="282" text-anchor="middle" class="label">Fonte autorevole</text><text x="345" y="303" text-anchor="middle" class="small">quale fonte ha titolo</text>
@@ -28,6 +30,7 @@
   <rect x="695" y="254" width="180" height="66" class="box"/><text x="785" y="282" text-anchor="middle" class="label">Authority</text><text x="785" y="303" text-anchor="middle" class="small">chi può decidere</text>
   <rect x="900" y="254" width="180" height="66" class="box"/><text x="990" y="282" text-anchor="middle" class="label">Decisione</text><text x="990" y="303" text-anchor="middle" class="small">scelta che crea effetti</text>
   <path d="M930 204 C930 225 950 232 970 252" class="arrow"/>
+
   <rect x="45" y="360" width="1110" height="142" class="band" fill="#f0fdf4" stroke="#bbf7d0"/>
   <text x="70" y="392" class="bandtitle">3 · ESECUZIONE</text>
   <rect x="320" y="374" width="180" height="52" class="box"/><text x="410" y="398" text-anchor="middle" class="label">Processo</text><text x="410" y="417" text-anchor="middle" class="small">percorso di lavoro</text>
@@ -41,18 +44,22 @@
   <path d="M805 446 V454" class="arrow"/>
   <path d="M760 442 C720 451 690 455 660 456" class="line"/>
   <path d="M865 442 C905 451 935 455 970 456" class="line"/>
+
   <rect x="45" y="516" width="790" height="122" class="band" fill="#fff7ed" stroke="#fed7aa"/>
   <text x="70" y="548" class="bandtitle">4 · MEMORIA E NAVIGAZIONE</text>
   <rect x="320" y="570" width="145" height="62" class="box"/><text x="392" y="606" text-anchor="middle" class="label">Nodo</text>
   <rect x="490" y="570" width="190" height="62" class="box"/><text x="585" y="599" text-anchor="middle" class="label">Relazione / sinapsi</text><text x="585" y="620" text-anchor="middle" class="small">collega significati e impatti</text>
   <rect x="700" y="570" width="120" height="62" class="box"/><text x="760" y="606" text-anchor="middle" class="label">Indice</text>
   <path d="M465 601 H488" class="arrow"/><path d="M680 601 H698" class="arrow"/>
+
   <rect x="855" y="516" width="300" height="122" class="band" fill="#faf5ff" stroke="#e9d5ff"/>
   <text x="880" y="548" class="bandtitle">5 · AFFIDABILITÀ</text>
   <rect x="875" y="564" width="125" height="54" class="box"/><text x="937" y="597" text-anchor="middle" class="label">Determinismo</text>
   <rect x="1015" y="564" width="125" height="54" class="box"/><text x="1077" y="597" text-anchor="middle" class="label">Idempotenza</text>
+
   <path d="M785 320 C785 342 805 360 815 384" class="arrow"/>
   <path d="M802 490 C750 525 650 550 585 570" class="arrow"/>
   <path d="M1000 516 C965 490 915 460 875 442" class="arrow"/>
+
   <text x="600" y="685" text-anchor="middle" class="caption">Nessun mattone, preso da solo, è il WCM: il valore nasce dalle relazioni tra questi elementi.</text>
 </svg>
