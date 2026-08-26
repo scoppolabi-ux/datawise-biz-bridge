@@ -3,11 +3,13 @@ import { canDownload, parseManifest, statusLabel, type WcmReleaseDocument } from
 
 const base: WcmReleaseDocument = {
   document_id: 'wcm-user-manual',
+  document_kind: 'manual',
+  book_id: null,
+  chapter_number: null,
   scope: 'wcm',
   project_id: null,
   project_label: null,
   title: 'WCM User Manual',
-
   audience: 'Operatori Mission Control',
   description: 'Manuale operativo',
   version: 'V0.1',
@@ -28,18 +30,57 @@ const base: WcmReleaseDocument = {
   pdf_page_count: null,
 };
 
-
 describe('parseManifest', () => {
   it('parses a well formed manifest', () => {
     const manifest = parseManifest({
-      manifest_version: '0.9',
+      manifest_version: '1.1',
       source_of_truth: 'https://github.com/scoppolabi-ux/WCM-LAB (main)',
       generated_at: base.released_at,
       documents: [base],
+      books: [],
     });
     expect(manifest?.documents).toHaveLength(1);
+    expect(manifest?.books).toHaveLength(0);
     expect(manifest?.documents[0].source_sha_short).toBe('abcdef1');
     expect(manifest?.documents[0].status).toBe('CURRENT');
+    expect(manifest?.documents[0].document_kind).toBe('manual');
+  });
+
+  it('parses a progressive book and frozen chapter metadata', () => {
+    const manifest = parseManifest({
+      documents: [{
+        ...base,
+        document_id: 'book-ch01',
+        document_kind: 'book_chapter',
+        book_id: 'book',
+        chapter_number: 1,
+      }],
+      books: [{
+        book_id: 'book',
+        scope: 'wcm',
+        title: 'Libro',
+        subtitle: 'Sottotitolo',
+        description: 'Descrizione',
+        status: 'IN_DEVELOPMENT',
+        index_status: 'APPROVED',
+        index_source_path: 'BOOK_INDEX.md',
+        index_source_sha: '1234567890abcdef',
+        frozen_chapters: 1,
+        sections: [{
+          title: 'Parte I',
+          chapters: [
+            { number: 1, title: 'Capitolo uno', status: 'FROZEN', document_id: 'book-ch01' },
+            { number: 2, title: 'Capitolo due', status: 'PLANNED' },
+          ],
+        }],
+        appendices: [{ number: 'A', title: 'Glossario', status: 'PLANNED' }],
+      }],
+    });
+    expect(manifest?.books).toHaveLength(1);
+    expect(manifest?.books[0].sections[0].chapters[0].document_id).toBe('book-ch01');
+    expect(manifest?.books[0].sections[0].chapters[1].status).toBe('PLANNED');
+    expect(manifest?.documents[0].document_kind).toBe('book_chapter');
+    expect(manifest?.documents[0].chapter_number).toBe(1);
   });
 
   it('rejects non-manifest payloads', () => {
@@ -71,12 +112,15 @@ describe('canDownload', () => {
     expect(canDownload(base, 'pdf')).toBe(true);
     expect(canDownload({ ...base, pdf_path: null }, 'pdf')).toBe(false);
     expect(canDownload({ ...base, qa_status: 'BUILD_FAIL' }, 'docx')).toBe(false);
+    expect(canDownload({ ...base, visual_qa_status: 'PENDING' }, 'pdf')).toBe(false);
   });
 });
 
 describe('statusLabel', () => {
   it('localizes known statuses and passes through unknown ones', () => {
     expect(statusLabel('CURRENT')).toBe('Corrente');
+    expect(statusLabel('IN_DEVELOPMENT')).toBe('In sviluppo');
+    expect(statusLabel('PLANNED')).toBe('Pianificato');
     expect(statusLabel('XYZ')).toBe('XYZ');
   });
 });
