@@ -51,6 +51,13 @@ const CommandState = ({ command }: { command: WcmCommandRequest }) => (
         {command.status} · {COMMAND_STATUS_LABELS[command.status]}
       </span>
     </div>
+    {isCommandDeliveryDelayed(command) && (
+      <p className="mt-2 text-xs font-semibold leading-relaxed text-amber-600">
+        Consegna al worker in ritardo · il comando è persistito in coda durevole da oltre 10 minuti,
+        ma il worker GitHub non l’ha ancora preso in carico. L’autorità NON è stata registrata;
+        nessuna azione manuale è richiesta, il recupero è automatico.
+      </p>
+    )}
     <p className="mt-1.5 text-xs text-wcm-dim">
       Richiesto da {command.requested_by_email} ({command.requested_by_role}) ·{' '}
       {new Date(command.created_at).toLocaleString('it-IT')}
