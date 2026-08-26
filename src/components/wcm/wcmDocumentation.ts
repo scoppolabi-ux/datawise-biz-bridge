@@ -6,9 +6,13 @@
  */
 
 export type WcmDocumentScope = 'wcm' | 'project';
+export type WcmDocumentKind = 'manual' | 'book_chapter';
 
 export type WcmReleaseDocument = {
   document_id: string;
+  document_kind: WcmDocumentKind;
+  book_id: string | null;
+  chapter_number: number | null;
   scope: WcmDocumentScope;
   project_id: string | null;
   project_label: string | null;
@@ -33,11 +37,39 @@ export type WcmReleaseDocument = {
   pdf_page_count: number | null;
 };
 
+export type WcmBookIndexItem = {
+  number: string;
+  title: string;
+  status: string;
+  document_id: string | null;
+};
+
+export type WcmBookSection = {
+  title: string;
+  chapters: WcmBookIndexItem[];
+};
+
+export type WcmDocumentationBook = {
+  book_id: string;
+  scope: WcmDocumentScope;
+  title: string;
+  subtitle: string;
+  description: string;
+  status: string;
+  index_status: string;
+  index_source_path: string;
+  index_source_sha: string;
+  frozen_chapters: number;
+  sections: WcmBookSection[];
+  appendices: WcmBookIndexItem[];
+};
+
 export type WcmReleaseManifest = {
   manifest_version: string;
   source_of_truth: string;
   generated_at: string;
   documents: WcmReleaseDocument[];
+  books: WcmDocumentationBook[];
 };
 
 export const MANIFEST_PATH = 'wcm/documentation/releases/manifest.json';
@@ -56,6 +88,63 @@ const str = (value: unknown): string | null =>
 const intOrNull = (value: unknown): number | null =>
   typeof value === 'number' && Number.isInteger(value) && value >= 0 ? value : null;
 
+const parseBookItem = (raw: unknown): WcmBookIndexItem | null => {
+  if (!raw || typeof raw !== 'object') return null;
+  const item = raw as Record<string, unknown>;
+  const numberRaw = item.number;
+  const number = typeof numberRaw === 'number' || typeof numberRaw === 'string' ? String(numberRaw) : '';
+  const title = str(item.title);
+  if (!number || !title) return null;
+  return {
+    number,
+    title,
+    status: (str(item.status) ?? 'PLANNED').toUpperCase(),
+    document_id: str(item.document_id),
+  };
+};
+
+const parseBooks = (raw: unknown): WcmDocumentationBook[] => {
+  if (!Array.isArray(raw)) return [];
+  const books: WcmDocumentationBook[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue;
+    const b = item as Record<string, unknown>;
+    const book_id = str(b.book_id);
+    const title = str(b.title);
+    if (!book_id || !title) continue;
+    const scopeRaw = (str(b.scope) ?? 'wcm').toLowerCase();
+    const sections: WcmBookSection[] = [];
+    if (Array.isArray(b.sections)) {
+      for (const sectionRaw of b.sections) {
+        if (!sectionRaw || typeof sectionRaw !== 'object') continue;
+        const section = sectionRaw as Record<string, unknown>;
+        const sectionTitle = str(section.title);
+        if (!sectionTitle || !Array.isArray(section.chapters)) continue;
+        const chapters = section.chapters.map(parseBookItem).filter((x): x is WcmBookIndexItem => Boolean(x));
+        sections.push({ title: sectionTitle, chapters });
+      }
+    }
+    const appendices = Array.isArray(b.appendices)
+      ? b.appendices.map(parseBookItem).filter((x): x is WcmBookIndexItem => Boolean(x))
+      : [];
+    books.push({
+      book_id,
+      scope: scopeRaw === 'project' ? 'project' : 'wcm',
+      title,
+      subtitle: str(b.subtitle) ?? '',
+      description: str(b.description) ?? '',
+      status: (str(b.status) ?? 'IN_DEVELOPMENT').toUpperCase(),
+      index_status: (str(b.index_status) ?? 'UNKNOWN').toUpperCase(),
+      index_source_path: str(b.index_source_path) ?? '',
+      index_source_sha: str(b.index_source_sha) ?? '',
+      frozen_chapters: intOrNull(b.frozen_chapters) ?? 0,
+      sections,
+      appendices,
+    });
+  }
+  return books;
+};
+
 export function parseManifest(raw: unknown): WcmReleaseManifest | null {
   if (!raw || typeof raw !== 'object') return null;
   const data = raw as Record<string, unknown>;
@@ -71,9 +160,14 @@ export function parseManifest(raw: unknown): WcmReleaseManifest | null {
 
     const scopeRaw = (str(d.scope) ?? 'wcm').toLowerCase();
     const scope: WcmDocumentScope = scopeRaw === 'project' ? 'project' : 'wcm';
+    const kindRaw = (str(d.document_kind) ?? 'manual').toLowerCase();
+    const document_kind: WcmDocumentKind = kindRaw === 'book_chapter' ? 'book_chapter' : 'manual';
 
     documents.push({
       document_id,
+      document_kind,
+      book_id: document_kind === 'book_chapter' ? str(d.book_id) : null,
+      chapter_number: document_kind === 'book_chapter' ? intOrNull(d.chapter_number) : null,
       scope,
       project_id: scope === 'project' ? str(d.project_id) : null,
       project_label: scope === 'project' ? str(d.project_label) : null,
@@ -104,6 +198,7 @@ export function parseManifest(raw: unknown): WcmReleaseManifest | null {
     source_of_truth: str(data.source_of_truth) ?? '',
     generated_at: str(data.generated_at) ?? '',
     documents,
+    books: parseBooks(data.books),
   };
 }
 
@@ -123,6 +218,8 @@ export const STATUS_LABELS: Record<string, string> = {
   DRAFT: 'Bozza',
   FROZEN: 'Congelato',
   APPROVED: 'Approvato',
+  PLANNED: 'Pianificato',
+  IN_DEVELOPMENT: 'In sviluppo',
   SUPERSEDED: 'Superato',
   UNKNOWN: 'Non dichiarato',
 };
