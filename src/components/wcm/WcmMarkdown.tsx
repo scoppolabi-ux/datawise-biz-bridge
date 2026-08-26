@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { assetUrl } from './wcmDocumentation';
 import { slugify } from './wcmToc';
 
 const nodeText = (node: React.ReactNode): string => {
@@ -11,6 +12,14 @@ const nodeText = (node: React.ReactNode): string => {
   return '';
 };
 
+const resolveImageSrc = (src: string | undefined, markdownPath?: string): string | undefined => {
+  if (!src) return src;
+  if (/^(?:https?:|data:|blob:)/i.test(src) || src.startsWith('/')) return src;
+  if (!markdownPath) return src;
+  const baseDir = markdownPath.includes('/') ? markdownPath.slice(0, markdownPath.lastIndexOf('/')) : '';
+  return assetUrl(`${baseDir}/${src}`);
+};
+
 /**
  * Safe Markdown renderer: raw HTML is NOT enabled (no rehype-raw),
  * so arbitrary HTML in the source content is escaped, not executed.
@@ -18,7 +27,7 @@ const nodeText = (node: React.ReactNode): string => {
  * H1/H2/H3 receive deterministic unique slug ids (same algorithm as
  * `wcmToc.extractHeadings`) so a table of contents can link to them.
  */
-const WcmMarkdown = ({ content }: { content: string }) => {
+const WcmMarkdown = ({ content, markdownPath }: { content: string; markdownPath?: string }) => {
   // Recreated on every render pass so ids stay stable and unique.
   const seen = new Map<string, number>();
   const headingId = (children: React.ReactNode) => {
@@ -56,12 +65,18 @@ const WcmMarkdown = ({ content }: { content: string }) => {
         h3: ({ node, children, ...props }) => (
           <h3 {...props} id={headingId(children)} className="scroll-mt-24">{children}</h3>
         ),
-
         a: ({ node, ...props }) => (
           <a {...props} target="_blank" rel="noopener noreferrer nofollow" />
         ),
-        // Tables are wrapped so long GFM tables scroll horizontally on mobile
-        // instead of blowing out the page layout.
+        img: ({ node, src, alt, ...props }) => (
+          <img
+            {...props}
+            src={resolveImageSrc(src, markdownPath)}
+            alt={alt ?? ''}
+            className="my-5 h-auto max-w-full rounded-lg border border-wcm-line bg-white"
+            loading="lazy"
+          />
+        ),
         table: ({ node, ...props }) => (
           <div className="my-4 w-full max-w-full overflow-x-auto rounded-lg border border-wcm-line">
             <table
@@ -90,6 +105,5 @@ const WcmMarkdown = ({ content }: { content: string }) => {
   </div>
   );
 };
-
 
 export default WcmMarkdown;
