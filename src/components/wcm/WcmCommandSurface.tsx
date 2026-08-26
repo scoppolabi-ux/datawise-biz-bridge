@@ -35,7 +35,14 @@ const statusTone = (status: WcmCommandRequest['status']) => {
 };
 
 const CommandState = ({ command }: { command: WcmCommandRequest }) => (
-  <div className={cn('rounded-lg border p-3 text-sm', statusTone(command.status))}>
+  <div
+    className={cn(
+      'rounded-lg border p-3 text-sm',
+      isCommandDeliveryDelayed(command)
+        ? 'border-amber-500/40 bg-amber-500/10 text-wcm-text'
+        : statusTone(command.status),
+    )}
+  >
     <div className="flex flex-wrap items-center justify-between gap-2">
       <span className="font-mono text-[11px] uppercase tracking-[0.14em]">
         {command.command_type}
