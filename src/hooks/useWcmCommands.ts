@@ -60,6 +60,23 @@ export const useWcmProjectCommands = (projectId: string | undefined) =>
     },
   });
 
+/** Derived observability only: no new authority, no DB status change. */
+export const COMMAND_DELIVERY_DELAY_MS = 10 * 60 * 1000;
+
+/**
+ * True when a command is still SUBMITTED after the delivery threshold: it is
+ * durably queued but the GitHub worker has not claimed it yet.
+ */
+export const isCommandDeliveryDelayed = (
+  command: Pick<WcmCommandRequest, 'status' | 'created_at'> | null | undefined,
+  now: number = Date.now(),
+): boolean => {
+  if (!command || command.status !== 'SUBMITTED') return false;
+  const createdAt = new Date(command.created_at).getTime();
+  if (!Number.isFinite(createdAt)) return false;
+  return now - createdAt >= COMMAND_DELIVERY_DELAY_MS;
+};
+
 export type SubmitCommandInput = {
   project_id: string;
   need_id: string;

@@ -17,6 +17,7 @@ import { resolveCanonicalState } from './wcmCanonicalState';
 import {
   ACTIVE_COMMAND_STATUSES,
   COMMAND_STATUS_LABELS,
+  isCommandDeliveryDelayed,
   useSubmitWcmCommand,
   useWcmProjectCommands,
   type WcmCommandRequest,
@@ -34,7 +35,14 @@ const statusTone = (status: WcmCommandRequest['status']) => {
 };
 
 const CommandState = ({ command }: { command: WcmCommandRequest }) => (
-  <div className={cn('rounded-lg border p-3 text-sm', statusTone(command.status))}>
+  <div
+    className={cn(
+      'rounded-lg border p-3 text-sm',
+      isCommandDeliveryDelayed(command)
+        ? 'border-amber-500/40 bg-amber-500/10 text-wcm-text'
+        : statusTone(command.status),
+    )}
+  >
     <div className="flex flex-wrap items-center justify-between gap-2">
       <span className="font-mono text-[11px] uppercase tracking-[0.14em]">
         {command.command_type}
@@ -43,6 +51,13 @@ const CommandState = ({ command }: { command: WcmCommandRequest }) => (
         {command.status} · {COMMAND_STATUS_LABELS[command.status]}
       </span>
     </div>
+    {isCommandDeliveryDelayed(command) && (
+      <p className="mt-2 text-xs font-semibold leading-relaxed text-amber-600">
+        Consegna al worker in ritardo · il comando è persistito in coda durevole da oltre 10 minuti,
+        ma il worker GitHub non l’ha ancora preso in carico. L’autorità NON è stata registrata;
+        nessuna azione manuale è richiesta, il recupero è automatico.
+      </p>
+    )}
     <p className="mt-1.5 text-xs text-wcm-dim">
       Richiesto da {command.requested_by_email} ({command.requested_by_role}) ·{' '}
       {new Date(command.created_at).toLocaleString('it-IT')}
