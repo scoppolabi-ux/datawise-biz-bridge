@@ -17,6 +17,7 @@ import { resolveCanonicalState } from './wcmCanonicalState';
 import {
   ACTIVE_COMMAND_STATUSES,
   COMMAND_STATUS_LABELS,
+  isCommandDeliveryDelayed,
   useSubmitWcmCommand,
   useWcmProjectCommands,
   type WcmCommandRequest,
