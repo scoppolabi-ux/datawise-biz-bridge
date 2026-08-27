@@ -374,10 +374,7 @@ const WcmCommandSurface = ({
               <p className="rounded-md border border-wcm-alert/40 bg-wcm-alert/10 p-3 text-xs leading-relaxed text-wcm-alert-fg">
                 {open === 'REQUEST_CHANGES' ? (
                   <>
-                    Conferma definitiva. La Candidate corrente viene <strong>rifiutata</strong>; WCM
-                    applicherà la <code>rejection_transition</code> dichiarata dal workflow per
-                    creare la nuova revisione. Mission Control registra soltanto l’autorità
-                    autenticata: l’esecuzione canonica avviene su GitHub.
+                    Conferma definitiva. {requestChangesConfirmationText()}
                   </>
                 ) : (
                   <>
