@@ -285,7 +285,7 @@ const WcmCommandSurface = ({
           className="w-full border-wcm-line-strong bg-transparent text-wcm-text hover:border-wcm-accent hover:bg-wcm-surface hover:text-wcm-strong sm:w-auto"
         >
           <MessageSquareWarning className="mr-2 h-3.5 w-3.5" />
-          Rifiuta + Riscrivi
+          {REQUEST_CHANGES_BUTTON_LABEL}
         </Button>
       </div>
 
