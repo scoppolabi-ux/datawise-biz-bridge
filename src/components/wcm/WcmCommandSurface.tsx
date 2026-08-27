@@ -345,7 +345,7 @@ const WcmCommandSurface = ({
             {open === 'REQUEST_CHANGES' ? (
               <div className="space-y-2">
                 <label htmlFor="wcm-command-note" className="text-xs text-wcm-muted">
-                  Motivo del rifiuto / istruzione di riscrittura (obbligatorio)
+                  {REQUEST_CHANGES_NOTE_LABEL}
                 </label>
                 <Textarea
                   id="wcm-command-note"
