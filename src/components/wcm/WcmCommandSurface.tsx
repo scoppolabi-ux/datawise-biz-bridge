@@ -324,7 +324,7 @@ const WcmCommandSurface = ({
         <DialogContent className="max-w-md border-wcm-line bg-wcm-surface text-wcm-text">
           <DialogHeader>
             <DialogTitle className="text-wcm-strong">
-              {open === 'APPROVE_FREEZE' ? 'Approva + Freeze' : 'Rifiuta + Riscrivi'}
+              {open === 'APPROVE_FREEZE' ? 'Approva + Freeze' : REQUEST_CHANGES_DIALOG_TITLE}
             </DialogTitle>
             <DialogDescription className="text-wcm-dim">
               {need.project_id} · {need.title}
