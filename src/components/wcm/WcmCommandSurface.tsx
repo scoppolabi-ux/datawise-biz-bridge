@@ -318,7 +318,7 @@ const WcmCommandSurface = ({
         <DialogContent className="max-w-md border-wcm-line bg-wcm-surface text-wcm-text">
           <DialogHeader>
             <DialogTitle className="text-wcm-strong">
-              {open === 'APPROVE_FREEZE' ? 'Approva + Freeze' : 'Richiedi modifiche'}
+              {open === 'APPROVE_FREEZE' ? 'Approva + Freeze' : 'Rifiuta + Riscrivi'}
             </DialogTitle>
             <DialogDescription className="text-wcm-dim">
               {need.project_id} · {need.title}
@@ -339,7 +339,7 @@ const WcmCommandSurface = ({
             {open === 'REQUEST_CHANGES' ? (
               <div className="space-y-2">
                 <label htmlFor="wcm-command-note" className="text-xs text-wcm-muted">
-                  Nota richiesta (obbligatoria)
+                  Motivo del rifiuto / istruzione di riscrittura (obbligatorio)
                 </label>
                 <Textarea
                   id="wcm-command-note"
@@ -366,9 +366,21 @@ const WcmCommandSurface = ({
 
             {step === 2 && (
               <p className="rounded-md border border-wcm-alert/40 bg-wcm-alert/10 p-3 text-xs leading-relaxed text-wcm-alert-fg">
-                Conferma definitiva. Mission Control registra soltanto l’autorità autenticata: gli
-                effetti su documenti e stato sono quelli <strong>previsti dal workflow</strong> WCM
-                su GitHub e non sono garantiti da questa interfaccia.
+                {open === 'REQUEST_CHANGES' ? (
+                  <>
+                    Conferma definitiva. La Candidate corrente viene <strong>rifiutata</strong>; WCM
+                    applicherà la <code>rejection_transition</code> dichiarata dal workflow per
+                    creare la nuova revisione. Mission Control registra soltanto l’autorità
+                    autenticata: l’esecuzione canonica avviene su GitHub.
+                  </>
+                ) : (
+                  <>
+                    Conferma definitiva. Mission Control registra soltanto l’autorità autenticata:
+                    gli effetti su documenti e stato sono quelli{' '}
+                    <strong>previsti dal workflow</strong> WCM su GitHub e non sono garantiti da
+                    questa interfaccia.
+                  </>
+                )}
               </p>
             )}
           </div>
