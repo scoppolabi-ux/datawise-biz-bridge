@@ -140,18 +140,39 @@ export type DocBucket =
   | 'CLOSED_SUPPORTING'
   | 'OTHER';
 
+const exact = (value: string | null | undefined) => (value ?? '').trim().toUpperCase();
+
+/** Board Package: category+status ESATTI del report di supporto di un gate OPEN. */
+export const BOARD_REPORT_CATEGORY = 'BOARD_REPORT';
+export const BOARD_OPEN_SUPPORTING_STATUS = 'BOARD_GATE_OPEN_SUPPORTING_MATERIAL';
+
+export type BoardPackageInput = {
+  category: string | null;
+  status?: string | null;
+};
+
+/**
+ * Solo il Board Report del gate APERTO (match esatto category+status) viene
+ * promosso visivamente nel blocco Board. Nessuna euristica, nessun impatto su
+ * authority, requires_stefano o conteggio "Da leggere".
+ */
+export const isOpenBoardSupportingDocument = (doc: BoardPackageInput): boolean =>
+  exact(doc.category) === BOARD_REPORT_CATEGORY &&
+  exact(doc.status) === BOARD_OPEN_SUPPORTING_STATUS;
+
 /**
  * Bucket = funzione del canonical state (match esatto category+status) e del
  * flag esplicito `requires_stefano`. Nessuna euristica su stringhe.
  */
 export const bucketOf = (
-  doc: { requires_stefano: boolean; category: string | null },
+  doc: { requires_stefano: boolean; category: string | null; status?: string | null },
   state: ResolvedState,
 ): DocBucket => {
   if (doc.requires_stefano) return 'TO_READ';
+  if (isOpenBoardSupportingDocument(doc)) return 'TO_READ';
   if (state === 'UNKNOWN') return 'UNCLASSIFIED';
   if (state === 'APPROVED_FROZEN') {
-    return (doc.category ?? '').trim().toUpperCase() === 'MANUSCRIPT_APPROVED'
+    return exact(doc.category) === 'MANUSCRIPT_APPROVED'
       ? 'MANUSCRIPT_APPROVED'
       : 'APPROVED_BASELINE';
   }
@@ -160,6 +181,16 @@ export const bucketOf = (
   if (state === 'CLOSED' || state === 'SUPERSEDED') return 'CLOSED_SUPPORTING';
   return 'OTHER';
 };
+
+/**
+ * Ordinamento deterministico dentro "Da leggere / Board":
+ * 0 = Candidate / documenti richiesti a Stefano, 1 = Board Report di supporto.
+ */
+export const toReadSortRank = (doc: {
+  requires_stefano: boolean;
+  category: string | null;
+  status?: string | null;
+}): number => (doc.requires_stefano ? 0 : isOpenBoardSupportingDocument(doc) ? 1 : 2);
 
 export const BUCKET_LABELS: Record<DocBucket, string> = {
   TO_READ: 'Da leggere / Board',
