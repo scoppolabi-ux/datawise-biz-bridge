@@ -113,13 +113,33 @@ describe('baseline runtime states del projector deterministico', () => {
     expect(authorityAllowed(state)).toBe(true);
   });
 
-  it('classifica BOARD_REPORT | BOARD_GATE_OPEN_SUPPORTING_MATERIAL come CLOSED senza badge', () => {
+  it('mostra BOARD_REPORT | BOARD_GATE_OPEN_SUPPORTING_MATERIAL nel Board Package senza badge', () => {
     const doc = { category: 'BOARD_REPORT', status: 'BOARD_GATE_OPEN_SUPPORTING_MATERIAL' };
     const state = resolveCanonicalState(doc, index);
     expect(state).toBe('CLOSED');
     expect(governanceBadgeOf({ distribution_ready: true }, state)).toBe('NONE');
-    expect(bucketOf({ requires_stefano: false, category: doc.category }, state)).toBe(
-      'CLOSED_SUPPORTING',
-    );
+    expect(bucketOf({ requires_stefano: false, ...doc }, state)).toBe('TO_READ');
+  });
+
+  it('lascia i BOARD_REPORT storici/chiusi nel materiale di supporto', () => {
+    const doc = { category: 'BOARD_REPORT', status: 'BOARD_GATE_CLOSED_SUPPORTING_MATERIAL' };
+    const state = resolveCanonicalState(doc, index);
+    expect(bucketOf({ requires_stefano: false, ...doc }, state)).not.toBe('TO_READ');
+  });
+
+  it('ordina la Candidate prima del Board Report nel blocco Board', () => {
+    const candidate = {
+      requires_stefano: true,
+      category: 'BOARD_CANDIDATE',
+      status: 'BOARD_GATE_OPEN_CANDIDATE',
+    };
+    const report = {
+      requires_stefano: false,
+      category: 'BOARD_REPORT',
+      status: 'BOARD_GATE_OPEN_SUPPORTING_MATERIAL',
+    };
+    expect(isOpenBoardSupportingDocument(report)).toBe(true);
+    expect(isOpenBoardSupportingDocument(candidate)).toBe(false);
+    expect(toReadSortRank(candidate)).toBeLessThan(toReadSortRank(report));
   });
 });
