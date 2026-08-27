@@ -77,7 +77,18 @@ export const isCommandDeliveryDelayed = (
   return now - createdAt >= COMMAND_DELIVERY_DELAY_MS;
 };
 
+/** Non-sensitive server-side wake-up diagnostic returned by the submit function. */
+export type WcmCommandDelivery = {
+  wake_requested: boolean;
+  reason?: string;
+  mechanism?: 'workflow_dispatch' | 'repository_dispatch';
+  http_status?: number;
+  attempts?: number;
+  token_source?: string;
+};
+
 export type SubmitCommandInput = {
+
   project_id: string;
   need_id: string;
   command_type: 'APPROVE_FREEZE' | 'REQUEST_CHANGES';
@@ -110,7 +121,11 @@ export const useSubmitWcmCommand = () => {
         }
         throw new Error(message);
       }
-      return data as { command: WcmCommandRequest };
+      return data as {
+        command: WcmCommandRequest;
+        delivery?: WcmCommandDelivery;
+      };
+
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['wcm-command-requests', variables.project_id] });

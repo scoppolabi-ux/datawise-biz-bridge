@@ -2,6 +2,8 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { isOpenNeed, needFingerprint } from '../_shared/wcmGovernance.ts'
 import { isBoardCandidateCategory } from '../_shared/wcmBoardGate.ts'
+import { requestWorkerWake } from '../_shared/wcmWorkerWake.ts'
+
 
 
 const COMMAND_TYPES = ['APPROVE_FREEZE', 'REQUEST_CHANGES'] as const
@@ -206,38 +208,17 @@ Deno.serve(async (req) => {
   // --- Best-effort worker wake-up (never affects the durable SUBMITTED command) ---
   // The browser never talks to GitHub. A failure here is non-fatal: the durable
   // queue stays the source of truth and the GitHub watchdog will recover it.
-  const delivery: { wake_requested: boolean; reason?: string } = { wake_requested: false }
-  const githubToken = Deno.env.get('WCM_GITHUB_TOKEN')
-  if (!githubToken) {
-    delivery.reason = 'GITHUB_TOKEN_UNAVAILABLE'
-  } else {
-    try {
-      const dispatch = await fetch(
-        'https://api.github.com/repos/scoppolabi-ux/WCM-LAB/actions/workflows/wcm-command-executor.yml/dispatches',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${githubToken}`,
-            Accept: 'application/vnd.github+json',
-            'X-GitHub-Api-Version': '2022-11-28',
-            'Content-Type': 'application/json',
-            'User-Agent': 'wcm-mission-control',
-          },
-          body: JSON.stringify({ ref: 'main' }),
-        },
-      )
-      if (dispatch.ok) {
-        delivery.wake_requested = true
-      } else {
-        delivery.reason = `DISPATCH_HTTP_${dispatch.status}`
-        console.error(`workflow_dispatch failed with status ${dispatch.status}`)
-      }
-    } catch (_e) {
-      delivery.reason = 'DISPATCH_REQUEST_FAILED'
-      console.error('workflow_dispatch request failed')
-    }
+  let delivery
+  try {
+    delivery = await requestWorkerWake({
+      log: (m) => console.log(`${m} command_id=${insertRow.command_id}`),
+    })
+  } catch (_e) {
+    // Defensive: requestWorkerWake already swallows errors.
+    delivery = { wake_requested: false, reason: 'DISPATCH_REQUEST_FAILED', attempts: 0 }
   }
 
   // Mission Control records authority only: no read-model or GitHub mutation here.
   return json({ command: inserted, delivery }, 201)
 })
+
