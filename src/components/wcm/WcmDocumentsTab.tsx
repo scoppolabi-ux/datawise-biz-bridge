@@ -100,7 +100,11 @@ const WcmDocumentsTab = ({
       {ORDER.map((bucket) => {
         const items = documents
           .filter((d) => bucketOf(d, resolveCanonicalState(d, index)) === bucket)
-          .sort((a, b) => Number(b.requires_stefano) - Number(a.requires_stefano));
+          .sort((a, b) =>
+            bucket === 'TO_READ'
+              ? toReadSortRank(a) - toReadSortRank(b)
+              : Number(b.requires_stefano) - Number(a.requires_stefano),
+          );
         if (items.length === 0) return null;
         return (
           <section
