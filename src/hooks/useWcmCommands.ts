@@ -110,7 +110,11 @@ export const useSubmitWcmCommand = () => {
         }
         throw new Error(message);
       }
-      return data as { command: WcmCommandRequest };
+      return data as {
+        command: WcmCommandRequest;
+        delivery?: WcmCommandDelivery;
+      };
+
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['wcm-command-requests', variables.project_id] });

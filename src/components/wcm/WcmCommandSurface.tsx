@@ -183,7 +183,7 @@ const WcmCommandSurface = ({
   const confirm = async () => {
     if (!open) return;
     try {
-      await submit.mutateAsync({
+      const result = await submit.mutateAsync({
         project_id: need.project_id,
         need_id: need.need_id,
         command_type: open,
@@ -191,8 +191,14 @@ const WcmCommandSurface = ({
         target_version: targetDoc?.version ?? null,
         note: open === 'REQUEST_CHANGES' ? note.trim() : note.trim() || null,
       });
-      toast({ title: 'Comando inviato', description: 'Stato: SUBMITTED' });
+      toast({
+        title: 'Comando inviato',
+        description: result?.delivery?.wake_requested
+          ? 'Stato: SUBMITTED · worker GitHub notificato'
+          : `Stato: SUBMITTED · worker non notificato (${result?.delivery?.reason ?? 'motivo sconosciuto'}); il comando resta in coda durevole`,
+      });
       close();
+
     } catch (e) {
       toast({
         title: 'Comando non inviato',
