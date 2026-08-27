@@ -8,7 +8,7 @@ import {
   suggestCanonicalState,
   type WcmStateMapping,
 } from './wcmCanonicalState';
-import { bucketOf } from './wcmFormat';
+import { bucketOf, isOpenBoardSupportingDocument, toReadSortRank } from './wcmFormat';
 
 const mappings: WcmStateMapping[] = [
   {
