@@ -15,6 +15,12 @@ import { cn } from '@/lib/utils';
 import { useCanonicalStateIndex } from '@/hooks/useWcmStateMappings';
 import { resolveCanonicalState } from './wcmCanonicalState';
 import {
+  REQUEST_CHANGES_BUTTON_LABEL,
+  REQUEST_CHANGES_DIALOG_TITLE,
+  REQUEST_CHANGES_NOTE_LABEL,
+  requestChangesConfirmationText,
+} from './wcmCommandSurfaceCopy';
+import {
   ACTIVE_COMMAND_STATUSES,
   COMMAND_STATUS_LABELS,
   isCommandDeliveryDelayed,
