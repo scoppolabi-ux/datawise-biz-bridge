@@ -5,7 +5,7 @@ import WcmDocumentReader from './WcmDocumentReader';
 import WcmDocumentActions from './WcmDocumentActions';
 import WcmUnapprovedBadge from './WcmUnapprovedBadge';
 import { resolveCanonicalState } from './wcmCanonicalState';
-import { BUCKET_LABELS, bucketOf, type DocBucket } from './wcmFormat';
+import { BUCKET_LABELS, bucketOf, toReadSortRank, type DocBucket } from './wcmFormat';
 
 const ORDER: DocBucket[] = [
   'TO_READ',
