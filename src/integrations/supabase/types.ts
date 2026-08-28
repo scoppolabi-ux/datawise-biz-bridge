@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.17"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -1000,6 +1000,72 @@ export type Database = {
           source_state_sha?: string | null
           status?: string
           summary?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wcm_project_technical_issues: {
+        Row: {
+          blocking: boolean
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          detail: string
+          detected_at: string
+          detected_by: string
+          error_code: string
+          id: string
+          issue_id: string
+          issue_type: string
+          opened_at: string
+          project_id: string
+          resolution_note: string | null
+          source_path: string
+          source_sha: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          blocking?: boolean
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string
+          detail: string
+          detected_at: string
+          detected_by: string
+          error_code: string
+          id?: string
+          issue_id: string
+          issue_type: string
+          opened_at: string
+          project_id: string
+          resolution_note?: string | null
+          source_path: string
+          source_sha: string
+          status: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          blocking?: boolean
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string
+          detail?: string
+          detected_at?: string
+          detected_by?: string
+          error_code?: string
+          id?: string
+          issue_id?: string
+          issue_type?: string
+          opened_at?: string
+          project_id?: string
+          resolution_note?: string | null
+          source_path?: string
+          source_sha?: string
+          status?: string
+          title?: string
           updated_at?: string
         }
         Relationships: []
