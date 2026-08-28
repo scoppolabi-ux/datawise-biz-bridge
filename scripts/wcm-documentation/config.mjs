@@ -221,7 +221,7 @@ export const DOCUMENTS = [
     source_path: 'wcm/documentation/process-memory-book/chapters/07_architettura_a_nodi.md',
     download_basename: 'WCM_Process_Memory_Book_Capitolo_07_FROZEN',
     bootstrap_file: 'WCM_PROCESS_MEMORY_BOOK_CH07.md',
-    bootstrap_sha: 'df7f916398505a62f8a5b1e0502011b597e4b125',
+    bootstrap_sha: '5af04f28bbd4f2d77dae1777f1e6e148fb538cd7',
     visual_qa_status: 'PENDING',
   },
   {
