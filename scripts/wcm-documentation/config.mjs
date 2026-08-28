@@ -225,6 +225,27 @@ export const DOCUMENTS = [
     visual_qa_status: 'PENDING',
   },
   {
+    document_id: 'wcm-process-memory-book-ch08',
+    document_kind: 'book_chapter',
+    book_id: 'wcm-process-memory-book',
+    chapter_number: 8,
+    release_subdir: 'book/chapters',
+    scope: 'wcm',
+    project_id: null,
+    project_label: null,
+    title: '08 — Le sinapsi: le relazioni tra i nodi',
+    audience: 'Lettori tecnici e non tecnici del WCM Process & Memory Book',
+    description: 'Come WCM rappresenta relazioni tipizzate tra nodi, Impact Set, orphan control, relationship validity e Knowledge Health.',
+    version: 'FROZEN-08',
+    master_date: '2026-08-28',
+    status: 'FROZEN',
+    source_path: 'wcm/documentation/process-memory-book/chapters/08_sinapsi_relazioni_tra_nodi.md',
+    download_basename: 'WCM_Process_Memory_Book_Capitolo_08_FROZEN',
+    bootstrap_file: 'WCM_PROCESS_MEMORY_BOOK_CH08.md',
+    bootstrap_sha: 'b1dc1641f1dd76a72dc92071e511f0adcd45fe02',
+    visual_qa_status: 'PENDING',
+  },
+  {
     document_id: 'prima-di-noi-technical-reference',
     scope: 'project',
     project_id: 'prima-di-noi',
@@ -311,6 +332,12 @@ export const STATIC_ASSETS = [
     source_sha: '647e18a202909b90265574c484111b4ff767f517',
     release_path: 'book/figures/FIG-003_WCM_NODE_ANATOMY.svg',
   },
+  {
+    bootstrap_file: 'FIG-004_WCM_SYNAPSE_NETWORK.svg',
+    source_path: 'wcm/documentation/process-memory-book/figures/FIG-004_WCM_SYNAPSE_NETWORK.svg',
+    source_sha: '88f2d9ffe2a1d6a8ef522aca0da642ef04bafd34',
+    release_path: 'book/figures/FIG-004_WCM_SYNAPSE_NETWORK.svg',
+  },
 ];
 
 const chapter = (number, title, status = 'PLANNED', document_id = null) => ({
@@ -331,7 +358,7 @@ export const BOOKS = [
     index_status: 'APPROVED',
     index_source_path: 'wcm/documentation/process-memory-book/BOOK_INDEX.md',
     index_source_sha: 'dd7029d8dda78a7da1970c97c09b8e2fb15f750d',
-    frozen_chapters: 7,
+    frozen_chapters: 8,
     sections: [
       { title: 'PARTE I — Capire WCM partendo da zero', chapters: [
         chapter(1, 'Perché esiste WCM', 'FROZEN', 'wcm-process-memory-book-ch01'),
@@ -344,7 +371,7 @@ export const BOOKS = [
         chapter(6, 'Il ciclo tra le due memorie', 'FROZEN', 'wcm-process-memory-book-ch06'),
       ]},
       { title: 'PARTE III — La memoria non è un archivio: è una rete', chapters: [
-        chapter(7, 'L’architettura a nodi', 'FROZEN', 'wcm-process-memory-book-ch07'), chapter(8, 'Le sinapsi: le relazioni tra i nodi'),
+        chapter(7, 'L’architettura a nodi', 'FROZEN', 'wcm-process-memory-book-ch07'), chapter(8, 'Le sinapsi: le relazioni tra i nodi', 'FROZEN', 'wcm-process-memory-book-ch08'),
       ]},
       { title: 'PARTE IV — INDEX-FIRST: come WCM trova quello che gli serve', chapters: [
         chapter(9, 'Il problema della conoscenza troppo grande'),
