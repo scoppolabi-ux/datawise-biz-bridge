@@ -1046,6 +1046,69 @@ export type Database = {
         }
         Relationships: []
       }
+      wcm_system_maintenance_log: {
+        Row: {
+          authority: string | null
+          created_at: string
+          description: string | null
+          event_id: string
+          event_type: string | null
+          id: string
+          language_policy: string | null
+          manifest_path: string | null
+          occurred_on: string | null
+          schema_version: string | null
+          scope: string
+          sort_order: number
+          source_path: string | null
+          source_sha: string | null
+          status: string | null
+          technical_label: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          authority?: string | null
+          created_at?: string
+          description?: string | null
+          event_id: string
+          event_type?: string | null
+          id?: string
+          language_policy?: string | null
+          manifest_path?: string | null
+          occurred_on?: string | null
+          schema_version?: string | null
+          scope?: string
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          status?: string | null
+          technical_label?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          authority?: string | null
+          created_at?: string
+          description?: string | null
+          event_id?: string
+          event_type?: string | null
+          id?: string
+          language_policy?: string | null
+          manifest_path?: string | null
+          occurred_on?: string | null
+          schema_version?: string | null
+          scope?: string
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          status?: string | null
+          technical_label?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

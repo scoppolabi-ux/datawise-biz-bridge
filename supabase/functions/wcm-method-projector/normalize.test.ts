@@ -3,6 +3,7 @@ import {
   computeStaleKeys,
   parseLearningInbox,
   parseLearningLedger,
+  parseMaintenanceLog,
   parseMethodChangeGates,
   parseMethodHealth,
   parseMethodRelationships,
@@ -528,4 +529,85 @@ Deno.test('method_change_gates rejects unknown decision-related keys fail-closed
     ],
   })
   assert('error' in parsed)
+})
+
+// ------------------------------------------- WCM_SYSTEM maintenance log
+
+const MAINTENANCE_SAMPLE = {
+  schema_version: '1.0',
+  scope: 'WCM_SYSTEM',
+  language_policy: 'IT_HUMAN_EN_TECHNICAL',
+  entries: [
+    {
+      event_id: 'WCM-CHANGE-2026-08-28-MAINT',
+      occurred_on: '2026-08-28',
+      event_type: 'MAINTENANCE',
+      title: 'Manutenzione registro',
+      description: 'Descrizione',
+      technical_label: 'WCM_MAINTENANCE',
+      status: 'READY_FOR_CLOSURE',
+      authority: 'STEFANO',
+      manifest_path: 'wcm/change-manifests/WCM-CHANGE-2026-08-28-MAINT.json',
+    },
+  ],
+}
+
+Deno.test('maintenance_log accepts the canonical shape', () => {
+  const parsed = parseMaintenanceLog(MAINTENANCE_SAMPLE)
+  assert(!('error' in parsed))
+  assertEquals(parsed.rows.length, 1)
+  const row = parsed.rows[0]
+  assertEquals(row.event_id, 'WCM-CHANGE-2026-08-28-MAINT')
+  assertEquals(row.scope, 'WCM_SYSTEM')
+  assertEquals(row.status, 'READY_FOR_CLOSURE')
+  assertEquals(row.sort_order, 0)
+  assertEquals(row.source_path, 'wcm/runtime/WCM_MAINTENANCE_LOG.json')
+  assertEquals(parsed.metadata.language_policy, 'IT_HUMAN_EN_TECHNICAL')
+})
+
+Deno.test('maintenance_log keeps the declared status verbatim, no closure inference', () => {
+  const parsed = parseMaintenanceLog(MAINTENANCE_SAMPLE)
+  assert(!('error' in parsed))
+  assert(parsed.rows[0].status !== 'CLOSED')
+})
+
+Deno.test('maintenance_log rejects a non WCM_SYSTEM scope', () => {
+  const parsed = parseMaintenanceLog({ ...MAINTENANCE_SAMPLE, scope: 'PROJECT' })
+  assert('error' in parsed)
+})
+
+Deno.test('maintenance_log rejects unknown top-level and entry keys fail-closed', () => {
+  assert('error' in parseMaintenanceLog({ ...MAINTENANCE_SAMPLE, project_id: 'prima-di-noi' }))
+  assert(
+    'error' in
+      parseMaintenanceLog({
+        scope: 'WCM_SYSTEM',
+        entries: [{ event_id: 'X', title: 'T', activity_id: 'A' }],
+      }),
+  )
+})
+
+Deno.test('maintenance_log requires event_id, title and a valid date', () => {
+  assert('error' in parseMaintenanceLog({ entries: [{ title: 'T' }] }))
+  assert('error' in parseMaintenanceLog({ entries: [{ event_id: 'X' }] }))
+  assert(
+    'error' in parseMaintenanceLog({ entries: [{ event_id: 'X', title: 'T', occurred_on: '28/08/2026' }] }),
+  )
+})
+
+Deno.test('maintenance_log rejects duplicate stable keys', () => {
+  const parsed = parseMaintenanceLog({
+    entries: [
+      { event_id: 'WCM-CHANGE-1', title: 'A' },
+      { event_id: 'WCM-CHANGE-1', title: 'B' },
+    ],
+  })
+  assert('error' in parsed)
+})
+
+Deno.test('maintenance_log snapshot convergence uses event_id as stable key', () => {
+  const parsed = parseMaintenanceLog(MAINTENANCE_SAMPLE)
+  assert(!('error' in parsed))
+  const keep = parsed.rows.map((r) => String(r.event_id))
+  assertEquals(computeStaleKeys(['WCM-CHANGE-OLD', ...keep], keep), ['WCM-CHANGE-OLD'])
 })

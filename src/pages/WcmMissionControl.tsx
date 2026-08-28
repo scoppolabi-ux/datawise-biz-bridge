@@ -18,6 +18,7 @@ import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
 import WcmLearningCard from '@/components/wcm/WcmLearningCard';
 import WcmDocumentationCard from '@/components/wcm/WcmDocumentationCard';
+import WcmSystemCard from '@/components/wcm/WcmSystemCard';
 import { withReturnTo } from '@/components/wcm/wcmReturnTo';
 
 const Shell = ({ children }: { children: React.ReactNode }) => (
@@ -143,6 +144,7 @@ const WcmMissionControl = () => {
             <div className="mt-4 grid gap-4 lg:grid-cols-2">
               <WcmLearningCard />
               <WcmDocumentationCard />
+              <WcmSystemCard />
             </div>
 
 
