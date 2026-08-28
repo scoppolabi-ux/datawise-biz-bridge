@@ -15,6 +15,7 @@ import WcmDocumentsToReadPage from "./pages/WcmDocumentsToReadPage";
 import WcmProjectDetail from "./pages/WcmProjectDetail";
 import WcmLearningPage from "./pages/WcmLearningPage";
 import WcmDocumentationPage from "./pages/WcmDocumentationPage";
+import WcmSystemPage from "./pages/WcmSystemPage";
 import WcmAuthGate from "./components/wcm/WcmAuthGate";
 import NotFound from "./pages/NotFound";
 
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/wcm/documents" element={<WcmAuthGate><WcmDocumentsToReadPage /></WcmAuthGate>} />
             <Route path="/wcm/learning" element={<WcmAuthGate><WcmLearningPage /></WcmAuthGate>} />
             <Route path="/wcm/documentation" element={<WcmAuthGate><WcmDocumentationPage /></WcmAuthGate>} />
+            <Route path="/wcm/system" element={<WcmAuthGate><WcmSystemPage /></WcmAuthGate>} />
             <Route path="/wcm/:projectId" element={<WcmAuthGate><WcmProjectDetail /></WcmAuthGate>} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
