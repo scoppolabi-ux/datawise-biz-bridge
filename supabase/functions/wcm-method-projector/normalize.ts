@@ -502,7 +502,120 @@ export function parseMethodChangeGates(
   return { rows, metadata }
 }
 
+// -------------------------------------------------- system maintenance log
+
+/**
+ * GLOBAL WCM System Maintenance Log (`wcm/runtime/WCM_MAINTENANCE_LOG.json`).
+ *
+ * Scope is WCM_SYSTEM: this is NOT project-scoped and never touches
+ * wcm_project_activity. Deterministic, fail-closed, no semantic inference:
+ * the status is stored exactly as declared by the source.
+ */
+const MAINTENANCE_ENTRY_KEYS = [
+  'event_id',
+  'occurred_on',
+  'event_type',
+  'title',
+  'description',
+  'technical_label',
+  'status',
+  'authority',
+  'manifest_path',
+  'source_path',
+  'source_sha',
+  'sort_order',
+] as readonly string[]
+
+const MAINTENANCE_TOP_KEYS = [
+  'schema_version',
+  'scope',
+  'language_policy',
+  'source_path',
+  'source_sha',
+  'entries',
+] as readonly string[]
+
+/** Exactly `YYYY-MM-DD`, or null. */
+const parseOccurredOn = (value: unknown): string | null | undefined => {
+  const normalized = normalize(value)
+  if (normalized === null) return null
+  if (typeof normalized !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(normalized)) return undefined
+  return normalized
+}
+
+export function parseMaintenanceLog(
+  input: unknown,
+): { rows: Record<string, unknown>[]; metadata: Record<string, unknown> } | ParseError {
+  if (!isObject(input)) return { error: 'maintenance_log must be an object' }
+
+  const unknownTop = Object.keys(input).filter((k) => !MAINTENANCE_TOP_KEYS.includes(k))
+  if (unknownTop.length > 0) {
+    return { error: 'Unsupported maintenance_log fields', fields: unknownTop }
+  }
+
+  const scope = normalize(input.scope)
+  if (scope !== null && scope !== 'WCM_SYSTEM') {
+    return { error: 'maintenance_log.scope must be WCM_SYSTEM' }
+  }
+
+  const entries = input.entries === undefined ? [] : input.entries
+  if (!Array.isArray(entries)) return { error: 'maintenance_log.entries must be an array' }
+
+  const metadata: Record<string, unknown> = {
+    schema_version: normalize(input.schema_version),
+    language_policy: normalize(input.language_policy),
+  }
+  const logSourcePath = normalize(input.source_path) ?? 'wcm/runtime/WCM_MAINTENANCE_LOG.json'
+  const logSourceSha = normalize(input.source_sha)
+
+  const rows: Record<string, unknown>[] = []
+  const seen = new Set<string>()
+  for (const [index, item] of entries.entries()) {
+    if (!isObject(item)) return { error: 'maintenance_log.entries item must be an object', index }
+    const unknown = Object.keys(item).filter((k) => !MAINTENANCE_ENTRY_KEYS.includes(k))
+    if (unknown.length > 0) {
+      return { error: 'Unsupported maintenance_log entry fields', index, fields: unknown }
+    }
+    const eventId = normalize(item.event_id)
+    if (eventId === null) {
+      return { error: 'maintenance_log.entries item requires event_id', index }
+    }
+    if (seen.has(eventId as string)) {
+      return { error: 'maintenance_log.entries contains a duplicate event_id', index }
+    }
+    seen.add(eventId as string)
+    if (normalize(item.title) === null) {
+      return { error: 'maintenance_log.entries item requires title', index }
+    }
+    const occurredOn = parseOccurredOn(item.occurred_on)
+    if (occurredOn === undefined) {
+      return { error: 'maintenance_log.entries occurred_on must be a YYYY-MM-DD date', index }
+    }
+
+    rows.push({
+      event_id: eventId,
+      occurred_on: occurredOn,
+      event_type: normalize(item.event_type),
+      title: normalize(item.title),
+      description: normalize(item.description),
+      technical_label: normalize(item.technical_label),
+      status: normalize(item.status),
+      authority: normalize(item.authority),
+      manifest_path: normalize(item.manifest_path),
+      scope: 'WCM_SYSTEM',
+      schema_version: metadata.schema_version,
+      language_policy: metadata.language_policy,
+      source_path: normalize(item.source_path) ?? logSourcePath,
+      source_sha: normalize(item.source_sha) ?? logSourceSha,
+      sort_order: typeof item.sort_order === 'number' ? item.sort_order : index,
+    })
+  }
+
+  return { rows, metadata }
+}
+
 // -------------------------------------------------------------- snapshots
+
 
 /** Ids present in the read-model but absent from the authoritative snapshot. */
 export const computeStaleKeys = (existing: string[], keep: string[]): string[] =>
