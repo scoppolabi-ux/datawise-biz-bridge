@@ -162,6 +162,27 @@ export const DOCUMENTS = [
     visual_qa_status: 'PENDING',
   },
   {
+    document_id: 'wcm-process-memory-book-ch05',
+    document_kind: 'book_chapter',
+    book_id: 'wcm-process-memory-book',
+    chapter_number: 5,
+    release_subdir: 'book/chapters',
+    scope: 'wcm',
+    project_id: null,
+    project_label: null,
+    title: '05 — Persistent Organizational Memory: la memoria dell’organizzazione',
+    audience: 'Lettori tecnici e non tecnici del WCM Process & Memory Book',
+    description: 'Come WCM rende durevole conoscenza, stato, decisioni, evidence e learning senza trasformare la memoria in un archivio indiscriminato.',
+    version: 'FROZEN-05',
+    master_date: '2026-08-28',
+    status: 'FROZEN',
+    source_path: 'wcm/documentation/process-memory-book/chapters/05_persistent_organizational_memory.md',
+    download_basename: 'WCM_Process_Memory_Book_Capitolo_05_FROZEN',
+    bootstrap_file: 'WCM_PROCESS_MEMORY_BOOK_CH05.md',
+    bootstrap_sha: 'eb3219d4169e0f7f960a27437a4f53558dd6a675',
+    visual_qa_status: 'PENDING',
+  },
+  {
     document_id: 'prima-di-noi-technical-reference',
     scope: 'project',
     project_id: 'prima-di-noi',
@@ -261,8 +282,8 @@ export const BOOKS = [
     status: 'IN_DEVELOPMENT',
     index_status: 'APPROVED',
     index_source_path: 'wcm/documentation/process-memory-book/BOOK_INDEX.md',
-    index_source_sha: '3d02d1bfcef147c1b624317a005bea6c0d5e0a60',
-    frozen_chapters: 4,
+    index_source_sha: 'dd7029d8dda78a7da1970c97c09b8e2fb15f750d',
+    frozen_chapters: 5,
     sections: [
       { title: 'PARTE I — Capire WCM partendo da zero', chapters: [
         chapter(1, 'Perché esiste WCM', 'FROZEN', 'wcm-process-memory-book-ch01'),
@@ -271,7 +292,7 @@ export const BOOKS = [
       { title: 'PARTE II — L’architettura cognitiva: Dual Memory', chapters: [
         chapter(3, 'Perché una sola memoria non basta', 'FROZEN', 'wcm-process-memory-book-ch03'),
         chapter(4, 'Working Memory — la memoria viva', 'FROZEN', 'wcm-process-memory-book-ch04'),
-        chapter(5, 'Persistent Organizational Memory — la memoria dell’organizzazione'),
+        chapter(5, 'Persistent Organizational Memory — la memoria dell’organizzazione', 'FROZEN', 'wcm-process-memory-book-ch05'),
         chapter(6, 'Il ciclo tra le due memorie'),
       ]},
       { title: 'PARTE III — La memoria non è un archivio: è una rete', chapters: [
