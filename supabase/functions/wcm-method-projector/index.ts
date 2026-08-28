@@ -230,6 +230,14 @@ Deno.serve(async (req) => {
         true,
       )
     }
+    if (maintenanceRows) {
+      counts.system_maintenance_log = await upsertSnapshot(
+        'wcm_system_maintenance_log',
+        'event_id',
+        maintenanceRows,
+        true,
+      )
+    }
   } catch (e) {
     return json({ error: (e as Error).message }, 500)
   }
@@ -245,5 +253,6 @@ Deno.serve(async (req) => {
     source_sha: sourceSha,
     // Canonical metadata accepted but intentionally not persisted verbatim.
     method_health_metadata: healthMetadata,
+    maintenance_log_metadata: maintenanceMetadata,
   })
 })
