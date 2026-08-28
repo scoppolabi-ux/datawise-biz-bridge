@@ -28,6 +28,7 @@ const TOP_LEVEL_KEYS = [
   'learning_inbox',
   'method_relationships',
   'method_change_gates',
+  'maintenance_log',
   // optional source metadata
   'source_sha',
   'source_ref',
@@ -130,7 +131,24 @@ Deno.serve(async (req) => {
     }
   }
 
+  // GLOBAL WCM_SYSTEM maintenance log — never project-scoped, never folded
+  // into wcm_project_activity.
+  let maintenanceRows: Record<string, unknown>[] | null = null
+  let maintenanceMetadata: Record<string, unknown> = {}
+  if (body.maintenance_log !== undefined && body.maintenance_log !== null) {
+    const parsed = parseMaintenanceLog(body.maintenance_log)
+    if ('error' in parsed) return json(parsed, 400)
+    maintenanceRows = parsed.rows
+    maintenanceMetadata = parsed.metadata
+    if (sourceSha) {
+      for (const row of maintenanceRows) {
+        if (row.source_sha == null) row.source_sha = sourceSha
+      }
+    }
+  }
+
   const supabase = createClient(
+
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     { auth: { persistSession: false } },
