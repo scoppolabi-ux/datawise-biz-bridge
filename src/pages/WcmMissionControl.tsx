@@ -13,6 +13,8 @@ import { COMMAND_STATUS_LABELS } from '@/hooks/useWcmCommands';
 import { needScopeLabel } from '@/components/wcm/wcmMethodGateNeeds';
 import { useWcmKnowledgeHealthAll } from '@/hooks/useWcmKnowledgeHealth';
 import { useWcmExecutionWorkflowsAll } from '@/hooks/useWcmExecutionWorkflows';
+import { useWcmTechnicalIssues } from '@/hooks/useWcmTechnicalIssues';
+import { issueDateLabel, openIssues } from '@/components/wcm/wcmTechnicalIssues';
 
 import WcmProjectCard from '@/components/wcm/WcmProjectCard';
 import WcmBrandHeader from '@/components/wcm/WcmBrandHeader';
