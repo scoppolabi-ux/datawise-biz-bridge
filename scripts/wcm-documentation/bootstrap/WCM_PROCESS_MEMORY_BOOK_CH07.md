@@ -1521,7 +1521,7 @@ Vedremo le **sinapsi WCM**:
 
 ---
 
-# Source Map — Draft 07
+# Frozen Source Map — 07
 
 Fonti canoniche principali usate per questa stesura:
 
@@ -1536,16 +1536,19 @@ Fonti canoniche principali usate per questa stesura:
 
 - `FIG-003_WCM_NODE_ANATOMY.svg` — nuova figura pedagogica del Capitolo 07; non definisce uno schema universale obbligatorio.
 
-## Vincoli di review
+## Review Closure
 
-Verificare in particolare:
+- Technical Review — PASS;
+- Human Comprehension Review — PASS;
+- nodo = oggetto persistente materialmente rilevante, non ogni file — verified;
+- file ≠ nodo come identità obbligatoria — verified;
+- metadata suggeriti da CONCEPT-007 ≠ schema universale obbligatorio — verified;
+- decisione come nodo causale coerente con CONCEPT-009 — verified;
+- processi/protocolli richiamabili senza universal router implicito — verified;
+- source of truth ≠ derived projection — verified;
+- graph architecture logica ≠ graph database obbligatorio — verified;
+- nessuna densità di nodi/relazioni trattata come KPI positivo — verified;
+- scope generale / nessun riferimento project-specific — PASS;
+- FIG-003 — APPROVED / EMBEDDED / VISUAL QA PASS.
 
-- nodo = oggetto persistente materialmente rilevante, non ogni file;
-- file ≠ nodo come identità obbligatoria;
-- metadata suggeriti da CONCEPT-007 ≠ schema universale obbligatorio;
-- decisione come nodo causale coerente con CONCEPT-009;
-- processi/protocolli presentati come nodi richiamabili senza inventare un universal router;
-- source of truth ≠ derived projection;
-- graph architecture logica ≠ graph database obbligatorio;
-- nessuna densità di nodi/relazioni come KPI positivo;
-- nessun riferimento project-specific.
+**Freeze verdict:** `CHAPTER 07 FROZEN — 2026-08-28`.
