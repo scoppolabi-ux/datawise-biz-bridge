@@ -5,6 +5,7 @@ import {
   computeStaleKeys,
   parseLearningInbox,
   parseLearningLedger,
+  parseMaintenanceLog,
   parseMethodChangeGates,
   parseMethodHealth,
   parseMethodRelationships,
