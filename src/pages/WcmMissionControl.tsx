@@ -64,6 +64,9 @@ const WcmMissionControl = () => {
   const { needsStefano, pendingNeeds, ready } = useWcmNeedStates();
   const { data: knowledgeHealth } = useWcmKnowledgeHealthAll();
   const { data: executionWorkflows } = useWcmExecutionWorkflowsAll();
+  const { data: technicalIssues } = useWcmTechnicalIssues();
+  const openTechnicalIssues = openIssues(technicalIssues ?? []);
+
 
   const all = projects ?? [];
   const projectById = new Map(all.map((p) => [p.project_id, p]));
@@ -132,7 +135,7 @@ const WcmMissionControl = () => {
 
         {all.length > 0 && (
           <>
-            <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <section className="grid grid-cols-2 gap-3 lg:grid-cols-5">
               <Metric label="Progetti" value={all.length} to="/wcm/projects" />
               <Metric
                 label="Needs Stefano"
@@ -141,6 +144,11 @@ const WcmMissionControl = () => {
               />
               <Metric label="Pending" value={pendingCount ?? '—'} to="/wcm/needs?view=pending" />
               <Metric label="Documenti da leggere" value={docsToRead} to="/wcm/documents" />
+              <Metric
+                label="Problemi tecnici"
+                value={openTechnicalIssues.length}
+                to="/wcm/issues"
+              />
             </section>
 
             <div className="mt-4 grid gap-4 lg:grid-cols-2">
