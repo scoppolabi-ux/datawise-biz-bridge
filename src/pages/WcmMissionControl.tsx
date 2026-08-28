@@ -157,6 +157,56 @@ const WcmMissionControl = () => {
               <WcmSystemCard />
             </div>
 
+            {openTechnicalIssues.length > 0 && (
+              <section className="mt-6 rounded-xl border border-wcm-alert/30 bg-wcm-alert/10 p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-2 text-wcm-alert-fg">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    <h2 className="text-sm font-bold uppercase tracking-[0.18em]">
+                      Problemi tecnici aperti
+                    </h2>
+                  </div>
+                  <Link
+                    to="/wcm/issues"
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] hover:text-wcm-strong"
+                  >
+                    Tutti
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+                <ul className="mt-3 space-y-2">
+                  {openTechnicalIssues.map((issue) => (
+                    <li key={issue.id}>
+                      <Link
+                        to="/wcm/issues"
+                        className="block rounded-lg border border-wcm-alert/25 bg-wcm-bg/40 p-3 transition-colors hover:border-wcm-alert/60"
+                      >
+                        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                          <span className="text-sm font-semibold text-wcm-strong">
+                            {projectById.get(issue.project_id)?.project_name ?? issue.project_id}
+                          </span>
+                          <span className="flex flex-wrap items-center gap-2 text-[11px] text-wcm-dim">
+                            {issue.blocking && (
+                              <span className="font-semibold uppercase tracking-wider text-wcm-alert-fg">
+                                Bloccante
+                              </span>
+                            )}
+                            <span className="font-mono">{issue.error_code}</span>
+                            <span>{issueDateLabel(issue.detected_at)}</span>
+                          </span>
+                        </div>
+                        <p className="mt-0.5 text-sm font-medium text-wcm-text">{issue.title}</p>
+                        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-wcm-dim">
+                          {issue.issue_id}
+                        </p>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+
 
 
 
