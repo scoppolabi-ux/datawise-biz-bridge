@@ -268,6 +268,27 @@ export const DOCUMENTS = [
     docx_page_count: 24,
   },
   {
+    document_id: 'wcm-process-memory-book-ch10',
+    document_kind: 'book_chapter',
+    book_id: 'wcm-process-memory-book',
+    chapter_number: 10,
+    release_subdir: 'book/chapters',
+    scope: 'wcm',
+    project_id: null,
+    project_label: null,
+    title: '10 — Il Knowledge Navigation Layer',
+    audience: 'Lettori tecnici e non tecnici del WCM Process & Memory Book',
+    description: 'Come WCM usa Entry Point, Index, metadata, Source Precedence, Progressive Retrieval e Stop Condition per trasformare una memoria grande in un percorso task-scoped.',
+    version: 'FROZEN-10',
+    master_date: '2026-08-29',
+    status: 'FROZEN',
+    source_path: 'wcm/documentation/process-memory-book/chapters/10_knowledge_navigation_layer.md',
+    download_basename: 'WCM_Process_Memory_Book_Capitolo_10_FROZEN',
+    bootstrap_file: 'WCM_PROCESS_MEMORY_BOOK_CH10.md',
+    bootstrap_sha: 'ad2e0a5fc2265b0d37c7d0506cfe6cb7aa9c9830',
+    visual_qa_status: 'PENDING',
+  },
+  {
     document_id: 'prima-di-noi-technical-reference',
     scope: 'project',
     project_id: 'prima-di-noi',
@@ -360,6 +381,12 @@ export const STATIC_ASSETS = [
     source_sha: '88f2d9ffe2a1d6a8ef522aca0da642ef04bafd34',
     release_path: 'book/figures/FIG-004_WCM_SYNAPSE_NETWORK.svg',
   },
+  {
+    bootstrap_file: 'FIG-005_WCM_KNOWLEDGE_NAVIGATION_LAYER.svg',
+    source_path: 'wcm/documentation/process-memory-book/figures/FIG-005_WCM_KNOWLEDGE_NAVIGATION_LAYER.svg',
+    source_sha: 'baae714e90cf3e559253b81ff6f3d006e481ff91',
+    release_path: 'book/figures/FIG-005_WCM_KNOWLEDGE_NAVIGATION_LAYER.svg',
+  },
 ];
 
 const chapter = (number, title, status = 'PLANNED', document_id = null) => ({
@@ -380,7 +407,7 @@ export const BOOKS = [
     index_status: 'APPROVED',
     index_source_path: 'wcm/documentation/process-memory-book/BOOK_INDEX.md',
     index_source_sha: '7af9a6a5dea33df4df512fd3bd89b51346a6cc65',
-    frozen_chapters: 9,
+    frozen_chapters: 10,
     sections: [
       { title: 'PARTE I — Capire WCM partendo da zero', chapters: [
         chapter(1, 'Perché esiste WCM', 'FROZEN', 'wcm-process-memory-book-ch01'),
@@ -397,7 +424,7 @@ export const BOOKS = [
       ]},
       { title: 'PARTE IV — INDEX-FIRST: come WCM trova quello che gli serve', chapters: [
         chapter(9, 'Il problema della conoscenza troppo grande', 'FROZEN', 'wcm-process-memory-book-ch09'),
-        chapter(10, 'Il Knowledge Navigation Layer'),
+        chapter(10, 'Il Knowledge Navigation Layer', 'FROZEN', 'wcm-process-memory-book-ch10'),
         chapter(11, 'INDEX-FIRST spiegato passo per passo'),
         chapter(12, 'Source Precedence — non tutte le informazioni valgono allo stesso modo'),
       ]},
