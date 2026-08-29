@@ -540,7 +540,7 @@ export const BOOKS = [
     index_status: 'APPROVED',
     index_source_path: 'wcm/documentation/process-memory-book/BOOK_INDEX.md',
     index_source_sha: '7af9a6a5dea33df4df512fd3bd89b51346a6cc65',
-    frozen_chapters: 15,
+    frozen_chapters: 16,
     sections: [
       { title: 'PARTE I — Capire WCM partendo da zero', chapters: [
         chapter(1, 'Perché esiste WCM', 'FROZEN', 'wcm-process-memory-book-ch01'),
@@ -567,7 +567,7 @@ export const BOOKS = [
         chapter(15, 'Esempi di routing domain-agnostic', 'FROZEN', 'wcm-process-memory-book-ch15'),
       ]},
       { title: 'PARTE VI — Il Libro dei Processi WCM', chapters: [
-        chapter(16, 'Come leggere un processo WCM'),
+        chapter(16, 'Come leggere un processo WCM', 'FROZEN', 'wcm-process-memory-book-ch16'),
         chapter(17, 'PROC-001 — Service Job Lifecycle'),
         chapter(18, 'PROC-002 — Workspace Pre-Sync'),
         chapter(19, 'PROC-003 — Deterministic Discovery & Durable Dispatch'),
