@@ -94,6 +94,15 @@ describe('canonical state resolution', () => {
     );
     expect(isApprovedState(state)).toBe(true);
   });
+
+  it('risolve l Extended Narrative Index approvato in APPROVED_FROZEN, mai working/unapproved', () => {
+    const doc = { category: 'MANUSCRIPT_INDEX', status: 'APPROVED_FROZEN_CURRENT' };
+    const state = resolveCanonicalState(doc, index);
+    expect(state).toBe('APPROVED_FROZEN');
+    expect(isApprovedState(state)).toBe(true);
+    expect(governanceBadgeOf({ distribution_ready: true }, state)).toBe('NONE');
+    expect(bucketOf({ requires_stefano: false, ...doc }, state)).not.toBe('UNCLASSIFIED');
+  });
 });
 
 describe('canonical state suggestion', () => {
