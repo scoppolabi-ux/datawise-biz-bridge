@@ -290,6 +290,27 @@ export const DOCUMENTS = [
     docx_page_count: 22,
   },
   {
+    document_id: 'wcm-process-memory-book-ch11',
+    document_kind: 'book_chapter',
+    book_id: 'wcm-process-memory-book',
+    chapter_number: 11,
+    release_subdir: 'book/chapters',
+    scope: 'wcm',
+    project_id: null,
+    project_label: null,
+    title: '11 — INDEX-FIRST spiegato passo per passo',
+    audience: 'Lettori tecnici e non tecnici del WCM Process & Memory Book',
+    description: 'Walkthrough operativo del Progressive Retrieval WCM: L0–L3, Retrieval Gate, source authority, Delta Preferred e Stop When Sufficient.',
+    version: 'FROZEN-11',
+    master_date: '2026-08-29',
+    status: 'FROZEN',
+    source_path: 'wcm/documentation/process-memory-book/chapters/11_index_first_spiegato_passo_per_passo.md',
+    download_basename: 'WCM_Process_Memory_Book_Capitolo_11_FROZEN',
+    bootstrap_file: 'WCM_PROCESS_MEMORY_BOOK_CH11.md',
+    bootstrap_sha: '87b1a31e21afcf5a6e59afefc0ceb5645074f10e',
+    visual_qa_status: 'PENDING',
+  },
+  {
     document_id: 'prima-di-noi-technical-reference',
     scope: 'project',
     project_id: 'prima-di-noi',
@@ -408,7 +429,7 @@ export const BOOKS = [
     index_status: 'APPROVED',
     index_source_path: 'wcm/documentation/process-memory-book/BOOK_INDEX.md',
     index_source_sha: '7af9a6a5dea33df4df512fd3bd89b51346a6cc65',
-    frozen_chapters: 10,
+    frozen_chapters: 11,
     sections: [
       { title: 'PARTE I — Capire WCM partendo da zero', chapters: [
         chapter(1, 'Perché esiste WCM', 'FROZEN', 'wcm-process-memory-book-ch01'),
@@ -426,7 +447,7 @@ export const BOOKS = [
       { title: 'PARTE IV — INDEX-FIRST: come WCM trova quello che gli serve', chapters: [
         chapter(9, 'Il problema della conoscenza troppo grande', 'FROZEN', 'wcm-process-memory-book-ch09'),
         chapter(10, 'Il Knowledge Navigation Layer', 'FROZEN', 'wcm-process-memory-book-ch10'),
-        chapter(11, 'INDEX-FIRST spiegato passo per passo'),
+        chapter(11, 'INDEX-FIRST spiegato passo per passo', 'FROZEN', 'wcm-process-memory-book-ch11'),
         chapter(12, 'Source Precedence — non tutte le informazioni valgono allo stesso modo'),
       ]},
       { title: 'PARTE V — Da una richiesta alle regole applicabili', chapters: [
