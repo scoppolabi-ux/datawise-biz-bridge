@@ -644,7 +644,7 @@ export const BOOKS = [
     index_status: 'APPROVED',
     index_source_path: 'wcm/documentation/process-memory-book/BOOK_INDEX.md',
     index_source_sha: '7af9a6a5dea33df4df512fd3bd89b51346a6cc65',
-    frozen_chapters: 20,
+    frozen_chapters: 21,
     sections: [
       { title: 'PARTE I — Capire WCM partendo da zero', chapters: [
         chapter(1, 'Perché esiste WCM', 'FROZEN', 'wcm-process-memory-book-ch01'),
@@ -676,7 +676,7 @@ export const BOOKS = [
         chapter(18, 'PROC-002 — Workspace Pre-Sync', 'FROZEN', 'wcm-process-memory-book-ch18'),
         chapter(19, 'PROC-003 — Deterministic Discovery & Durable Dispatch', 'FROZEN', 'wcm-process-memory-book-ch19'),
         chapter(20, 'PROC-004 — Evidence → Baseline Promotion', 'FROZEN', 'wcm-process-memory-book-ch20'),
-        chapter(21, 'PROC-005 — Agent-Ready Context Bootstrap'),
+        chapter(21, 'PROC-005 — Agent-Ready Context Bootstrap', 'FROZEN', 'wcm-process-memory-book-ch21'),
         chapter(22, 'PROC-006 — Memory Consolidation & Consistency Loop'),
         chapter(23, 'PROC-007 — Project Bootstrap & Admission'),
         chapter(24, 'PROC-008 — Knowledge Integrity Assurance Loop'),
