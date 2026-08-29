@@ -378,6 +378,28 @@ export const DOCUMENTS = [
     docx_page_count: 20,
   },
   {
+    document_id: 'wcm-process-memory-book-ch15',
+    document_kind: 'book_chapter',
+    book_id: 'wcm-process-memory-book',
+    chapter_number: 15,
+    release_subdir: 'book/chapters',
+    scope: 'wcm',
+    project_id: null,
+    project_label: null,
+    title: '15 — Esempi di routing domain-agnostic',
+    audience: 'Lettori tecnici e non tecnici del WCM Process & Memory Book',
+    description: 'Esempi pedagogici domain-agnostic di routing WCM: dalla richiesta al fatto operativo, processi e protocolli applicabili, guard, action e vere stop condition, con la tabella mentale di sintesi.',
+    version: 'FROZEN-15',
+    master_date: '2026-08-29',
+    status: 'FROZEN',
+    source_path: 'wcm/documentation/process-memory-book/chapters/15_esempi_di_routing_domain_agnostic.md',
+    download_basename: 'WCM_Process_Memory_Book_Capitolo_15_FROZEN',
+    bootstrap_file: 'WCM_PROCESS_MEMORY_BOOK_CH15.md',
+    bootstrap_sha: '3829858ab427ce2fdd35e7339d7a9e43787d5819',
+    visual_qa_status: 'PASS',
+    docx_page_count: 19,
+  },
+  {
     document_id: 'prima-di-noi-technical-reference',
     scope: 'project',
     project_id: 'prima-di-noi',
@@ -496,7 +518,7 @@ export const BOOKS = [
     index_status: 'APPROVED',
     index_source_path: 'wcm/documentation/process-memory-book/BOOK_INDEX.md',
     index_source_sha: '7af9a6a5dea33df4df512fd3bd89b51346a6cc65',
-    frozen_chapters: 14,
+    frozen_chapters: 15,
     sections: [
       { title: 'PARTE I — Capire WCM partendo da zero', chapters: [
         chapter(1, 'Perché esiste WCM', 'FROZEN', 'wcm-process-memory-book-ch01'),
@@ -520,7 +542,7 @@ export const BOOKS = [
       { title: 'PARTE V — Da una richiesta alle regole applicabili', chapters: [
         chapter(13, 'Il Request Routing WCM', 'FROZEN', 'wcm-process-memory-book-ch13'),
         chapter(14, 'Come WCM individua i protocolli da applicare', 'FROZEN', 'wcm-process-memory-book-ch14'),
-        chapter(15, 'Esempi di routing domain-agnostic'),
+        chapter(15, 'Esempi di routing domain-agnostic', 'FROZEN', 'wcm-process-memory-book-ch15'),
       ]},
       { title: 'PARTE VI — Il Libro dei Processi WCM', chapters: [
         chapter(16, 'Come leggere un processo WCM'),
