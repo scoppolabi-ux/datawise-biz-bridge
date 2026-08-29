@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <defs>
+    <style>
+      .title{font:700 34px Arial,sans-serif;fill:#111827}.sub{font:400 18px Arial,sans-serif;fill:#475569}
+      .card{rx:24;ry:24;stroke-width:2}.h{font:700 25px Arial,sans-serif;fill:#111827}.body{font:400 17px Arial,sans-serif;fill:#334155}
+      .pipe{rx:18;ry:18;fill:#f8fafc;stroke:#cbd5e1;stroke-width:2}.ph{font:700 19px Arial,sans-serif;fill:#0f172a}.ps{font:400 15px Arial,sans-serif;fill:#475569}
+      .arrow{stroke:#64748b;stroke-width:4;fill:none;marker-end:url(#a)}.foot{font:600 18px Arial,sans-serif;fill:#334155}
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#64748b"/></marker>
+  </defs>
+  <rect width="1400" height="900" fill="#ffffff"/>
+  <text x="60" y="62" class="title">Dual Memory Architecture — vista operativa</text>
+  <text x="60" y="94" class="sub">La memoria vive in due domini; continuità e rilevanza dipendono dai flussi che li collegano.</text>
+
+  <rect x="230" y="140" width="940" height="225" class="card" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="700" y="186" text-anchor="middle" class="h">WORKING MEMORY / INTERACTION MEMORY</text>
+  <text x="420" y="235" text-anchor="middle" class="body">conversazione corrente</text>
+  <text x="700" y="235" text-anchor="middle" class="body">intenzioni e chiarimenti</text>
+  <text x="980" y="235" text-anchor="middle" class="body">ipotesi e ragionamento</text>
+  <text x="420" y="286" text-anchor="middle" class="body">correzioni recenti</text>
+  <text x="700" y="286" text-anchor="middle" class="body">decisioni appena formulate</text>
+  <text x="980" y="286" text-anchor="middle" class="body">contesto operativo immediato</text>
+  <text x="700" y="334" text-anchor="middle" class="body">ricca · immediata · temporanea · non source of truth persistente</text>
+
+  <rect x="230" y="575" width="940" height="225" class="card" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="700" y="620" text-anchor="middle" class="h">PERSISTENT ORGANIZATIONAL MEMORY</text>
+  <text x="390" y="671" text-anchor="middle" class="body">governance / baseline</text>
+  <text x="620" y="671" text-anchor="middle" class="body">decision records</text>
+  <text x="850" y="671" text-anchor="middle" class="body">processi / protocolli</text>
+  <text x="1080" y="671" text-anchor="middle" class="body">runtime / stato</text>
+  <text x="440" y="724" text-anchor="middle" class="body">knowledge base e relazioni</text>
+  <text x="700" y="724" text-anchor="middle" class="body">evidence</text>
+  <text x="960" y="724" text-anchor="middle" class="body">method experience / learning</text>
+  <text x="700" y="774" text-anchor="middle" class="body">durevole · strutturata · versionata · navigabile · autorevole quando previsto</text>
+
+  <rect x="70" y="392" width="520" height="145" class="pipe"/>
+  <text x="330" y="425" text-anchor="middle" class="ph">WORKING → PERSISTENT</text>
+  <text x="330" y="459" text-anchor="middle" class="body">DELTA DETECTION → CLASSIFICATION → CONSOLIDATION</text>
+  <text x="330" y="493" text-anchor="middle" class="ps">si conserva ciò che deve sopravvivere, nel nodo appropriato</text>
+  <path d="M360 365 C360 380 330 380 330 392" class="arrow"/>
+  <path d="M330 537 C330 555 360 555 360 575" class="arrow"/>
+
+  <rect x="810" y="392" width="520" height="145" class="pipe"/>
+  <text x="1070" y="425" text-anchor="middle" class="ph">PERSISTENT → WORKING</text>
+  <text x="1070" y="459" text-anchor="middle" class="body">INDEX-FIRST → PROGRESSIVE RETRIEVAL → CONTEXT SUFFICIENT</text>
+  <text x="1070" y="493" text-anchor="middle" class="ps">si recupera il minimo autorevole necessario al task corrente</text>
+  <path d="M1040 575 C1040 555 1070 555 1070 537" class="arrow"/>
+  <path d="M1070 392 C1070 380 1040 380 1040 365" class="arrow"/>
+
+  <text x="700" y="850" text-anchor="middle" class="foot">Stateful organization + context-aware cognition</text>
+  <text x="700" y="878" text-anchor="middle" class="body">La tecnologia può cambiare; il principio architetturale resta la cooperazione tra le due memorie.</text>
+</svg>

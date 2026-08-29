@@ -1,65 +1,1045 @@
 {
-  "manifest_version": "0.9",
+  "manifest_version": "1.1",
   "release_mode": "BOOTSTRAP_AUTHORIZED_SNAPSHOT",
   "source_of_truth": "https://github.com/scoppolabi-ux/WCM-LAB (main)",
-  "generated_at": "2026-08-20T21:35:00.035Z",
+  "generated_at": "2026-08-29T05:40:28.754Z",
+  "books": [
+    {
+      "book_id": "wcm-process-memory-book",
+      "scope": "wcm",
+      "title": "WCM — Libro dei Processi e della Memoria",
+      "subtitle": "Come il Wise Centric Model comprende, ricorda, naviga, decide ed esegue",
+      "description": "Manuale progressivo del metodo WCM. L’indice è approvato; i capitoli diventano consultabili nel Documentation Center quando raggiungono lo stato FROZEN.",
+      "status": "IN_DEVELOPMENT",
+      "index_status": "APPROVED",
+      "index_source_path": "wcm/documentation/process-memory-book/BOOK_INDEX.md",
+      "index_source_sha": "7af9a6a5dea33df4df512fd3bd89b51346a6cc65",
+      "frozen_chapters": 12,
+      "sections": [
+        {
+          "title": "PARTE I — Capire WCM partendo da zero",
+          "chapters": [
+            {
+              "number": 1,
+              "title": "Perché esiste WCM",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch01"
+            },
+            {
+              "number": 2,
+              "title": "I mattoni fondamentali",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch02"
+            }
+          ]
+        },
+        {
+          "title": "PARTE II — L’architettura cognitiva: Dual Memory",
+          "chapters": [
+            {
+              "number": 3,
+              "title": "Perché una sola memoria non basta",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch03"
+            },
+            {
+              "number": 4,
+              "title": "Working Memory — la memoria viva",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch04"
+            },
+            {
+              "number": 5,
+              "title": "Persistent Organizational Memory — la memoria dell’organizzazione",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch05"
+            },
+            {
+              "number": 6,
+              "title": "Il ciclo tra le due memorie",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch06"
+            }
+          ]
+        },
+        {
+          "title": "PARTE III — La memoria non è un archivio: è una rete",
+          "chapters": [
+            {
+              "number": 7,
+              "title": "L’architettura a nodi",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch07"
+            },
+            {
+              "number": 8,
+              "title": "Le sinapsi: le relazioni tra i nodi",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch08"
+            }
+          ]
+        },
+        {
+          "title": "PARTE IV — INDEX-FIRST: come WCM trova quello che gli serve",
+          "chapters": [
+            {
+              "number": 9,
+              "title": "Il problema della conoscenza troppo grande",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch09"
+            },
+            {
+              "number": 10,
+              "title": "Il Knowledge Navigation Layer",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch10"
+            },
+            {
+              "number": 11,
+              "title": "INDEX-FIRST spiegato passo per passo",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch11"
+            },
+            {
+              "number": 12,
+              "title": "Source Precedence — non tutte le informazioni valgono allo stesso modo",
+              "status": "FROZEN",
+              "document_id": "wcm-process-memory-book-ch12"
+            }
+          ]
+        },
+        {
+          "title": "PARTE V — Da una richiesta alle regole applicabili",
+          "chapters": [
+            {
+              "number": 13,
+              "title": "Il Request Routing WCM",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 14,
+              "title": "Come WCM individua i protocolli da applicare",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 15,
+              "title": "Esempi di routing domain-agnostic",
+              "status": "PLANNED",
+              "document_id": null
+            }
+          ]
+        },
+        {
+          "title": "PARTE VI — Il Libro dei Processi WCM",
+          "chapters": [
+            {
+              "number": 16,
+              "title": "Come leggere un processo WCM",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 17,
+              "title": "PROC-001 — Service Job Lifecycle",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 18,
+              "title": "PROC-002 — Workspace Pre-Sync",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 19,
+              "title": "PROC-003 — Deterministic Discovery & Durable Dispatch",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 20,
+              "title": "PROC-004 — Evidence → Baseline Promotion",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 21,
+              "title": "PROC-005 — Agent-Ready Context Bootstrap",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 22,
+              "title": "PROC-006 — Memory Consolidation & Consistency Loop",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 23,
+              "title": "PROC-007 — Project Bootstrap & Admission",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 24,
+              "title": "PROC-008 — Knowledge Integrity Assurance Loop",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 25,
+              "title": "PROC-009 — WCM Learning Loop",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 26,
+              "title": "PROC-010 — Documentation Continuity Loop",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 27,
+              "title": "PROC-011 — Deterministic State Reconciliation",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 28,
+              "title": "PROC-012 — WCM Change Propagation & Closure",
+              "status": "PLANNED",
+              "document_id": null
+            }
+          ]
+        },
+        {
+          "title": "PARTE VII — Il Libro dei Protocolli WCM",
+          "chapters": [
+            {
+              "number": 29,
+              "title": "Processo vs Protocollo",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 30,
+              "title": "PROT-001 — Git & Working Tree Safety",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 31,
+              "title": "PROT-002 — Result Acceptance & Closure",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 32,
+              "title": "PROT-003 — Direct Before Delegate",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 33,
+              "title": "PROT-004 — Canonical Dispatch & Idempotency",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 34,
+              "title": "PROT-005 — Index-First Progressive Retrieval",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 35,
+              "title": "PROT-006 — Branch Ownership & Baseline Sync",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 36,
+              "title": "PROT-007 — Decision Change & Impact Analysis",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 37,
+              "title": "PROT-008 — Owner Source Intake Gate",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 38,
+              "title": "PROT-009 — Contiguous Workflow Execution",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 39,
+              "title": "PROT-010 — Mission Control Authenticated Authority Command",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 40,
+              "title": "PROT-011 — Capability Evidence Check Before Block",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 41,
+              "title": "PROT-012 — Verified Email Delivery & Idempotency",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 42,
+              "title": "PROT-013 — Knowledge Synapse & Health Standard",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 43,
+              "title": "PROT-014 — Method Experience Memory Standard",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 44,
+              "title": "PROT-015 — Documentation Impact & Publication Standard",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 45,
+              "title": "PROT-016 — Deterministic State & Projection Contract",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 46,
+              "title": "PROT-017 — Persistent Mutation Safety",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 47,
+              "title": "PROT-018 — Internal Async Dependency Resolution",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 48,
+              "title": "PROT-019 — WCM Change Closure Standard",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 49,
+              "title": "PROT-020 — WCM Technical Issue Tracking V1",
+              "status": "PLANNED",
+              "document_id": null
+            }
+          ]
+        },
+        {
+          "title": "PARTE VIII — Come processi e protocolli lavorano insieme",
+          "chapters": [
+            {
+              "number": 50,
+              "title": "Il WCM non è una sequenza lineare",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 51,
+              "title": "La matrice Processi × Protocolli",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 52,
+              "title": "La mappa dei nodi procedurali",
+              "status": "PLANNED",
+              "document_id": null
+            }
+          ]
+        },
+        {
+          "title": "PARTE IX — I loop fondamentali del WCM",
+          "chapters": [
+            {
+              "number": 53,
+              "title": "Operational Loop",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 54,
+              "title": "Memory Loop",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 55,
+              "title": "Immune Loop",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 56,
+              "title": "Learning Loop",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 57,
+              "title": "Documentation Continuity Loop",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 58,
+              "title": "Il ciclo completo",
+              "status": "PLANNED",
+              "document_id": null
+            }
+          ]
+        },
+        {
+          "title": "PARTE X — Determinismo e cognizione",
+          "chapters": [
+            {
+              "number": 59,
+              "title": "Dove serve l’AI e dove non deve essere usata",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 60,
+              "title": "Cognitive Core vs Deterministic Core",
+              "status": "PLANNED",
+              "document_id": null
+            }
+          ]
+        },
+        {
+          "title": "PARTE XI — Perché questa architettura è interessante",
+          "chapters": [
+            {
+              "number": 61,
+              "title": "I punti di forza",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 62,
+              "title": "Dove sta l’originalità dell’approccio WCM",
+              "status": "PLANNED",
+              "document_id": null
+            },
+            {
+              "number": 63,
+              "title": "Limiti e maturità attuale",
+              "status": "PLANNED",
+              "document_id": null
+            }
+          ]
+        }
+      ],
+      "appendices": [
+        {
+          "number": "A",
+          "title": "Glossario completo WCM",
+          "status": "PLANNED"
+        },
+        {
+          "number": "B",
+          "title": "Mappa di tutti i Processi",
+          "status": "PLANNED"
+        },
+        {
+          "number": "C",
+          "title": "Mappa di tutti i Protocolli",
+          "status": "PLANNED"
+        },
+        {
+          "number": "D",
+          "title": "Matrice Processi × Protocolli",
+          "status": "PLANNED"
+        },
+        {
+          "number": "E",
+          "title": "Source Precedence Map",
+          "status": "PLANNED"
+        },
+        {
+          "number": "F",
+          "title": "Knowledge Node & Synapse Vocabulary",
+          "status": "PLANNED"
+        },
+        {
+          "number": "G",
+          "title": "Request → Protocol Routing Cheat Sheet",
+          "status": "PLANNED"
+        },
+        {
+          "number": "H",
+          "title": "Stati e Gate",
+          "status": "PLANNED"
+        },
+        {
+          "number": "I",
+          "title": "Schemi architetturali completi",
+          "status": "PLANNED"
+        },
+        {
+          "number": "J",
+          "title": "Legenda degli status",
+          "status": "PLANNED"
+        }
+      ]
+    }
+  ],
+  "static_assets": [
+    {
+      "release_path": "wcm/documentation/releases/book/figures/FIG-001A_DUAL_MEMORY_SIMPLE.svg",
+      "source_path": "wcm/documentation/process-memory-book/figures/FIG-001A_DUAL_MEMORY_SIMPLE.svg",
+      "source_sha": "4a7700e4c2df3849b871f0fccc1436748e976158"
+    },
+    {
+      "release_path": "wcm/documentation/releases/book/figures/FIG-001B_DUAL_MEMORY_ARCHITECTURE.svg",
+      "source_path": "wcm/documentation/process-memory-book/figures/FIG-001B_DUAL_MEMORY_ARCHITECTURE.svg",
+      "source_sha": "635bd681ac4ed2ab046c9478442592a0d30f4e63"
+    },
+    {
+      "release_path": "wcm/documentation/releases/book/figures/FIG-002_FOUNDATIONAL_CONCEPT_MAP.svg",
+      "source_path": "wcm/documentation/process-memory-book/figures/FIG-002_FOUNDATIONAL_CONCEPT_MAP.svg",
+      "source_sha": "28fe069c0998772629fe25edf036769120e0b6b1"
+    },
+    {
+      "release_path": "wcm/documentation/releases/book/figures/FIG-003_WCM_NODE_ANATOMY.svg",
+      "source_path": "wcm/documentation/process-memory-book/figures/FIG-003_WCM_NODE_ANATOMY.svg",
+      "source_sha": "647e18a202909b90265574c484111b4ff767f517"
+    },
+    {
+      "release_path": "wcm/documentation/releases/book/figures/FIG-004_WCM_SYNAPSE_NETWORK.svg",
+      "source_path": "wcm/documentation/process-memory-book/figures/FIG-004_WCM_SYNAPSE_NETWORK.svg",
+      "source_sha": "88f2d9ffe2a1d6a8ef522aca0da642ef04bafd34"
+    },
+    {
+      "release_path": "wcm/documentation/releases/book/figures/FIG-005_WCM_KNOWLEDGE_NAVIGATION_LAYER.svg",
+      "source_path": "wcm/documentation/process-memory-book/figures/FIG-005_WCM_KNOWLEDGE_NAVIGATION_LAYER.svg",
+      "source_sha": "baae714e90cf3e559253b81ff6f3d006e481ff91"
+    }
+  ],
   "documents": [
     {
       "document_id": "wcm-technical-reference",
+      "document_kind": "manual",
+      "book_id": null,
+      "chapter_number": null,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
       "title": "WCM Technical Reference",
-      "audience": "Team tecnico e integratori",
-      "description": "Riferimento tecnico del sistema WCM: architettura, memoria duale, governance RUN/CHANGE, assurance, learning e Documentation System.",
-      "version": "V0.2",
-      "master_date": "2026-08-20",
+      "audience": "Stakeholder tecnico, developer, architect, partner AI/automation",
+      "description": "Riferimento tecnico end-to-end del Wise Centric Model: runtime durevole, state/projector deterministici, assurance, authority, learning, persistent mutation safety, flow block e Documentation System.",
+      "version": "V0.5",
+      "master_date": "2026-08-24",
       "status": "ACTIVE",
-      "source_path": "wcm/documentation/WCM_TECHNICAL_REFERENCE_V0_2.md",
-      "source_sha": "fbb2cf43db8cb4298dd455fd9b7fdb9248d1bcc3",
-      "source_sha_short": "fbb2cf4",
-      "released_at": "2026-08-20T21:35:00.035Z",
-      "markdown_path": "/wcm/documentation/releases/wcm-technical-reference.md",
-      "docx_path": "/wcm/documentation/releases/wcm-technical-reference.docx",
-      "pdf_path": "/wcm/documentation/releases/wcm-technical-reference.pdf",
-      "download_filename_docx": "WCM_Technical_Reference_V0_2.docx",
-      "download_filename_pdf": "WCM_Technical_Reference_V0_2.pdf",
-      "qa_status": "BUILD_PASS"
+      "source_path": "wcm/documentation/WCM_TECHNICAL_REFERENCE_V0_5.md",
+      "source_sha": "11a025570bb737ed08b0aeddb3b34f7b4e0111de",
+      "source_sha_short": "11a0255",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/wcm-technical-reference.md",
+      "docx_path": "wcm/documentation/releases/wcm-technical-reference.docx",
+      "pdf_path": "wcm/documentation/releases/wcm-technical-reference.pdf",
+      "download_filename_docx": "WCM_Technical_Reference_V0_5.docx",
+      "download_filename_pdf": "WCM_Technical_Reference_V0_5.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PASS",
+      "docx_page_count": 8,
+      "pdf_page_count": 9
     },
     {
       "document_id": "wcm-executive-client-guide",
+      "document_kind": "manual",
+      "book_id": null,
+      "chapter_number": null,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
       "title": "WCM Executive / Client Guide",
-      "audience": "Direzione, clienti e partner non tecnici",
-      "description": "Guida esecutiva al metodo WCM: problema affrontato, valore, memoria organizzativa, governance umana e benefici attesi.",
-      "version": "V0.2",
-      "master_date": "2026-08-20",
+      "audience": "Clienti, partner, management, investitori e interlocutori non tecnici",
+      "description": "Guida esecutiva al metodo WCM: continuità organizzativa, memoria controllata, determinismo selettivo, authority umana, automazioni spiegabili e field validation su PRIMA DI NOI.",
+      "version": "V0.5",
+      "master_date": "2026-08-24",
       "status": "ACTIVE",
-      "source_path": "wcm/documentation/WCM_EXECUTIVE_CLIENT_GUIDE_V0_2.md",
-      "source_sha": "006e8eb8c6286f2263008314e42a325f3b23ef43",
-      "source_sha_short": "006e8eb",
-      "released_at": "2026-08-20T21:35:00.035Z",
-      "markdown_path": "/wcm/documentation/releases/wcm-executive-client-guide.md",
-      "docx_path": "/wcm/documentation/releases/wcm-executive-client-guide.docx",
-      "pdf_path": "/wcm/documentation/releases/wcm-executive-client-guide.pdf",
-      "download_filename_docx": "WCM_Executive_Client_Guide_V0_2.docx",
-      "download_filename_pdf": "WCM_Executive_Client_Guide_V0_2.pdf",
-      "qa_status": "BUILD_PASS"
+      "source_path": "wcm/documentation/WCM_EXECUTIVE_CLIENT_GUIDE_V0_5.md",
+      "source_sha": "ac8bf70eea05eefd545e7e375c84fd68cff12663",
+      "source_sha_short": "ac8bf70",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/wcm-executive-client-guide.md",
+      "docx_path": "wcm/documentation/releases/wcm-executive-client-guide.docx",
+      "pdf_path": "wcm/documentation/releases/wcm-executive-client-guide.pdf",
+      "download_filename_docx": "WCM_Executive_Client_Guide_V0_5.docx",
+      "download_filename_pdf": "WCM_Executive_Client_Guide_V0_5.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PASS",
+      "docx_page_count": 6,
+      "pdf_page_count": 7
     },
     {
       "document_id": "wcm-user-manual",
+      "document_kind": "manual",
+      "book_id": null,
+      "chapter_number": null,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
       "title": "WCM User Manual",
-      "audience": "Utilizzatori WCM, owner e Board",
-      "description": "Manuale operativo di Mission Control: Home, Needs, Board, documenti, Knowledge Health, Learning e Documentation Center.",
-      "version": "V0.2",
-      "master_date": "2026-08-20",
+      "audience": "Utilizzatori WCM, owner, Board e persone senza background tecnico",
+      "description": "Manuale discorsivo per usare WCM: Mission Control, Needs e Pending, heartbeat, gate, Knowledge Health, assurance, learning, documentazione e cosa richiede davvero l’utente.",
+      "version": "V0.6",
+      "master_date": "2026-08-24",
       "status": "ACTIVE",
-      "source_path": "wcm/documentation/WCM_USER_MANUAL_V0_2.md",
-      "source_sha": "16e354b84638581e8386c6e1cf0982349a80a9d5",
-      "source_sha_short": "16e354b",
-      "released_at": "2026-08-20T21:35:00.035Z",
-      "markdown_path": "/wcm/documentation/releases/wcm-user-manual.md",
-      "docx_path": "/wcm/documentation/releases/wcm-user-manual.docx",
-      "pdf_path": "/wcm/documentation/releases/wcm-user-manual.pdf",
-      "download_filename_docx": "WCM_User_Manual_V0_2.docx",
-      "download_filename_pdf": "WCM_User_Manual_V0_2.pdf",
-      "qa_status": "BUILD_PASS"
+      "source_path": "wcm/documentation/WCM_USER_MANUAL_V0_6.md",
+      "source_sha": "80d886da68e537710826849c3b5e2efc8499291d",
+      "source_sha_short": "80d886d",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/wcm-user-manual.md",
+      "docx_path": "wcm/documentation/releases/wcm-user-manual.docx",
+      "pdf_path": "wcm/documentation/releases/wcm-user-manual.pdf",
+      "download_filename_docx": "WCM_User_Manual_V0_6.docx",
+      "download_filename_pdf": "WCM_User_Manual_V0_6.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PASS",
+      "docx_page_count": 11,
+      "pdf_page_count": 14
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch01",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 1,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "01 — Perché esiste WCM",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "Perché una conversazione intelligente non è ancora un’organizzazione e quale problema prova a risolvere WCM.",
+      "version": "FROZEN-01",
+      "master_date": "2026-08-25",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/01_perche_esiste_wcm.md",
+      "source_sha": "8fb8ec3d8f5e20d6ab1a035c88eeeb053813abe6",
+      "source_sha_short": "8fb8ec3",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch01.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch01.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch01.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_01_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_01_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PENDING",
+      "docx_page_count": null,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch02",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 2,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "02 — I mattoni fondamentali",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "Il vocabolario fondamentale del WCM: dati, conoscenza, stato, authority, processi, protocolli, nodi, indici, determinismo e idempotenza.",
+      "version": "FROZEN-02",
+      "master_date": "2026-08-25",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/02_mattoni_fondamentali.md",
+      "source_sha": "2f2bac9002a45d450fea6a7471d57df60e6b3a73",
+      "source_sha_short": "2f2bac9",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch02.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch02.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch02.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_02_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_02_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PENDING",
+      "docx_page_count": null,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch03",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 3,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "03 — Perché una sola memoria non basta",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "La Dual Memory Architecture: Working Memory e Persistent Organizational Memory, consolidation e selective retrieval.",
+      "version": "FROZEN-03",
+      "master_date": "2026-08-25",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/03_perche_una_sola_memoria_non_basta.md",
+      "source_sha": "70deb1b53c657af617cf354a893125506e26662a",
+      "source_sha_short": "70deb1b",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch03.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch03.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch03.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_03_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_03_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PENDING",
+      "docx_page_count": null,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch04",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 4,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "04 — Working Memory: la memoria viva",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "Cosa appartiene alla memoria viva, cosa può restarvi e quali delta devono essere consolidati nella memoria organizzativa.",
+      "version": "FROZEN-04",
+      "master_date": "2026-08-26",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/04_working_memory.md",
+      "source_sha": "76c6a2daa268f74127117d31496c2adb9b2fcf48",
+      "source_sha_short": "76c6a2d",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch04.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch04.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch04.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_04_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_04_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PENDING",
+      "docx_page_count": null,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch05",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 5,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "05 — Persistent Organizational Memory: la memoria dell’organizzazione",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "Come WCM rende durevole conoscenza, stato, decisioni, evidence e learning senza trasformare la memoria in un archivio indiscriminato.",
+      "version": "FROZEN-05",
+      "master_date": "2026-08-28",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/05_persistent_organizational_memory.md",
+      "source_sha": "eb3219d4169e0f7f960a27437a4f53558dd6a675",
+      "source_sha_short": "eb3219d",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch05.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch05.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch05.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_05_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_05_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PENDING",
+      "docx_page_count": null,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch06",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 6,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "06 — Il ciclo tra le due memorie",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "Il ciclo completo della Dual Memory: delta detection, classification, consolidation, assurance e selective retrieval.",
+      "version": "FROZEN-06",
+      "master_date": "2026-08-28",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/06_ciclo_dual_memory.md",
+      "source_sha": "2b56e3e810e388510688cedf3db3e6bb532a1dcc",
+      "source_sha_short": "2b56e3e",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch06.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch06.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch06.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_06_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_06_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PENDING",
+      "docx_page_count": null,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch07",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 7,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "07 — L’architettura a nodi",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "Perché la memoria WCM evolve da raccolta di file a rete di nodi identificabili, tipizzati, governati e collegabili.",
+      "version": "FROZEN-07",
+      "master_date": "2026-08-28",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/07_architettura_a_nodi.md",
+      "source_sha": "5af04f28bbd4f2d77dae1777f1e6e148fb538cd7",
+      "source_sha_short": "5af04f2",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch07.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch07.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch07.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_07_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_07_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PENDING",
+      "docx_page_count": null,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch08",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 8,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "08 — Le sinapsi: le relazioni tra i nodi",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "Come WCM rappresenta relazioni tipizzate tra nodi, Impact Set, orphan control, relationship validity e Knowledge Health.",
+      "version": "FROZEN-08",
+      "master_date": "2026-08-28",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/08_sinapsi_relazioni_tra_nodi.md",
+      "source_sha": "b1dc1641f1dd76a72dc92071e511f0adcd45fe02",
+      "source_sha_short": "b1dc164",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch08.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch08.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch08.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_08_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_08_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PENDING",
+      "docx_page_count": null,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch09",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 9,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "09 — Il problema della conoscenza troppo grande",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "Perché una memoria organizzativa ricca diventa difficile da usare senza retrieval selettivo, source precedence e una mappa di navigazione.",
+      "version": "FROZEN-09",
+      "master_date": "2026-08-29",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/09_il_problema_della_conoscenza_troppo_grande.md",
+      "source_sha": "5f585a57f434727e032a75139776d3cdaac8490f",
+      "source_sha_short": "5f585a5",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch09.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch09.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch09.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_09_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_09_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PASS",
+      "docx_page_count": 24,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch10",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 10,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "10 — Il Knowledge Navigation Layer",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "Come WCM usa Entry Point, Index, metadata, Source Precedence, Progressive Retrieval e Stop Condition per trasformare una memoria grande in un percorso task-scoped.",
+      "version": "FROZEN-10",
+      "master_date": "2026-08-29",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/10_knowledge_navigation_layer.md",
+      "source_sha": "ad2e0a5fc2265b0d37c7d0506cfe6cb7aa9c9830",
+      "source_sha_short": "ad2e0a5",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch10.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch10.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch10.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_10_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_10_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PASS",
+      "docx_page_count": 22,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch11",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 11,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "11 — INDEX-FIRST spiegato passo per passo",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "Walkthrough operativo del Progressive Retrieval WCM: L0–L3, Retrieval Gate, source authority, Delta Preferred e Stop When Sufficient.",
+      "version": "FROZEN-11",
+      "master_date": "2026-08-29",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/11_index_first_spiegato_passo_per_passo.md",
+      "source_sha": "87b1a31e21afcf5a6e59afefc0ceb5645074f10e",
+      "source_sha_short": "87b1a31",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch11.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch11.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch11.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_11_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_11_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PASS",
+      "docx_page_count": 18,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "wcm-process-memory-book-ch12",
+      "document_kind": "book_chapter",
+      "book_id": "wcm-process-memory-book",
+      "chapter_number": 12,
+      "scope": "wcm",
+      "project_id": null,
+      "project_label": null,
+      "title": "12 — Source Precedence — non tutte le informazioni valgono allo stesso modo",
+      "audience": "Lettori tecnici e non tecnici del WCM Process & Memory Book",
+      "description": "Come WCM attribuisce peso alle fonti: authority, status, scope, tipo di fatto, precedence specifica per gli execution facts e divieto di silent conflict resolution.",
+      "version": "FROZEN-12",
+      "master_date": "2026-08-29",
+      "status": "FROZEN",
+      "source_path": "wcm/documentation/process-memory-book/chapters/12_source_precedence.md",
+      "source_sha": "ddff24c1c1f5b8ecbca1aa969807ea740fa869ed",
+      "source_sha_short": "ddff24c",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch12.md",
+      "docx_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch12.docx",
+      "pdf_path": "wcm/documentation/releases/book/chapters/wcm-process-memory-book-ch12.pdf",
+      "download_filename_docx": "WCM_Process_Memory_Book_Capitolo_12_FROZEN.docx",
+      "download_filename_pdf": "WCM_Process_Memory_Book_Capitolo_12_FROZEN.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PASS",
+      "docx_page_count": null,
+      "pdf_page_count": null
+    },
+    {
+      "document_id": "prima-di-noi-technical-reference",
+      "document_kind": "manual",
+      "book_id": null,
+      "chapter_number": null,
+      "scope": "project",
+      "project_id": "prima-di-noi",
+      "project_label": "PRIMA DI NOI",
+      "title": "PRIMA DI NOI Technical Reference",
+      "audience": "Tecnici, editori con background tecnologico, production architect, partner AI/editorial tech",
+      "description": "Riferimento tecnico dell’applicazione WCM a PRIMA DI NOI: Chapter Workflow, internal assurance dependency, delivery verificata, living knowledge, state/projector, heartbeat telemetry e Board Gate.",
+      "version": "V0.2",
+      "master_date": "2026-08-24",
+      "status": "ACTIVE",
+      "source_path": "projects/prima-di-noi/documentation/PRIMA_DI_NOI_TECHNICAL_REFERENCE_V0_2.md",
+      "source_sha": "6e0ce024d4f14d472e9b139d0443a861d8477e62",
+      "source_sha_short": "6e0ce02",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/prima-di-noi-technical-reference.md",
+      "docx_path": "wcm/documentation/releases/prima-di-noi-technical-reference.docx",
+      "pdf_path": "wcm/documentation/releases/prima-di-noi-technical-reference.pdf",
+      "download_filename_docx": "PRIMA_DI_NOI_Technical_Reference_V0_2.docx",
+      "download_filename_pdf": "PRIMA_DI_NOI_Technical_Reference_V0_2.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PASS",
+      "docx_page_count": 8,
+      "pdf_page_count": 9
+    },
+    {
+      "document_id": "prima-di-noi-executive-editorial-partner-guide",
+      "document_kind": "manual",
+      "book_id": null,
+      "chapter_number": null,
+      "scope": "project",
+      "project_id": "prima-di-noi",
+      "project_label": "PRIMA DI NOI",
+      "title": "PRIMA DI NOI Executive / Editorial Partner Guide",
+      "audience": "Editori, autori, literary agent, studi editoriali, produttori di contenuti, partner publishing tech",
+      "description": "Case study editoriale AI-native governato: redazione virtuale persistente, maker/reviewer separation, continuity, author authority, assurance, delivery e osservabilità.",
+      "version": "V0.2",
+      "master_date": "2026-08-24",
+      "status": "ACTIVE",
+      "source_path": "projects/prima-di-noi/documentation/PRIMA_DI_NOI_EXECUTIVE_EDITORIAL_PARTNER_GUIDE_V0_2.md",
+      "source_sha": "c9d239091c74e8b119a402adbb20e376f8737737",
+      "source_sha_short": "c9d2390",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/prima-di-noi-executive-editorial-partner-guide.md",
+      "docx_path": "wcm/documentation/releases/prima-di-noi-executive-editorial-partner-guide.docx",
+      "pdf_path": "wcm/documentation/releases/prima-di-noi-executive-editorial-partner-guide.pdf",
+      "download_filename_docx": "PRIMA_DI_NOI_Executive_Editorial_Partner_Guide_V0_2.docx",
+      "download_filename_pdf": "PRIMA_DI_NOI_Executive_Editorial_Partner_Guide_V0_2.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PASS",
+      "docx_page_count": 8,
+      "pdf_page_count": 8
+    },
+    {
+      "document_id": "prima-di-noi-user-manual",
+      "document_kind": "manual",
+      "book_id": null,
+      "chapter_number": null,
+      "scope": "project",
+      "project_id": "prima-di-noi",
+      "project_label": "PRIMA DI NOI",
+      "title": "PRIMA DI NOI User Manual",
+      "audience": "Author & Creative Director e utenti autorizzati, anche senza background tecnico",
+      "description": "Manuale discorsivo del progetto: ciclo del capitolo, Candidate e Board Report, mass control, continuity, assurance, heartbeat, approval/freeze, post-freeze e automazioni.",
+      "version": "V0.2",
+      "master_date": "2026-08-24",
+      "status": "ACTIVE",
+      "source_path": "projects/prima-di-noi/documentation/PRIMA_DI_NOI_USER_MANUAL_V0_2.md",
+      "source_sha": "0e12a04df58402f439e0576e7d99bfacdb01739a",
+      "source_sha_short": "0e12a04",
+      "released_at": "2026-08-29T05:40:28.754Z",
+      "markdown_path": "wcm/documentation/releases/prima-di-noi-user-manual.md",
+      "docx_path": "wcm/documentation/releases/prima-di-noi-user-manual.docx",
+      "pdf_path": "wcm/documentation/releases/prima-di-noi-user-manual.pdf",
+      "download_filename_docx": "PRIMA_DI_NOI_User_Manual_V0_2.docx",
+      "download_filename_pdf": "PRIMA_DI_NOI_User_Manual_V0_2.pdf",
+      "qa_status": "BUILD_PASS",
+      "visual_qa_status": "PASS",
+      "docx_page_count": 13,
+      "pdf_page_count": 15
     }
   ]
 }

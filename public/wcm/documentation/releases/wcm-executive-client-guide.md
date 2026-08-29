@@ -1,351 +1,300 @@
 # WCM — Executive / Client Guide
 
-**Versione:** 0.2  
-**Data:** 2026-08-20  
+**Versione:** 0.5  
+**Data:** 2026-08-24  
 **Stato:** ACTIVE / LIVING PROJECTION / FIELD VALIDATION  
 **Pubblico:** clienti, partner, management, investitori e interlocutori non tecnici  
-**Authority:** human-facing projection governata da `DEC-010`; non sostituisce la baseline tecnica WCM
+**Authority:** DEC-010 + DEC-014; human-facing projection, non source of truth
 
 ---
 
 # 1. WCM in una frase
 
-**WCM è un modello operativo che permette di lavorare con l'intelligenza artificiale in modo continuativo, organizzato, tracciabile e governato, mantenendo memoria, stato, decisioni e apprendimento anche quando il lavoro attraversa più sessioni, strumenti e progetti.**
+**WCM è un modello operativo che trasforma l'intelligenza artificiale da strumento di singola sessione a capacità organizzativa continuativa, mantenendo memoria, stato, controlli, apprendimento e decisioni umane lungo il tempo.**
 
-L'obiettivo può essere sintetizzato così:
-
-> aumentare l'autonomia operativa dell'AI senza perdere controllo umano, memoria e coerenza.
+Il suo obiettivo non è rendere l'AI “libera di fare tutto”. È permetterle di lavorare molto **senza perdere controllo, coerenza e tracciabilità**.
 
 ---
 
-# 2. Il problema che WCM affronta
+# 2. Il problema che affronta
 
-Usare un'AI per rispondere a una domanda è relativamente semplice.
+Un modello AI può essere molto bravo a rispondere a una domanda o produrre un documento. Quando però deve lavorare per giorni o settimane su un progetto reale emergono problemi diversi:
 
-Usarla per portare avanti un progetto nel tempo è molto più difficile.
+- una nuova sessione può non sapere cosa è già stato fatto;
+- una decisione può essere dimenticata o contraddetta;
+- un'attività può essere rieseguita per errore;
+- una dashboard può rimanere indietro rispetto al lavoro;
+- una knowledge base può contenere molte informazioni ma non essere coerente;
+- un'automazione può scrivere nel posto sbagliato o su una versione non più corrente;
+- l'esperienza fatta può andare persa invece di migliorare il metodo.
 
-Quando il lavoro cresce, emergono problemi ricorrenti:
-
-- il contesto si disperde tra conversazioni, file e strumenti;
-- decisioni importanti possono essere dimenticate o contraddette;
-- l'AI può ripetere attività già svolte;
-- non è sempre chiaro cosa sia approvato e cosa sia soltanto una proposta;
-- più progetti contemporanei aumentano rapidamente la complessità;
-- automazione e agenti possono lavorare senza che sia facile capire su quale memoria o authority stiano agendo;
-- quando cambia una decisione, il cambiamento può non propagarsi a tutto ciò che ne dipende;
-- una knowledge base può diventare ricca ma internamente incoerente;
-- l'esperienza accumulata rischia di non trasformarsi in miglioramento del metodo.
-
-WCM nasce per affrontare questa dimensione **organizzativa e cognitiva** del lavoro con l'AI.
+WCM tratta questi problemi come problemi di **organizzazione, memoria, governance e controllo**, non soltanto come limiti del modello linguistico.
 
 ---
 
-# 3. Che cos'è WCM
+# 3. Come funziona in parole semplici
 
-WCM non è un singolo software e non coincide con un singolo modello AI.
+```text
+L'UTENTE DEFINISCE INTENZIONE E DECIDE AI GATE
+                     ↓
+              WISE COMPRENDE E LAVORA
+                     ↓
+         WCM CONSERVA WORKFLOW E MEMORIA
+                     ↓
+     AUTOMAZIONI MECCANICHE SINCRONIZZANO
+                     ↓
+          KNOWLEDGE ASSURANCE CONTROLLA
+                     ↓
+          MISSION CONTROL RENDE VISIBILE
+                     ↓
+              WCM IMPARA DALL'ESPERIENZA
+```
 
-È un **modello operativo** che coordina:
+La caratteristica centrale è la separazione delle responsabilità.
 
-- un nucleo cognitivo;
-- memoria organizzativa persistente;
-- stato e roadmap dei progetti;
-- processi e protocolli;
-- capability dirette o delegabili;
-- controlli di integrità della conoscenza;
-- cicli di apprendimento dall'esperienza;
-- una superficie umana di osservazione e governance.
+L'AI viene usata per ragionamento, sintesi, creatività e interpretazione. Le attività che hanno già una regola chiara vengono progressivamente trasformate in procedure deterministiche.
+
+---
+
+# 4. Cognizione dove serve, determinismo dove serve
+
+Se dobbiamo decidere come rivedere un capitolo, interpretare un'anomalia o proporre una strategia, serve intelligenza.
+
+Se dobbiamo invece aggiornare uno stato, verificare che una revisione sia ancora corrente, impedire una doppia scrittura o proiettare un dato strutturato in una dashboard, non serve “creatività”. Serve affidabilità.
+
+Per questo WCM cerca il seguente equilibrio:
+
+```text
+DOMANDA APERTA / SIGNIFICATO → COGNIZIONE
+REGOLA NOTA / MECCANICA       → DETERMINISMO
+DECISIONE RISERVATA           → HUMAN AUTHORITY
+```
+
+Questo principio è diventato sempre più concreto nella field validation di PRIMA DI NOI.
+
+---
+
+# 5. Continuità: la fine della chat non è la fine del lavoro
+
+WCM mantiene workflow persistenti con checkpoint.
+
+Se il lavoro deve attraversare più sessioni, il sistema può ricordare:
+
+- che cosa è già stato completato;
+- che cosa viene dopo;
+- qual è il vero punto di arresto;
+- quale authority è valida;
+- se un'interruzione è tecnica o sostanziale.
+
+Quindi una sessione può terminare senza costringere il progetto a ripartire da zero.
+
+---
+
+# 6. Memoria che viene anche controllata
+
+WCM non considera sufficiente archiviare file.
+
+Con **Knowledge Assurance** verifica che la memoria resti coerente e sufficientemente aggiornata. Il controllo oggi è principalmente event-driven: quando cambia qualcosa di rilevante può partire automaticamente, con una safety net periodica ogni sei ore.
+
+Quando la correzione è meccanica e già autorizzata, il Knowledge Steward può ripararla e ricontrollarla. Quando il problema richiede significato o una decisione, il sistema non “inventa” una risposta: effettua escalation.
+
+Un workflow può anche richiedere esplicitamente un controllo Knowledge fresh prima di un passaggio delicato. Questo è già stato utilizzato in PRIMA DI NOI prima di un Board Gate.
+
+---
+
+# 7. Scritture persistenti più sicure
+
+Una delle lezioni emerse sul campo è che una write tecnicamente riuscita può comunque essere sbagliata: target errato, dato stale, payload incompleto, writer concorrente.
+
+Da questa esperienza WCM ha promosso il protocollo **Persistent Mutation Safety — PROT-017**.
+
+Prima di una write critica il sistema deve verificare, in modo proporzionato al rischio:
+
+- target e scope esatti;
+- forma del payload;
+- versione/stato atteso;
+- ownership del writer;
+- idempotenza;
+- risultato realmente persistito;
+- rispetto dell'authority.
 
 In termini semplici:
 
+> non basta sapere come recuperare da un errore; bisogna ridurre la probabilità di compierlo.
+
+---
+
+# 8. Heartbeat: lavorare periodicamente senza confondere attività e liveness
+
+Un heartbeat è un meccanismo che riattiva periodicamente il cognitive core di un progetto.
+
+Non contiene il task corrente: WCM lo ricostruisce dalla memoria persistente.
+
+Una seconda evoluzione importante riguarda la telemetria. Il sistema ora distingue nettamente:
+
+- **liveness** — “il worker si è attivato ed ha concluso una run”;
+- **execution** — “il progetto è realmente passato da uno stato a un altro”.
+
+La telemetria del heartbeat viene registrata con una procedura deterministica separata. Un nuovo timestamp non viene quindi scambiato per una nuova fase o una nuova decisione del progetto.
+
+---
+
+# 9. Human authority: decidere non significa ancora eseguire
+
+Mission Control può raccogliere decisioni umane nei punti espressamente autorizzati.
+
+WCM separa però tre cose che nei sistemi meno governati vengono spesso confuse:
+
 ```text
-WCM RICORDA
-    ↓
-WCM LAVORA
-    ↓
-WCM CONTROLLA CIÒ CHE HA FATTO
-    ↓
-WCM PROTEGGE LA PROPRIA MEMORIA
-    ↓
-WCM IMPARA DALL'ESPERIENZA
-    ↓
-WCM PROPONE COME EVOLVERE
+DECISIONE UMANA
+≠ REGISTRAZIONE DELL'AUTHORITY
+≠ ESECUZIONE DEGLI EFFETTI
 ```
 
-L'essere umano mantiene l'authority sulle decisioni che il metodo considera riservate o materiali.
+Per esempio, nel Learning System un'approvazione di un Method Change Gate viene registrata deterministicamente con una receipt verificabile. Solo un processo successivo applica davvero la modifica alla baseline e ne verifica gli effetti.
+
+Questo rende possibile sapere non solo “che cosa è cambiato”, ma **chi lo ha autorizzato e se la modifica è stata realmente applicata**.
 
 ---
 
-# 4. Perché è diverso da un chatbot
+# 10. WCM impara, ma non cambia le proprie regole da solo
 
-Un chatbot lavora soprattutto nella conversazione corrente.
-
-WCM aggiunge una **memoria organizzativa persistente** capace di mantenere nel tempo:
-
-- obiettivi;
-- decisioni;
-- stato corrente;
-- roadmap;
-- documenti;
-- evidenze;
-- relazioni tra informazioni;
-- regole operative;
-- learning del metodo.
-
-Questo permette di riprendere il lavoro senza affidarsi soltanto a ciò che una singola chat ricorda.
-
----
-
-# 5. Perché è diverso da un semplice sistema multi-agent
-
-Aggiungere agenti non risolve automaticamente i problemi di continuità, governance e memoria.
-
-WCM non parte dal principio “più agenti = più capacità”.
-
-Il principio è:
-
-> usare la minima complessità organizzativa necessaria e attivare capacità aggiuntive soltanto quando il lavoro lo richiede.
-
-Il nucleo cognitivo può operare direttamente quando possiede la capability necessaria e delegare soltanto la parte che richiede strumenti, ambienti o service differenti.
-
----
-
-# 6. La memoria del WCM
-
-WCM combina due livelli complementari.
-
-## Memoria di lavoro
-
-È il contesto vivo: conversazione, intenzioni recenti, ragionamento situazionale, nuove informazioni.
-
-## Memoria organizzativa persistente
-
-È la memoria durevole e versionata: stato, decisioni, processi, roadmap, knowledge, evidence e learning.
-
-Il valore non sta soltanto nel conservare file, ma nel mantenere **coerenti le relazioni** tra ciò che il sistema sa.
-
----
-
-# 7. Il sistema immunitario della conoscenza
-
-Una knowledge base può essere piena di informazioni e comunque contenere incoerenze.
-
-Per questo WCM include un **Knowledge Assurance / Immune Loop**.
-
-Il sistema verifica, per quanto possibile in modo deterministico:
-
-- coerenza dello stato;
-- propagazione delle decisioni;
-- validità delle relazioni;
-- freschezza dei registri;
-- presenza di informazioni orfane;
-- età del controllo rispetto all'ultimo cambiamento materiale.
-
-Quando il problema è puramente meccanico e rientra in classi di riparazione esplicitamente autorizzate, può essere corretto automaticamente e ricontrollato.
-
-Quando invece il problema richiede interpretazione o decisione, il sistema **non inventa la risposta**: effettua escalation.
-
----
-
-# 8. WCM impara dall'esperienza
-
-WCM possiede anche un **Learning Loop**.
-
-Un evento non diventa automaticamente una nuova regola.
-
-Il percorso è governato:
+L'esperienza operativa alimenta un Learning System:
 
 ```text
 ESPERIENZA
-   ↓
-EVIDENZA
-   ↓
-CANDIDATE LEARNING
-   ↓
-ACCUMULO / REVISIONE
-   ↓
-VALIDAZIONE O RIGETTO
-   ↓
-EVENTUALE PROMOZIONE DEL METODO
+→ EVIDENZA
+→ REVIEW
+→ LEARNING
+→ EVENTUALE CHANGE GATE
+→ BASELINE UPDATE VERIFICATO
 ```
 
-Un learning può essere osservato e maturare senza conferire automaticamente l'autorità per modificare WCM.
+Il collector automatico raccoglie evidence. La review cognitiva valuta se quella evidence contiene un learning riusabile. Se il learning richiede un cambiamento materiale del metodo, serve il Change Gate umano.
 
-Le modifiche materiali al metodo restano soggette alla governance prevista.
+Un caso reale è `WCM-LRN-004`: nato da incidenti e hardening delle scritture persistenti, è stato validato, sottoposto a gate e infine promosso nel protocollo PROT-017.
 
 ---
 
-# 9. Mission Control: la superficie umana
+# 11. Mission Control: osservabilità senza trasformare la dashboard nella verità
 
-L'utente non deve leggere repository, log tecnici o decine di file per capire cosa sta succedendo.
+Mission Control è la sala di controllo human-facing.
 
-Mission Control rende visibili le informazioni rilevanti.
-
-Oggi può mostrare, tra le altre cose:
+Rende accessibili:
 
 - portfolio dei progetti;
-- stato e fase corrente;
-- Needs che richiedono una decisione umana;
-- documenti da leggere;
-- Board Gate;
-- attività e roadmap;
-- Knowledge Health;
-- attività del Knowledge Steward;
+- Needs e Pending;
+- documenti e Board Gate;
+- Activity e Roadmap;
+- Execution Health;
+- Knowledge Health e Steward Activity;
 - WCM Learning;
-- documentazione ufficiale del metodo.
+- documentazione generale e di progetto.
 
-Mission Control è una superficie di osservazione e, solo dove esplicitamente previsto, di authority autenticata e vincolata.
-
----
-
-# 10. Documentation Center V0.9
-
-WCM mantiene tre documenti human-facing viventi:
-
-1. **Technical Reference** — per chi vuole capire come WCM è costruito;
-2. **Executive / Client Guide** — per capire cosa fa, perché serve e quali benefici offre;
-3. **User Manual** — per capire come utilizzarlo concretamente.
-
-Mission Control V0.9 introduce una sezione globale **Documentazione WCM**.
-
-L'utente può:
-
-- consultare i documenti direttamente nel browser;
-- vedere versione, data e stato;
-- verificare la provenienza dal master GitHub;
-- scaricare una release Word;
-- scaricare una release PDF.
-
-La release mantiene il collegamento al preciso master da cui deriva tramite source path e source SHA.
-
-Principio:
-
-> scaricare un documento non significa approvarlo e non modifica alcuna authority WCM.
+La dashboard non diventa source of truth: riflette fonti persistenti e read-model. Se una vista è in ritardo, si corregge la projection, non si modifica il progetto per “far tornare lo schermo”.
 
 ---
 
-# 11. Cosa fa l'utente e cosa fa WCM
+# 12. Automazioni spiegabili
 
-```text
-UTENTE                         WCM
-────────────────────────────────────────────────
-definisce intenzione        → struttura il lavoro
-prende decisioni riservate  ← prepara Need e opzioni
-approva cambi materiali     ← prepara Change Gate
-legge output                ← produce e organizza
-mantiene authority          ← opera nel mandato
-                             ← ricorda
-                             ← controlla la memoria
-                             ← apprende dall'esperienza
-                             ← segnala anomalie
-```
+WCM mantiene un Automation & Flow Block Catalog. Per ogni blocco materiale dovrebbe essere possibile rispondere a domande comprensibili:
 
-L'obiettivo non è sostituire la responsabilità umana, ma aumentare la quantità di lavoro che può essere svolta in modo continuativo senza perdere governo e tracciabilità.
+- perché esiste?
+- quando parte?
+- cosa legge?
+- cosa produce o modifica?
+- cosa può fare senza chiedere permesso?
+- cosa non può fare?
+- quando si ferma?
+- dove vedo il risultato?
+
+Tra i blocchi correnti troviamo heartbeat cognitivi, state/projector deterministici, Knowledge Assurance, command consumers, Learning Collector/Review, telemetry materializer e Documentation Continuity.
 
 ---
 
-# 12. Multi-project
+# 13. Documentazione generale e specifica di progetto
 
-WCM è progettato per non essere legato a un singolo dominio.
+WCM possiede tre manuali generali:
 
-La stessa architettura può essere utilizzata, con processi specifici differenti, per esempio per:
+- Technical Reference;
+- Executive / Client Guide;
+- User Manual.
 
-- sviluppo di un prodotto o venture;
-- progetto operativo aziendale;
-- sviluppo software;
-- progetto creativo complesso;
-- ricerca e analisi;
-- attività commerciali ricorrenti;
-- iniziative con più strumenti e service.
+Ogni progetto sufficientemente maturo può avere la stessa terna adattata al proprio dominio.
 
-Il metodo generale resta comune, mentre workflow e knowledge structure devono essere proporzionati al dominio.
+PRIMA DI NOI è la prima field validation di questo modello e possiede:
 
----
+- Technical Reference;
+- Executive / Editorial Partner Guide;
+- User Manual.
 
-# 13. Un esempio reale di field validation
-
-**PRIMA DI NOI**, progetto editoriale complesso, è la principale field validation corrente del WCM.
-
-Il progetto ha permesso di osservare problemi reali di:
-
-- continuità tra documenti e capitoli;
-- propagazione delle decisioni;
-- knowledge drift;
-- relazioni tra informazioni;
-- gestione dei gate umani;
-- osservabilità dei cicli autonomi;
-- apprendimento metodologico.
-
-Queste evidenze vengono utilizzate per migliorare WCM senza trasformare automaticamente ogni esperienza locale in una regola generale.
+Questo evita due estremi: documentazione troppo generica per spiegare un progetto reale, oppure documentazione di progetto che duplica e contraddice il metodo generale.
 
 ---
 
-# 14. Punti di forza del modello
+# 14. PRIMA DI NOI: cosa rende interessante il caso
 
-## Continuità
+PRIMA DI NOI non viene usato per dimostrare semplicemente che “l'AI sa scrivere”.
 
-Il lavoro non dipende dalla memoria di una singola conversazione.
+Il progetto sta sperimentando un'organizzazione editoriale AI-native con:
 
-## Memoria organizzativa
+- Author & Creative Director con authority finale;
+- workflow del capitolo persistente;
+- Writer e review professionali separate;
+- Narrative Mass Control;
+- continuity e reveal ledgers;
+- Knowledge Assurance richiamabile prima dei gate;
+- delivery verificata;
+- Board Gate;
+- state/projector deterministici;
+- heartbeat telemetry separata;
+- Learning derivato dall'esperienza reale.
 
-Stato, decisioni e conoscenza importante sono persistenti e versionati.
-
-## Tracciabilità
-
-È possibile ricostruire perché una decisione esiste e quali elementi ne dipendono.
-
-## Human authority
-
-Autonomia operativa e authority decisionale sono separate.
-
-## Controlled automation
-
-L'automazione viene limitata da processi, capability e guardrail espliciti.
-
-## Knowledge assurance
-
-La memoria viene controllata, non soltanto accumulata.
-
-## Organizational learning
-
-L'esperienza può trasformarsi progressivamente in miglioramento del metodo.
-
-## Observability
-
-Mission Control rende visibile ciò che il sistema sta facendo, ricordando e imparando.
-
-## Multi-project orientation
-
-Il modello è pensato per gestire più iniziative mantenendo contesti separati e governance comune.
+È quindi un case study di **processo**, non soltanto di generazione di contenuti.
 
 ---
 
-# 15. Cosa WCM non è
+# 15. Punti di forza che la field validation sta esplorando
 
-WCM non è:
+**Continuità.** Il lavoro può attraversare sessioni senza perdere il punto di esecuzione.
 
-- un semplice chatbot;
-- una cartella di documenti;
-- un project manager tradizionale;
-- un sinonimo di sistema multi-agent;
-- un meccanismo che autorizza l'AI a modificare autonomamente ogni cosa;
-- una promessa che ogni errore possa essere auto-riparato;
-- un prodotto dichiarato già definitivo o universalmente scale-ready.
+**Memoria organizzativa.** Decisioni, output, authority e conoscenza importante diventano persistenti.
 
----
+**Determinismo selettivo.** Le routine meccaniche vengono progressivamente sottratte alla variabilità LLM.
 
-# 16. Stato di maturità
+**Controllo umano.** L'autonomia operativa termina ai gate riservati all'owner.
 
-WCM è in **FIELD VALIDATION**.
+**Safety sulle write.** Le mutazioni persistenti critiche hanno guard espliciti e verifica post-write.
 
-Alcune capability sono già operative e vengono utilizzate nel lavoro reale; altre sono ancora in sperimentazione o richiedono maggiore evidenza cross-domain.
+**Assurance.** La memoria viene controllata e alcune anomalie meccaniche possono essere auto-riparate.
 
-Questa distinzione è intenzionale: il metodo vuole evolvere sulla base dell'esperienza, senza presentare come consolidato ciò che non lo è ancora.
+**Learning governato.** L'esperienza può cambiare il metodo soltanto attraverso promotion e authority.
+
+**Observability.** L'utente può vedere stato, health, needs e learning senza leggere il backend.
 
 ---
 
-# 17. Il beneficio atteso
+# 16. Cosa WCM non è
 
-In sintesi, WCM cerca di rendere possibile questo passaggio:
+WCM non è un chatbot, una cartella di file, una semplice dashboard o un sinonimo di “sistema multi-agent”.
+
+Non afferma che ogni errore sia auto-riparabile, che ogni decisione possa essere automatizzata o che lo stesso workflow funzioni identicamente per ogni dominio.
+
+---
+
+# 17. Stato di maturità
+
+WCM è **FIELD VALIDATION**.
+
+Alcune capacità sono già operative e hanno evidence significativa su PRIMA DI NOI. La generalizzazione cross-project, la scalabilità organizzativa più ampia e la productizzazione enterprise devono ancora essere validate su ulteriori casi reali.
+
+Questa prudenza non è un limite narrativo del prodotto: è una regola di qualità del metodo stesso.
+
+---
+
+# 18. Beneficio atteso
+
+Il passaggio cercato è:
 
 ```text
 AI COME STRUMENTO DI SESSIONE
@@ -353,14 +302,4 @@ AI COME STRUMENTO DI SESSIONE
 AI COME CAPACITÀ ORGANIZZATIVA CONTINUA
 ```
 
-mantenendo tre invarianti:
-
-**memoria**, **controllo**, **coerenza**.
-
-Il risultato atteso è poter gestire **più progetti, più complessità e più autonomia operativa dell'AI senza perdere la capacità umana di capire, verificare e decidere**.
-
----
-
-## Nota finale
-
-Questo documento è una proiezione human-facing della baseline WCM corrente. GitHub `main` e le fonti metodologiche autorevoli rimangono la source of truth. Le release Word/PDF distribuite tramite Mission Control sono derivate dal master e ne conservano la provenance.
+con **memoria, sicurezza delle operazioni, controllo umano, apprendimento e spiegabilità**.

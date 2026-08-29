@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="920" viewBox="0 0 1500 920">
+<rect width="1500" height="920" fill="#ffffff"/>
+<text x="750" y="66" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="42" font-weight="700" fill="#111827">Una piccola rete di sinapsi WCM</text>
+<rect x="420" y="88" width="660" height="44" rx="12" fill="#eef2ff" stroke="#818cf8" stroke-width="2"/>
+<text x="750" y="117" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#3730a3">MODELLO PEDAGOGICO — POCHI LINK, SIGNIFICATO ESPLICITO</text>
+
+<!-- central decision -->
+<rect x="590" y="355" width="320" height="150" rx="24" fill="#eef2ff" stroke="#4f46e5" stroke-width="4"/>
+<text x="750" y="410" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="700" fill="#312e81">DECISIONE CURRENT</text>
+<text x="750" y="447" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="20" fill="#4b5563">STATUS = FROZEN</text>
+
+<!-- process -->
+<rect x="160" y="260" width="300" height="120" rx="20" fill="#f8fafc" stroke="#64748b" stroke-width="3"/>
+<text x="310" y="315" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="26" font-weight="700" fill="#1f2937">PROCESSO</text>
+<text x="310" y="347" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#4b5563">relation status = ACTIVE</text>
+
+<!-- document -->
+<rect x="130" y="610" width="330" height="120" rx="20" fill="#f8fafc" stroke="#64748b" stroke-width="3"/>
+<text x="295" y="665" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="26" font-weight="700" fill="#1f2937">DOCUMENTO</text>
+<text x="295" y="697" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#4b5563">relation status = ACTIVE</text>
+
+<!-- evidence -->
+<rect x="1040" y="260" width="300" height="120" rx="20" fill="#f8fafc" stroke="#64748b" stroke-width="3"/>
+<text x="1190" y="315" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="26" font-weight="700" fill="#1f2937">EVIDENCE</text>
+<text x="1190" y="347" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#4b5563">relation status = ACTIVE</text>
+
+<!-- old decision -->
+<rect x="1025" y="610" width="330" height="120" rx="20" fill="#fff7ed" stroke="#c2410c" stroke-width="3"/>
+<text x="1190" y="665" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="25" font-weight="700" fill="#7c2d12">DECISIONE PRECEDENTE</text>
+<text x="1190" y="697" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#9a3412">STATUS = SUPERSEDED</text>
+
+<!-- at risk node -->
+<rect x="590" y="735" width="320" height="100" rx="20" fill="#fefce8" stroke="#ca8a04" stroke-width="3"/>
+<text x="750" y="778" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" fill="#713f12">NODO DIPENDENTE</text>
+<text x="750" y="809" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#854d0e">target node — relazione in verifica</text>
+
+<!-- arrows/labels -->
+<defs>
+<marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#475569"/></marker>
+</defs>
+
+<line x1="460" y1="335" x2="590" y2="400" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="515" y="332" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#334155">DEPENDS_ON</text>
+
+<line x1="450" y1="625" x2="230" y2="385" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="315" y="500" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#334155" transform="rotate(-47 315 500)">IMPLEMENTS</text>
+
+<line x1="1040" y1="335" x2="910" y2="400" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="945" y="332" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#334155">EVIDENCE_FOR</text>
+
+<line x1="1045" y1="625" x2="905" y2="490" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="990" y="555" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="700" fill="#334155">SUPERSEDED_BY</text>
+
+<line x1="750" y1="505" x2="750" y2="735" stroke="#ca8a04" stroke-width="3" stroke-dasharray="10 8" marker-end="url(#arrow)"/>
+<rect x="430" y="545" width="300" height="58" rx="12" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/><text x="580" y="570" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#854d0e">AFFECTS</text><text x="580" y="593" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#854d0e">RELATION STATUS = AT_RISK</text>
+
+<text x="750" y="884" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="21" fill="#6b7280">La qualità della rete dipende dalla precisione delle relazioni, non dalla loro quantità.</text>
+</svg>

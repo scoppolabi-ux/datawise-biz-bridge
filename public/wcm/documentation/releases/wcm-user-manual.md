@@ -1,364 +1,625 @@
-# WCM — User Manual
+# WCM — Manuale Utente
 
-**Versione:** 0.2  
-**Data:** 2026-08-20  
+**Versione:** 0.6  
+**Data:** 2026-08-24  
 **Stato:** ACTIVE / LIVING PROJECTION / FIELD VALIDATION  
-**Pubblico:** utilizzatori WCM / owner / Board  
-**Authority:** human-facing projection governata da `DEC-010`; non sostituisce Governance, Process Book o Project State
+**Pubblico:** utilizzatori WCM, owner, Board e persone senza background tecnico  
+**Authority:** DEC-010 + DEC-014; human-facing projection, non source of truth
 
 ---
 
-# 1. A cosa serve questo manuale
+# 1. Prima di cominciare: non devi conoscere la tecnologia per usare WCM
 
-Questo manuale spiega **come usare WCM concretamente**.
+WCM utilizza termini tecnici perché dietro l'interfaccia esistono workflow, automazioni, controlli e registri. Ma **non devi conoscere GitHub, Supabase, runtime o projector per capire se il sistema sta lavorando bene e se serve una tua decisione**.
 
-Non descrive in dettaglio l'implementazione tecnica e non sostituisce le regole di governance. Serve a capire:
+Dal punto di vista dell'utente, WCM può essere descritto così:
 
-- dove guardare;
-- cosa significa ciò che si vede;
-- quando è richiesta un'azione umana;
-- cosa può fare WCM autonomamente;
-- come leggere stato, documenti, Knowledge Health e Learning;
-- come consultare la documentazione ufficiale WCM.
+> **È un sistema che permette all'intelligenza artificiale di lavorare su progetti che durano nel tempo, ricordando ciò che è stato deciso, continuando il lavoro da dove era arrivato, controllando la propria memoria e fermandosi quando una decisione deve essere presa da una persona.**
+
+Le cinque domande fondamentali sono sempre le stesse:
+
+1. Dove siamo?
+2. Che cosa sta facendo WCM?
+3. C'è qualcosa che richiede me?
+4. Posso fidarmi dello stato e della memoria che vedo?
+5. Che cosa ha imparato il sistema dall'esperienza?
+
+Mission Control serve soprattutto a rispondere a queste domande.
 
 ---
 
-# 2. Entrare in Mission Control
+# 2. Un'immagine semplice: WCM come una piccola organizzazione
 
-Mission Control è la principale superficie umana del WCM.
+Puoi immaginare WCM come un'organizzazione invisibile che lavora dietro Mission Control.
 
-Percorso corrente:
+**Wise** è la parte che comprende: interpreta obiettivi, problemi, significato e priorità.
+
+La **memoria persistente** è il luogo in cui vengono conservate le cose che non devono andare perse quando una conversazione termina.
+
+Le **automazioni deterministiche** fanno i lavori meccanici: aggiornano stati, controllano regole, registrano dati, evitano duplicazioni.
+
+**Mission Control** è la sala di controllo che ti mostra in modo leggibile ciò che sta succedendo.
+
+**Tu**, nei punti previsti, mantieni l'ultima parola sulle decisioni che WCM non può prendere autonomamente.
+
+```text
+TU DAI DIREZIONE E AUTHORITY
+            ↓
+       WISE LAVORA
+            ↓
+ WCM CONSERVA E CONTROLLA
+            ↓
+AUTOMAZIONI SINCRONIZZANO
+            ↓
+MISSION CONTROL TI INFORMA
+            ↓
+SE SERVE UNA DECISIONE → TORNA A TE
+```
+
+---
+
+# 3. Da dove si entra
+
+Il punto principale è Mission Control:
 
 `/wcm`
 
-Dopo l'accesso autenticato si apre la Home del portfolio.
+Dalla Home puoi entrare nei progetti, vedere se qualcosa richiede la tua attenzione, consultare documenti, controllare la salute del sistema, leggere i learning e aprire la documentazione.
 
-La Home permette di capire rapidamente:
+Una regola utile:
 
-- quanti progetti sono attivi;
-- quanti Need richiedono l'attenzione dell'owner;
-- quante decisioni sono già in elaborazione;
-- quanti documenti devono essere letti;
-- lo stato del WCM Learning;
-- l'accesso alla Documentazione WCM;
-- lo stato sintetico dei singoli progetti.
+> **Mission Control è il cruscotto, non il motore.**
+
+Normalmente puoi fidarti di ciò che vedi. Se però una schermata dovesse essere in ritardo, non bisogna modificare il progetto per far coincidere la dashboard: è la dashboard che deve riallinearsi alla fonte corretta.
 
 ---
 
-# 3. Home: cosa guardare per prima cosa
+# 4. La Home: da dove partire senza guardare tutto
 
-## Progetti
-Apre l'elenco dei progetti WCM.
+Quando entri non serve leggere ogni card.
 
-## Needs Stefano
-Mostra le decisioni o azioni che richiedono realmente l'intervento dell'owner. Se il numero è maggiore di zero, è normalmente il primo punto da controllare.
+## 4.1 Needs Stefano
 
-## Pending
-Mostra decisioni già effettuate ma ancora in elaborazione dal sistema. `Pending` non significa necessariamente che devi intervenire di nuovo.
+Se il numero è maggiore di zero, aprilo per primo.
 
-## Documenti da leggere
-Mostra i documenti collegati a un Need o a un passaggio che richiede lettura umana.
+Un Need significa, in sostanza:
 
-## WCM Learning
-Apre la vista globale di ciò che WCM sta imparando dall'esperienza.
+> **“WCM è arrivato a un punto in cui non può o non deve decidere da solo.”**
 
-## Documentazione WCM
-Apre il Documentation Center con Technical Reference, Executive / Client Guide e User Manual.
+Potrebbe chiederti di approvare un documento, scegliere tra alternative, autorizzare un cambiamento oppure fornire un'informazione che soltanto tu possiedi.
 
----
+Se non ci sono Need, non significa che WCM non stia lavorando. Significa semplicemente che in quel momento non richiede te.
 
-# 4. Progetti
+## 4.2 Pending
 
-Aprendo un progetto puoi trovare, in funzione della configurazione applicabile:
+Pending significa:
 
-- Overview;
-- stato/fase;
-- focus corrente;
-- next action;
-- Board;
-- Documents;
-- Activity;
-- Roadmap;
-- Knowledge;
-- Steward Activity.
+> **“Hai già deciso; WCM sta ancora applicando gli effetti.”**
 
-Non tutti i progetti devono avere la stessa struttura interna: WCM è domain-agnostic e i workflow specifici dipendono dal progetto.
+È importante perché evita un comportamento molto umano: premere di nuovo pensando che il primo comando non sia stato ricevuto.
 
----
+Se una decisione è Pending, normalmente non devi fare nulla.
 
-# 5. Needs Stefano
+## 4.3 Progetti
 
-Un **Need** rappresenta qualcosa che richiede attenzione umana.
+Qui trovi il portfolio WCM. Ogni progetto possiede la propria situazione, i propri workflow e, quando necessario, i propri manuali.
 
-Può trattarsi, per esempio, di una scelta autoriale o strategica, una Board decision, una richiesta di approvazione, una modifica da valutare o un problema semantico che il sistema non può risolvere meccanicamente.
+## 4.4 Documenti
 
-## Come usarlo
-1. apri `Needs Stefano`;
-2. identifica il progetto;
-3. leggi titolo e azione richiesta;
-4. apri gli eventuali documenti collegati;
-5. prendi la decisione richiesta attraverso il canale previsto.
+Qui puoi trovare materiale da leggere, Candidate, documenti approvati, report o altri output.
 
-Un Need `OPEN` non va considerato risolto soltanto perché hai letto il documento.
+**Il fatto che tu possa leggere o scaricare un file non significa che quel file sia approvato.**
+
+## 4.5 WCM Learning
+
+Questa pagina parla del metodo WCM, non del contenuto di un progetto. Mostra l'esperienza che il sistema sta trasformando in conoscenza metodologica.
+
+## 4.6 Documentazione
+
+Qui trovi i manuali generali e quelli specifici dei progetti, con indice cliccabile e release distribuibili quando verificate.
 
 ---
 
-# 6. Decisioni in elaborazione / Pending
+# 5. Come capire se WCM sta lavorando o aspetta te
 
-Quando hai già inviato una decisione, il sistema può mostrare il relativo elemento tra le decisioni in elaborazione.
+Nella sezione Execution Health puoi incontrare termini tecnici. Ecco il loro significato umano.
 
-Questo significa che l'authority è stata inviata o registrata, ma il workflow può dover ancora completare gli effetti previsti.
+## `ACTIVE`
 
-> Se il sistema dichiara che la decisione è in elaborazione e non presenta una nuova azione richiesta, non ripetere inutilmente lo stesso comando.
+**Il workflow ha ancora lavoro autorizzato da fare.**
 
----
+Non devi necessariamente intervenire.
 
-# 7. Documents
+## `INTERRUPTED_RESUMABLE`
 
-La sezione Documents permette di consultare gli artefatti human-facing di un progetto.
+**Il lavoro non è finito, ma qualcosa di tecnico ha impedito di proseguire.**
 
-Un documento può essere approved/frozen, candidate, unapproved, Board package o working document.
+WCM conserva il punto da cui ripartire. Non è necessario ricostruire a mano il lavoro già fatto.
 
-## Distribuzione ≠ approvazione
+## `WAITING_AUTHORITY`
 
-Un documento può essere scaricabile o condivisibile anche se non è approvato. Quando è non approvato, Mission Control deve renderlo visibile chiaramente.
+**WCM ha fatto tutto ciò che poteva fare entro il proprio mandato e ora aspetta una decisione umana.**
 
-Scaricare o condividere un documento non lo approva, non lo congela, non modifica il progetto e non conferisce authority.
+È un arresto corretto, non un guasto.
 
----
+## `BLOCKED`
 
-# 8. Board
+**C'è un ostacolo reale.**
 
-La sezione Board raccoglie le informazioni necessarie alle decisioni riservate quando il workflow del progetto prevede un Board Gate.
+Può essere tecnico, informativo o semantico. Il dettaglio deve spiegare quale.
 
-Un comando umano valido viene autenticato, registrato in modo durevole, conferisce l'authority specifica dichiarata e deve poi essere consumato dal workflow.
+## `COMPLETED`
 
-**Authority Receipt ≠ execution**: la registrazione della tua decisione non significa che tutti gli effetti siano già stati completati nello stesso istante.
+**Il workflow è realmente terminato**, non semplicemente la chat o l'heartbeat.
 
----
+Prima di dichiarare `COMPLETED`, WCM deve verificare che output, stato, memoria e passaggi di chiusura siano coerenti.
 
-# 9. Activity e Roadmap
+## `CANCELLED`
 
-Activity serve a ricostruire cosa è successo nel progetto. Roadmap mostra il percorso pianificato.
-
-Leggile così:
-
-- State = dove siamo ora;
-- Roadmap = dove stiamo andando;
-- Need = cosa richiede una decisione umana;
-- Activity = cosa è successo.
+Il workflow è stato annullato e non deve riprendere.
 
 ---
 
-# 10. Knowledge Health
+# 6. Perché WCM non dimentica il lavoro quando cambia sessione
 
-WCM non si limita a conservare documenti: controlla anche la coerenza della memoria organizzativa.
+Dietro ogni workflow importante esiste un checkpoint persistente.
 
-## HEALTHY
-La memoria è strutturalmente coerente rispetto ai controlli applicabili e il check è sufficientemente recente. Non significa che il progetto sia perfetto.
+Pensa a un **segnalibro intelligente** che dice:
 
-## DEGRADED
-Esistono anomalie o debiti che riducono la qualità della memoria ma non necessariamente bloccano ogni attività.
+> “Ho già fatto A, B e C. Il prossimo passaggio è D. Posso continuare senza ripetere ciò che è già stato completato.”
 
-## STALE / CHECK REQUIRED
-L'ultimo controllo è precedente a un cambiamento materiale o non è più sufficiente per dichiarare la memoria corrente.
+Per questo una regola centrale è:
 
-## CRITICAL
-Esiste un problema incompatibile con una transizione knowledge-sensitive sicura.
+```text
+FINE SESSIONE ≠ FINE WORKFLOW
+```
 
----
+Una nuova sessione o un nuovo heartbeat devono leggere il checkpoint e riprendere dal punto corretto.
 
-# 11. Synapses, drift e orphan
-
-Le Knowledge Synapses sono relazioni esplicite tra elementi della memoria. Aiutano a comprendere dipendenze, impatti e continuità.
-
-- `ACTIVE` — relazione corrente;
-- `AT_RISK` — relazione da verificare;
-- `BROKEN` — relazione non più valida;
-- `orphan` — elemento non sufficientemente collegato;
-- `drift` — disallineamento tra rappresentazioni che dovrebbero essere coerenti.
-
-Più sinapsi non significa automaticamente migliore qualità.
+Questo è uno dei meccanismi che permettono a WCM di lavorare su attività lunghe senza dipendere dalla memoria della conversazione corrente.
 
 ---
 
-# 12. Knowledge Steward
+# 7. Che cos'è un heartbeat
 
-Principio:
+Un **heartbeat** è semplicemente una sveglia periodica.
 
-> Wise governa il significato. Knowledge Steward governa la memoria.
+Non dice a Wise: “scrivi il Capitolo 7” o “fai la prossima analisi”. Gli dice, più o meno:
 
-Il Knowledge Steward può correggere automaticamente soltanto anomalie appartenenti a repair class autorizzate e deterministiche. Se il problema richiede interpretazione, strategia, canone o altra decisione semantica, deve fermarsi e fare escalation.
+> “Riattivati, guarda qual è lo stato reale e verifica se esiste lavoro autorizzato da continuare.”
 
-Steward Activity permette di vedere cosa ha controllato, tentato, corretto o escalato.
+A quel punto Wise ricostruisce il task dalla memoria persistente.
 
----
-
-# 13. WCM Learning
-
-La pagina `/wcm/learning` mostra Method Knowledge Health, learning `PROMOTED`, `CANDIDATE`, eventuali learning in osservazione/validazione, evidence, review, sinapsi del metodo, confidence, generalizzabilità e provenance.
-
-Un Candidate è un learning in maturazione, non una nuova regola. La pagina è read-only: osservare un learning non equivale ad approvarlo o promuoverlo.
+Questa distinzione è importante perché evita che una vecchia istruzione programmata continui a comandare un lavoro che nel frattempo è cambiato.
 
 ---
 
-# 14. Documentazione WCM — Documentation Center V0.9
+# 8. Ultimo heartbeat: cosa significa davvero
 
-Dalla Home trovi la card globale **Documentazione WCM**.
+Mission Control può mostrarti quando il sistema si è svegliato l'ultima volta.
+
+Questo dato indica **liveness**, cioè che il meccanismo si è attivato.
+
+Non indica automaticamente che il progetto sia avanzato.
+
+Esempio:
+
+- il progetto è `WAITING_AUTHORITY`;
+- l'heartbeat parte regolarmente;
+- controlla lo stato;
+- scopre correttamente che manca ancora la tua decisione;
+- termina senza cambiare il progetto.
+
+L'ultimo heartbeat sarà recente, ma il progetto resterà correttamente `WAITING_AUTHORITY`.
+
+Dal 24 agosto questa telemetria viene registrata con un meccanismo deterministico separato: il cognitive heartbeat comunica l'esito, mentre una routine meccanica aggiorna il dato di liveness in modo ordinato e controllato.
+
+In parole semplici:
+
+> **“Il sistema è vivo” e “il progetto è avanzato” sono due informazioni diverse.**
+
+---
+
+# 9. Board Gate: quando il sistema deve fermarsi
+
+Un **Board Gate** è un punto in cui WCM deve volontariamente smettere di avanzare.
+
+Il flusso tipico è:
+
+```text
+WCM LAVORA
+→ prepara il materiale
+→ esegue i controlli previsti
+→ arriva al gate
+→ crea un Need
+→ TU DECIDI
+→ la decisione viene registrata
+→ WCM applica gli effetti
+→ il workflow riparte
+```
+
+Il Board Gate serve a evitare che l'autonomia operativa venga confusa con il diritto di decidere.
+
+---
+
+# 10. Cosa succede quando premi Approva
+
+Questa è una distinzione importante e spesso invisibile all'utente.
+
+Quando premi un comando, possono esserci tre momenti diversi:
+
+1. **hai espresso la decisione**;
+2. **il sistema ha registrato in modo verificabile la tua authority**;
+3. **il workflow ha applicato tutti gli effetti della decisione**.
+
+Non sono necessariamente istantanei.
+
+Per questo puoi vedere Pending anche dopo aver approvato.
+
+In termini tecnici il sistema crea un'**Authority Receipt**, cioè una ricevuta durevole della decisione. Ma per l'utente il concetto è più semplice:
+
+> **WCM deve poter dimostrare che aveva il permesso di fare ciò che ha fatto.**
+
+---
+
+# 11. Il Change Gate del metodo WCM
+
+Il WCM può anche imparare qualcosa che suggerisce di cambiare il proprio metodo.
+
+In quel caso viene aperto un **WCM Change Gate**.
+
+Qui la separazione è ancora più rigorosa:
+
+```text
+TU APPROVI IL CAMBIAMENTO
+        ↓
+AUTHORITY VIENE REGISTRATA
+        ↓
+IL CAMBIAMENTO VIENE APPLICATO
+        ↓
+IL RISULTATO VIENE VERIFICATO
+        ↓
+IL LEARNING PUÒ DIVENTARE PROMOTED
+```
+
+Un clic di approvazione **non modifica direttamente il metodo**.
+
+Puoi quindi incontrare stati diversi:
+
+- `AUTHORITY_APPROVED` — hai autorizzato;
+- `EXECUTED` — la modifica è stata realmente applicata;
+- `PROMOTED` — il learning è entrato nella baseline metodologica prevista.
+
+Questa separazione rende il cambiamento più tracciabile e meno fragile.
+
+---
+
+# 12. Documenti: Draft, Candidate, Approved e Frozen
+
+I nomi cambiano leggermente in base al progetto, ma il significato generale è questo.
+
+**Draft / Working** — materiale di lavoro che può ancora cambiare.
+
+**Candidate** — una versione proposta, abbastanza matura per essere valutata, ma non ancora approvata.
+
+**Unapproved** — materiale esplicitamente non approvato.
+
+**Approved / Frozen** — il documento è stato approvato nel perimetro previsto ed è diventato parte della baseline.
+
+**Board material** — materiale preparato per aiutarti a decidere; non è necessariamente l'oggetto che stai approvando.
+
+Una regola da ricordare:
+
+> **download ≠ approval ≠ authority**
+
+---
+
+# 13. Activity, Roadmap, State e Need non sono la stessa cosa
+
+Queste aree rispondono a domande diverse.
+
+**Activity:** “Che cosa è successo?”
+
+**Roadmap:** “Qual è il percorso previsto?”
+
+**Execution / State:** “Dove siamo realmente adesso?”
+
+**Need:** “Che cosa richiede me adesso?”
+
+Se la Roadmap dice che dopo il Capitolo 7 viene il Capitolo 8 ma Execution mostra `WAITING_AUTHORITY` sul Capitolo 7, il Capitolo 8 non è ancora il lavoro corrente.
+
+---
+
+# 14. Knowledge Health: non è un voto al progetto
+
+Knowledge Health misura la **salute della memoria organizzativa**, non la qualità artistica o commerciale di ciò che stai facendo.
+
+## `HEALTHY`
+
+I controlli previsti non stanno rilevando problemi strutturali rilevanti e il check è sufficientemente recente.
+
+## `DEGRADED`
+
+Esistono anomalie o debiti. Non significa automaticamente che il progetto sia bloccato.
+
+La domanda utile è:
+
+> “Questi problemi rendono insicuro il prossimo passaggio?”
+
+## `STALE` / `CHECK REQUIRED`
+
+Il controllo è precedente a un cambiamento importante. Va aggiornato prima di considerarlo corrente.
+
+## `CRITICAL`
+
+Esiste un problema incompatibile con un lavoro sensibile alla conoscenza.
+
+---
+
+# 15. Knowledge Assurance: il controllo può partire da solo
+
+Knowledge Assurance è il sistema di controllo della memoria WCM.
+
+Oggi può partire in tre modi:
+
+- quando cambia qualcosa di rilevante;
+- quando un workflow lo chiama perché necessita di un controllo fresh;
+- periodicamente come safety net, ogni sei ore.
+
+Il funzionamento semplificato è:
+
+```text
+CONTROLLA
+→ TROVA UN PROBLEMA?
+   ├─ NO → registra il risultato
+   └─ SÌ
+       → la correzione è meccanica e autorizzata?
+          ├─ SÌ → ripara → ricontrolla
+          └─ NO → non inventa → escalation
+```
+
+Quindi non devi avviare manualmente un controllo dopo ogni modifica.
+
+---
+
+# 16. Una nuova idea utile: il controllo come dipendenza interna
+
+Un workflow può sapere in anticipo che, prima di un passaggio importante, gli serve un Knowledge Assurance aggiornato.
+
+È come dire:
+
+> “Non portarmi al Board Gate finché non hai verificato che la memoria usata per preparare il materiale sia abbastanza fresca e coerente.”
+
+Il sistema può eseguire questo controllo automaticamente e registrare che la dipendenza è stata soddisfatta.
+
+Se il risultato è `DEGRADED` ma non riguarda il lavoro corrente, il workflow può comunque avanzare. Se è realmente bloccante, si ferma.
+
+Questo meccanismo è già stato usato nel workflow del Capitolo 7 di PRIMA DI NOI.
+
+---
+
+# 17. Knowledge Steward: manutentore, non autore
+
+Il Knowledge Steward può sistemare solo problemi per i quali la soluzione è già determinata da regole autorizzate.
+
+Non può decidere:
+
+- quale strategia adottare;
+- che cosa deve significare un requisito;
+- quale versione narrativa è corretta;
+- quale decisione dovrebbe prendere l'owner.
+
+Una buona regola mentale è:
+
+> **Knowledge Steward mantiene la memoria; Wise interpreta; l'owner decide ciò che è riservato all'owner.**
+
+---
+
+# 18. Perché WCM protegge le scritture persistenti
+
+Nel lavoro reale abbiamo imparato che “la chiamata è riuscita” non significa sempre “il risultato è corretto”.
+
+Una write può essere tecnicamente valida ma:
+
+- puntare al file sbagliato;
+- usare una versione vecchia;
+- avere un payload incompleto;
+- entrare in conflitto con un altro writer;
+- superare il perimetro autorizzato.
+
+Per questo esiste **Persistent Mutation Safety — PROT-017**.
+
+Prima delle scritture più sensibili WCM deve controllare target, payload, versione attesa, ownership e risultato finale.
+
+Per l'utente significa una cosa semplice:
+
+> **le operazioni persistenti importanti non dovrebbero essere considerate riuscite soltanto perché un'API ha risposto “OK”.**
+
+---
+
+# 19. WCM Learning: come il sistema trasforma esperienza in metodo
+
+WCM Learning raccoglie incidenti, successi e failure mode che potrebbero insegnare qualcosa al sistema.
+
+Gli stati non sono tutti equivalenti.
+
+**Evidence** — è successo qualcosa di osservabile.
+
+**Candidate / Validated** — esiste un learning plausibile o sufficientemente sostenuto.
+
+**Promoted** — il learning ha effettivamente prodotto una modifica alla baseline attraverso il processo previsto.
+
+Un esempio reale è `WCM-LRN-004`: inizialmente era una lezione sulle scritture remote; dopo evidence, review, approvazione e propagazione è diventato il protocollo `PROT-017 Persistent Mutation Safety`.
+
+Quindi:
+
+> **WCM impara, ma non trasforma ogni osservazione in una nuova regola.**
+
+---
+
+# 20. Documentation Center
 
 Percorso:
 
 `/wcm/documentation`
 
-La sezione contiene:
-
-1. **WCM Technical Reference** — come è costruito WCM;
-2. **WCM Executive / Client Guide** — cos'è WCM, a cosa serve e quali benefici offre;
-3. **WCM User Manual** — come si usa WCM.
-
-## Informazioni visibili
-Per ciascun documento puoi vedere versione, data del master, stato, pubblico, source SHA e stato QA della release.
-
-## Consulta
-Il pulsante **Consulta** apre il documento nel reader Mission Control. Il reader usa lo snapshot Markdown appartenente alla stessa release dei file scaricabili.
-
-## Scarica Word
-Scarica la release `.docx` quando realmente disponibile e verificata.
-
-## Scarica PDF
-Scarica la release `.pdf` quando realmente disponibile e verificata.
-
-## Source of truth
-
-> GitHub `main` è la source of truth. Word e PDF sono release derivate.
-
-Il download non modifica WCM, non approva il documento, non cambia governance e non genera authority.
-
-Se un formato non è realmente prodotto o non supera QA, Mission Control non deve mostrare un download fittizio.
-
----
-
-# 15. Come iniziare un nuovo progetto
-
-In forma semplificata:
+La documentazione è organizzata in due livelli:
 
 ```text
-INTENZIONE DI PROGETTO
-        ↓
-CLASSIFICAZIONE
-        ↓
-ADMISSION PREVIEW
-        ↓
-BOARD ADMISSION
-        ↓
-OWNER SOURCE INTAKE
-        ↓
-MEMORIA + GOAL + STATE + ROADMAP + GOVERNANCE
-        ↓
-READINESS REVIEW
-        ↓
-BOARD ACTIVATION
-        ↓
-WCM RUN
+WCM
+├─ Technical Reference
+├─ Executive / Client Guide
+└─ User Manual
+
+PROGETTI
+└─ PRIMA DI NOI
+   ├─ Technical Reference
+   ├─ Executive / Editorial Partner Guide
+   └─ User Manual
 ```
 
-Non è sufficiente creare una cartella per dichiarare un progetto operativo.
+Nel reader trovi un indice cliccabile. Word/PDF vengono resi disponibili quando la release corrispondente è stata generata e verificata.
+
+Il Markdown canonico resta il master.
 
 ---
 
-# 16. Come interagire con Wise
+# 21. Cosa succede automaticamente e quando servi tu
 
-Non è necessario impartire sempre istruzioni atomiche. Puoi esprimere un obiettivo, un problema o un'intenzione.
-
-Wise deve ricostruire il contesto necessario, verificare state e authority, capire la prossima azione utile, eseguire direttamente quando possibile, delegare soltanto quando serve, proseguire attraverso le transizioni WCM RUN contigue e fermarsi a una vera stop condition o gate umano.
-
----
-
-# 17. WCM RUN e WCM CHANGE per l'utente
-
-## WCM RUN
-È normale esecuzione di regole e workflow già autorizzati: report previsto, avanzamento di fase previsto, aggiornamento fedele dello State, release Word/PDF da un master corrente.
-
-## WCM CHANGE
-Modifica il metodo, governance, authority, architettura, goal/scope o altra decisione materiale.
-
-Quando serve un Change Gate, Wise deve mostrare l'Impact Preview e fermarsi prima della modifica materiale finché non riceve l'authority richiesta.
+| Situazione | Cosa fa WCM | Cosa fai tu |
+|---|---|---|
+| workflow ha un next step autorizzato | continua | nulla |
+| termina la sessione ma il workflow è aperto | conserva/riprende il checkpoint | nulla |
+| cambia lo stato esecutivo | state/projector si riallineano | nulla |
+| heartbeat si attiva | ricostruisce il lavoro reale | nulla salvo Need |
+| serve un Knowledge check fresh | lo richiama/esegue | nulla se non bloccante |
+| anomaly meccanica allowlisted | può riparare e ricontrollare | nulla |
+| decisione riservata | crea Need/gate e si ferma | decidi |
+| WCM Change Gate | registra la tua authority separatamente dall'esecuzione | approva/rifiuta/chiedi modifiche |
+| learning evidence | raccoglie e rivede | nulla salvo Change Gate |
+| persistent write sensibile | applica safety guard | normalmente nulla |
 
 ---
 
-# 18. Cosa fare quando…
+# 22. Come iniziare un nuovo progetto
 
-## …vedo `BLOCKED_BOARD`
-Apri il Need e il materiale Board collegato. Il workflow è fermo in attesa dell'authority o scelta prevista.
+Quando chiedi di inserire un nuovo progetto nel WCM, il sistema non dovrebbe improvvisare una procedura diversa ogni volta.
+
+Il percorso generale prevede:
+
+```text
+INTENZIONE
+→ CLASSIFICAZIONE
+→ ADMISSION PREVIEW
+→ ADMISSION GATE
+→ ACQUISIZIONE FONTI OWNER
+→ MEMORIA + GOAL + STATE + ROADMAP
+→ READINESS
+→ ACTIVATION GATE
+→ WCM RUN
+```
+
+Quando il progetto raggiunge sufficiente complessità/maturità, viene valutata anche la creazione dei suoi manuali specifici.
+
+---
+
+# 23. Come parlare con Wise
+
+Non devi trasformare ogni richiesta in un ticket tecnico perfettamente scritto.
+
+Puoi dire:
+
+- “Voglio inserire questo nuovo progetto nel WCM.”
+- “Fammi capire perché siamo fermi.”
+- “Vorrei cambiare questa regola.”
+- “Porta avanti il lavoro fino a quando serve una mia decisione.”
+
+Wise deve ricostruire il contesto dalle fonti canoniche, capire se la richiesta è RUN o CHANGE, verificare authority e capability e lavorare fino alla vera stop condition.
+
+---
+
+# 24. WCM RUN e WCM CHANGE spiegati senza gergo
+
+**WCM RUN** significa: “fai ciò che il metodo e l'authority già consentono”.
+
+**WCM CHANGE** significa: “cambiamo una regola, una responsabilità, un confine o un elemento materiale della baseline”.
+
+Nel secondo caso WCM deve mostrarti prima l'impatto e ricevere authority esplicita.
+
+Questo impedisce che un miglioramento apparentemente piccolo cambi silenziosamente il funzionamento del sistema.
+
+---
+
+# 25. Cosa fare quando…
+
+## …vedo `WAITING_AUTHORITY`
+
+Apri il Need. Il sistema aspetta te intenzionalmente.
+
+## …vedo `INTERRUPTED_RESUMABLE`
+
+Il lavoro non è perso. Non ricrearlo da zero: deve essere ripreso dal checkpoint.
 
 ## …vedo `DEGRADED`
-Apri Knowledge e verifica quali componenti sono degradate. Non assumere automaticamente che tutto il progetto sia bloccato.
 
-## …vedo `STALE`
-Il Knowledge Health deve essere aggiornato prima di considerarlo rappresentativo dello stato corrente.
+Apri Knowledge Health e verifica se le issue sono pertinenti al lavoro corrente. `DEGRADED` non significa automaticamente stop.
 
-## …un documento è `UNAPPROVED`
-Puoi leggerlo e, se distribution-ready, anche scaricarlo. Non trattarlo come frozen/approved.
+## …vedo un heartbeat recente ma nessuna nuova Activity
 
-## …compare un nuovo Need
-Aprilo, leggi l'azione richiesta e gli eventuali documenti collegati.
+Può essere perfettamente normale: il worker si è attivato ma non c'era una transizione autorizzata da eseguire.
 
-## …una mia decisione è Pending
-Normalmente attendi che il workflow la consumi. Ripeti la decisione solo se il sistema segnala un errore o una nuova richiesta.
+## …ho già premuto Approva e vedo Pending
 
-## …WCM Learning mostra un Candidate
-È un learning in maturazione, non una nuova regola già approvata.
+Non ripetere il comando. L'authority può essere già registrata mentre gli effetti sono ancora in elaborazione.
 
-## …nel Documentation Center manca Word o PDF
-La release non ha un artefatto verificato per quel formato e deve essere rigenerata.
+## …un Change Gate mostra `AUTHORITY_APPROVED`
 
-## …voglio cambiare una regola WCM
-Descrivi il cambiamento desiderato. Wise deve classificarlo e, se materiale, applicare il WCM Change Gate.
+Hai autorizzato il cambiamento; non significa ancora che la baseline sia stata modificata. Attendi `EXECUTED`/propagazione prevista.
+
+## …il Control Panel sembra indietro
+
+Non modificare il progetto per farlo coincidere. La projection va riallineata dalla source of truth.
+
+## …un manuale racconta qualcosa di diverso dal sistema corrente
+
+È Documentation Drift. Il manuale va aggiornato; non diventa authority per il solo fatto di essere pubblicato.
 
 ---
 
-# 19. Glossario minimo
+# 26. Glossario umano
 
-| Termine | Significato pratico |
+| Termine | Traduzione pratica |
 |---|---|
-| WCM | Wise Centric Model |
-| Wise | nucleo cognitivo/orchestratore |
-| Mission Control | superficie umana di osservazione e governance |
-| Need | richiesta di attenzione/decisione umana |
-| Board Gate | punto in cui il workflow richiede authority del Board/owner |
-| State | stato corrente autorevole del progetto |
-| Knowledge Health | misura strutturale dell'integrità della memoria |
-| Knowledge Steward | manutentore dell'integrità meccanica della memoria |
-| Synapse | relazione tipizzata tra elementi di conoscenza |
-| Learning | proposizione metodologica derivata dall'esperienza |
-| Candidate | learning non ancora promosso a baseline |
-| WCM RUN | esecuzione conforme alla baseline vigente |
-| WCM CHANGE | modifica materiale del metodo/authority/baseline |
-| Source of truth | fonte autorevole che prevale sulle proiezioni |
-| Release | artefatto derivato e distribuibile di un master corrente |
+| Heartbeat | sveglia periodica del cognitive worker |
+| Liveness | conferma che il meccanismo si è attivato |
+| Workflow | lavoro organizzato in passaggi |
+| Checkpoint | segnalibro persistente del workflow |
+| Runtime | registro strutturato dello stato esecutivo |
+| Derived State | sintesi deterministica del runtime |
+| Projector | meccanismo che porta dati nella vista Mission Control |
+| Need | qualcosa che richiede davvero l'utente |
+| Pending | decisione già inviata, effetti ancora in corso |
+| Board Gate | punto in cui WCM deve attendere authority umana |
+| Authority Receipt | prova persistente di una decisione autorizzante |
+| Knowledge Health | controllo qualità della memoria |
+| Knowledge Assurance | processo che controlla e, quando possibile, ripara la memoria |
+| Learning | lezione metodologica derivata dall'esperienza |
+| Promoted | learning entrato nella baseline prevista |
+| Persistent Mutation Safety | protezioni prima/dopo scritture persistenti sensibili |
+| Source SHA | impronta della precisa versione sorgente di un artefatto |
 
 ---
 
-# 20. Regola finale
+# 27. La regola più importante per chi usa WCM
 
-Quando non sai dove guardare:
+Non devi supervisionare ogni operazione.
+
+Devi poter distinguere tre situazioni:
 
 ```text
-MISSION CONTROL HOME
-   ↓
-NEEDS STEFANO?
-   ├─ SÌ → gestisci il Need
-   └─ NO
-        ↓
-PROGETTO / STATO
-        ↓
-DOCUMENTI / ROADMAP / KNOWLEDGE se necessari
+WCM PUÒ CONTINUARE → lascialo lavorare
+WCM STA CONTROLLANDO/SINCRONIZZANDO → osserva, normalmente non intervenire
+WCM HA RAGGIUNTO UN GATE → decidi
 ```
 
-Per capire WCM come sistema, usa **Documentazione WCM**. Per capire cosa richiede la tua attenzione adesso, usa **Needs Stefano**.
-
----
-
-## Nota di authority
-
-Questo manuale descrive l'esperienza utente corrente. Se una UI e una fonte WCM autorevole entrano in conflitto, la fonte autorevole prevale e il manuale deve essere riallineato. GitHub `main` resta la source of truth; Word e PDF sono release derivate con provenance verificabile.
+Il valore del sistema sta proprio nel ridurre la micro-supervisione **senza ridurre la tua authority**.

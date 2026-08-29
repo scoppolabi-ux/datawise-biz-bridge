@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="930" viewBox="0 0 1500 930">
+<rect width="1500" height="930" fill="#ffffff"/>
+<text x="750" y="64" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="42" font-weight="700" fill="#111827">WCM Knowledge Navigation Layer</text>
+<rect x="360" y="88" width="780" height="44" rx="12" fill="#eef2ff" stroke="#818cf8" stroke-width="2"/>
+<text x="750" y="117" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#3730a3">LA MAPPA TRA MEMORIA PERSISTENTE E CONTESTO UTILE</text>
+<defs><marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#475569"/></marker></defs>
+<rect x="80" y="230" width="330" height="500" rx="26" fill="#f8fafc" stroke="#64748b" stroke-width="3"/>
+<text x="245" y="285" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="700" fill="#1f2937">PERSISTENT</text>
+<text x="245" y="320" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="700" fill="#1f2937">ORGANIZATIONAL MEMORY</text>
+<text x="245" y="370" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="19" fill="#475569">decisioni</text>
+<text x="245" y="408" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="19" fill="#475569">processi / protocolli</text>
+<text x="245" y="446" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="19" fill="#475569">stato / runtime</text>
+<text x="245" y="484" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="19" fill="#475569">documenti / manuali</text>
+<text x="245" y="522" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="19" fill="#475569">evidence / learning</text>
+<text x="245" y="560" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="19" fill="#475569">nodi / sinapsi</text>
+<rect x="125" y="620" width="240" height="72" rx="16" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="245" y="650" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#7c2d12">CONTIENE IL TERRITORIO</text>
+<text x="245" y="677" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#9a3412">non dice da solo cosa leggere ora</text>
+<rect x="510" y="190" width="480" height="580" rx="28" fill="#eef2ff" stroke="#4f46e5" stroke-width="4"/>
+<text x="750" y="240" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="29" font-weight="700" fill="#312e81">KNOWLEDGE NAVIGATION LAYER</text>
+<rect x="565" y="278" width="370" height="58" rx="14" fill="#ffffff" stroke="#818cf8" stroke-width="2"/><text x="750" y="315" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" fill="#3730a3">1. ENTRY POINT</text>
+<rect x="565" y="350" width="370" height="58" rx="14" fill="#ffffff" stroke="#818cf8" stroke-width="2"/><text x="750" y="387" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" fill="#3730a3">2. INDEX / MAP</text>
+<rect x="565" y="422" width="370" height="58" rx="14" fill="#ffffff" stroke="#818cf8" stroke-width="2"/><text x="750" y="459" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" fill="#3730a3">3. METADATA</text>
+<rect x="565" y="494" width="370" height="58" rx="14" fill="#ffffff" stroke="#818cf8" stroke-width="2"/><text x="750" y="531" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" fill="#3730a3">4. SOURCE PRECEDENCE</text>
+<rect x="565" y="566" width="370" height="58" rx="14" fill="#ffffff" stroke="#818cf8" stroke-width="2"/><text x="750" y="603" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" fill="#3730a3">5. PROGRESSIVE RETRIEVAL</text>
+<rect x="565" y="638" width="370" height="58" rx="14" fill="#ffffff" stroke="#818cf8" stroke-width="2"/><text x="750" y="675" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" fill="#3730a3">6. STOP CONDITION</text>
+<text x="750" y="735" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#4338ca">indica dove andare, quanto scendere e quando fermarsi</text>
+<rect x="1090" y="230" width="330" height="500" rx="26" fill="#f8fafc" stroke="#64748b" stroke-width="3"/>
+<text x="1255" y="285" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="700" fill="#1f2937">ATTORE / TASK</text>
+<rect x="1140" y="350" width="230" height="72" rx="16" fill="#ecfdf5" stroke="#059669" stroke-width="2"/><text x="1255" y="380" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#065f46">WISE / AGENTE</text><text x="1255" y="406" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#047857">contesto task-scoped</text>
+<rect x="1140" y="448" width="230" height="72" rx="16" fill="#ecfdf5" stroke="#059669" stroke-width="2"/><text x="1255" y="478" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#065f46">SERVICE LEAD</text><text x="1255" y="504" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#047857">route circoscritta</text>
+<rect x="1140" y="546" width="230" height="72" rx="16" fill="#ecfdf5" stroke="#059669" stroke-width="2"/><text x="1255" y="576" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#065f46">UMANO</text><text x="1255" y="602" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#047857">orientamento rapido</text>
+<rect x="1140" y="642" width="230" height="52" rx="14" fill="#ecfdf5" stroke="#059669" stroke-width="2"/><text x="1255" y="675" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#065f46">CONTESTO SUFFICIENTE</text>
+<line x1="410" y1="480" x2="510" y2="480" stroke="#475569" stroke-width="4" marker-end="url(#arrow)"/><text x="460" y="455" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#334155">NAVIGA</text>
+<line x1="990" y1="480" x2="1090" y2="480" stroke="#475569" stroke-width="4" marker-end="url(#arrow)"/><text x="1040" y="455" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#334155">RECUPERA</text>
+<text x="750" y="845" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" fill="#111827">Il layer non duplica la conoscenza e non crea authority.</text>
+<text x="750" y="880" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="20" fill="#6b7280">Trasforma una memoria grande in un percorso di lettura progressivo, task-scoped e verificabile.</text>
+</svg>
