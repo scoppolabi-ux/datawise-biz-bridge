@@ -17,7 +17,7 @@ const Row = ({ label, value }: { label: string; value: string | null }) => (
     <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wider text-wcm-dim sm:w-56">
       {label}
     </span>
-    <span className="min-w-0 text-sm leading-relaxed text-wcm-text">{value || '—'}</span>
+    <span className="min-w-0 break-words text-sm leading-relaxed text-wcm-text">{value || '—'}</span>
   </div>
 );
 
@@ -113,7 +113,7 @@ const WorkflowCard = ({ workflow }: { workflow: WcmExecutionWorkflow }) => {
           <Row label="Passaggi completati" value={`${steps.length} · ${steps.join(', ')}`} />
         )}
         {workflow.source_path && (
-          <p className="pt-1 font-mono text-[11px] text-wcm-dim">{workflow.source_path}</p>
+          <p className="truncate pt-1 font-mono text-[11px] text-wcm-dim">{workflow.source_path}</p>
         )}
       </div>
     </article>

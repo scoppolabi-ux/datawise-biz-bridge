@@ -32,7 +32,7 @@ const Field = ({
       <Icon className="h-3.5 w-3.5" />
       {label}
     </div>
-    <p className="mt-2 text-sm leading-relaxed text-wcm-text">{value || '—'}</p>
+    <p className="mt-2 break-words text-sm leading-relaxed text-wcm-text">{value || '—'}</p>
   </div>
 );
 

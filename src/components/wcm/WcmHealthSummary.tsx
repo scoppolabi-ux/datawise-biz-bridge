@@ -64,7 +64,7 @@ const WcmHealthSummary = ({
                 </span>
               </div>
 
-              <p className="mt-2 text-sm leading-relaxed text-wcm-text">{plane.headline}</p>
+              <p className="mt-2 break-words text-sm leading-relaxed text-wcm-text">{plane.headline}</p>
 
               <dl className="mt-3 space-y-1">
                 {plane.lines.map((line) => (
