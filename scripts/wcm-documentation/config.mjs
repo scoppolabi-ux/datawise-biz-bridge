@@ -543,7 +543,7 @@ export const DOCUMENTS = [
     source_path: 'wcm/documentation/process-memory-book/chapters/22_proc_006_memory_consolidation_consistency_loop.md',
     download_basename: 'WCM_Process_Memory_Book_Capitolo_22_FROZEN',
     bootstrap_file: 'WCM_PROCESS_MEMORY_BOOK_CH22.md',
-    bootstrap_sha: '862789ea165f8d3663f6a5528345981eb4f1db51',
+    bootstrap_sha: '7b2ec587afa421e55ebcff878c714669d9272e1c',
   },
   {
     document_id: 'prima-di-noi-technical-reference',
