@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680">
+  <defs>
+    <style>
+      .title{font:700 34px Arial,sans-serif;fill:#111827}.sub{font:400 18px Arial,sans-serif;fill:#475569}
+      .card{rx:24;ry:24;stroke-width:2}.h{font:700 26px Arial,sans-serif;fill:#111827}.body{font:400 18px Arial,sans-serif;fill:#334155}
+      .arrow{stroke:#64748b;stroke-width:4;fill:none;marker-end:url(#a)}.alabel{font:700 17px Arial,sans-serif;fill:#334155}
+      .pill{rx:12;ry:12;fill:#ffffff;stroke:#e2e8f0;stroke-width:1.5}.foot{font:600 19px Arial,sans-serif;fill:#334155}
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#64748b"/></marker>
+  </defs>
+  <rect width="1200" height="680" fill="#ffffff"/>
+  <text x="60" y="62" class="title">Dual Memory Architecture — versione semplice</text>
+  <text x="60" y="94" class="sub">Due memorie complementari, collegate da due movimenti diversi.</text>
+
+  <rect x="80" y="170" width="420" height="300" class="card" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="290" y="220" text-anchor="middle" class="h">WORKING MEMORY</text>
+  <text x="290" y="262" text-anchor="middle" class="body">contesto vivo</text>
+  <text x="290" y="294" text-anchor="middle" class="body">intenzioni e chiarimenti</text>
+  <text x="290" y="326" text-anchor="middle" class="body">ipotesi e ragionamento</text>
+  <text x="290" y="358" text-anchor="middle" class="body">ciò che sta accadendo adesso</text>
+  <text x="290" y="416" text-anchor="middle" class="body">ricca di sfumature</text>
+  <text x="290" y="446" text-anchor="middle" class="body">ma temporanea</text>
+
+  <rect x="700" y="170" width="420" height="300" class="card" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="910" y="220" text-anchor="middle" class="h">PERSISTENT</text>
+  <text x="910" y="252" text-anchor="middle" class="h">ORGANIZATIONAL MEMORY</text>
+  <text x="910" y="300" text-anchor="middle" class="body">decisioni e stato</text>
+  <text x="910" y="332" text-anchor="middle" class="body">processi e protocolli</text>
+  <text x="910" y="364" text-anchor="middle" class="body">knowledge, evidenze, storia</text>
+  <text x="910" y="416" text-anchor="middle" class="body">durevole e strutturata</text>
+  <text x="910" y="446" text-anchor="middle" class="body">ma non è una mente</text>
+
+  <path d="M500 280 C570 225 630 225 700 280" class="arrow"/>
+  <rect x="505" y="132" width="190" height="70" class="pill"/>
+  <text x="600" y="158" text-anchor="middle" class="alabel">CONSOLIDATION</text>
+  <text x="600" y="184" text-anchor="middle" class="body">delta significativo → memoria</text>
+
+  <path d="M700 380 C630 435 570 435 500 380" class="arrow"/>
+  <rect x="486" y="450" width="228" height="70" class="pill"/>
+  <text x="600" y="477" text-anchor="middle" class="alabel">SELECTIVE RETRIEVAL</text>
+  <text x="600" y="503" text-anchor="middle" class="body">memoria → contesto necessario</text>
+
+  <text x="600" y="575" text-anchor="middle" class="foot">La continuità WCM nasce dal ciclo, non da una memoria che tenta di fare tutto.</text>
+  <text x="600" y="610" text-anchor="middle" class="body">Non si salva tutto. Non si rilegge tutto.</text>
+</svg>
