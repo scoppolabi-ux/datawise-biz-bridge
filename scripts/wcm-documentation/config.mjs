@@ -462,6 +462,8 @@ export const DOCUMENTS = [
     download_basename: 'WCM_Process_Memory_Book_Capitolo_18_FROZEN',
     bootstrap_file: 'WCM_PROCESS_MEMORY_BOOK_CH18.md',
     bootstrap_sha: '360bc1442bf95f5b105d835f60de38425f4d5713',
+    visual_qa_status: 'PASS',
+    docx_page_count: 16,
   },
   {
     document_id: 'prima-di-noi-technical-reference',
