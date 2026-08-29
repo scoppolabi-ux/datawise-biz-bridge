@@ -474,7 +474,7 @@ export const BOOKS = [
     index_status: 'APPROVED',
     index_source_path: 'wcm/documentation/process-memory-book/BOOK_INDEX.md',
     index_source_sha: '7af9a6a5dea33df4df512fd3bd89b51346a6cc65',
-    frozen_chapters: 12,
+    frozen_chapters: 13,
     sections: [
       { title: 'PARTE I — Capire WCM partendo da zero', chapters: [
         chapter(1, 'Perché esiste WCM', 'FROZEN', 'wcm-process-memory-book-ch01'),
@@ -496,7 +496,7 @@ export const BOOKS = [
         chapter(12, 'Source Precedence — non tutte le informazioni valgono allo stesso modo', 'FROZEN', 'wcm-process-memory-book-ch12'),
       ]},
       { title: 'PARTE V — Da una richiesta alle regole applicabili', chapters: [
-        chapter(13, 'Il Request Routing WCM'),
+        chapter(13, 'Il Request Routing WCM', 'FROZEN', 'wcm-process-memory-book-ch13'),
         chapter(14, 'Come WCM individua i protocolli da applicare'),
         chapter(15, 'Esempi di routing domain-agnostic'),
       ]},
