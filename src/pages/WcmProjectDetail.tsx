@@ -114,7 +114,7 @@ const WcmProjectDetail = () => {
     setOpenDocumentId(documentId, `/wcm/${projectId}?tab=${fromTab}`);
 
   return (
-    <div className="wcm-grid min-h-screen">
+    <div className="wcm-grid min-h-screen overflow-x-clip">
       <Helmet>
         <title>
           {project ? `${project.project_name} · WCM Mission Control` : 'WCM Mission Control'}
