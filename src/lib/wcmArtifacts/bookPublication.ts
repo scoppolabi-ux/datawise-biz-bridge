@@ -1,186 +1,155 @@
-import type {
-  WcmReleaseDocument,
-  WcmReleaseManifest,
-} from '@/components/wcm/wcmDocumentation';
+import type { WcmReleaseDocument, WcmReleaseManifest } from '@/components/wcm/wcmDocumentation';
 
-export const BOOK_PUBLICATION_OVERLAY_URL =
-  'https://raw.githubusercontent.com/scoppolabi-ux/WCM-LAB/main/wcm/documentation/process-memory-book/runtime/CONTROL_PANEL_PUBLICATION.json';
+export const BOOK_PUBLICATION_PROJECT_ID = 'wcm-documentation-system';
+export const BOOK_PUBLICATION_BOOK_ID = 'wcm-process-memory-book';
+export const BOOK_LIVE_SCHEME = 'wcm-live://';
 
-type PublicationChapter = {
-  number: number;
+export type BookPublicationReadModelRow = {
+  document_id: string;
   title: string;
-  master_date: string | null;
-  source_path: string;
-  source_sha: string;
-  released_at: string;
-  markdown_url: string;
-  reader_qa: 'PASS';
-  docx_page_count: number | null;
-  release_complete: true;
+  category: string | null;
+  status: string | null;
+  version: string | null;
+  source_url: string | null;
+  source_sha: string | null;
+  content_markdown: string | null;
+  distribution_ready: boolean;
+  sort_order: number;
+  updated_at: string;
 };
 
-export type BookPublicationOverlay = {
-  schema_version: '1.0';
-  book_id: string;
-  index_source_path: string;
-  index_source_sha: string;
-  publication_fingerprint: string;
-  latest_complete_chapter: number;
-  chapters: PublicationChapter[];
-};
+const SHA_RE = /^[0-9a-f]{40}$/;
+const CHAPTER_ID_RE = /^wcm-process-memory-book-ch(\d{2})$/;
 
-const isSha = (value: unknown): value is string =>
-  typeof value === 'string' && /^[0-9a-f]{40}$/.test(value);
+function chapterNumber(row: BookPublicationReadModelRow): number | null {
+  const match = CHAPTER_ID_RE.exec(row.document_id);
+  if (!match) return null;
+  const value = Number(match[1]);
+  return Number.isInteger(value) && value > 0 ? value : null;
+}
 
-export function parseBookPublicationOverlay(raw: unknown): BookPublicationOverlay | null {
-  if (!raw || typeof raw !== 'object') return null;
-  const data = raw as Record<string, unknown>;
-  if (
-    data.schema_version !== '1.0' ||
-    typeof data.book_id !== 'string' ||
-    typeof data.index_source_path !== 'string' ||
-    !isSha(data.index_source_sha) ||
-    typeof data.publication_fingerprint !== 'string' ||
-    !Number.isInteger(data.latest_complete_chapter) ||
-    !Array.isArray(data.chapters)
-  ) {
-    return null;
-  }
+function sourcePathFromUrl(sourceUrl: string | null): string {
+  if (!sourceUrl) return '';
+  const marker = '/WCM-LAB/blob/';
+  const index = sourceUrl.indexOf(marker);
+  if (index < 0) return '';
+  const rest = sourceUrl.slice(index + marker.length);
+  const slash = rest.indexOf('/');
+  return slash >= 0 ? decodeURIComponent(rest.slice(slash + 1)) : '';
+}
 
-  const chapters: PublicationChapter[] = [];
-  for (const item of data.chapters) {
-    if (!item || typeof item !== 'object') return null;
-    const chapter = item as Record<string, unknown>;
-    if (
-      !Number.isInteger(chapter.number) ||
-      typeof chapter.title !== 'string' ||
-      !chapter.title.trim() ||
-      typeof chapter.source_path !== 'string' ||
-      !isSha(chapter.source_sha) ||
-      typeof chapter.released_at !== 'string' ||
-      typeof chapter.markdown_url !== 'string' ||
-      chapter.reader_qa !== 'PASS' ||
-      chapter.release_complete !== true
-    ) {
-      return null;
-    }
+function masterDate(markdown: string | null): string | null {
+  if (!markdown) return null;
+  const match = markdown.match(/\*\*Data:\*\*\s*(\d{4}-\d{2}-\d{2})/i);
+  return match?.[1] ?? null;
+}
 
-    const pageCount =
-      chapter.docx_page_count === null ||
-      (typeof chapter.docx_page_count === 'number' &&
-        Number.isInteger(chapter.docx_page_count) &&
-        chapter.docx_page_count >= 0)
-        ? (chapter.docx_page_count as number | null)
-        : null;
-
-    chapters.push({
-      number: chapter.number as number,
-      title: chapter.title.trim(),
-      master_date: typeof chapter.master_date === 'string' ? chapter.master_date : null,
-      source_path: chapter.source_path,
-      source_sha: chapter.source_sha,
-      released_at: chapter.released_at,
-      markdown_url: chapter.markdown_url,
-      reader_qa: 'PASS',
-      docx_page_count: pageCount,
-      release_complete: true,
-    });
-  }
-
-  chapters.sort((a, b) => a.number - b.number);
-
-  return {
-    schema_version: '1.0',
-    book_id: data.book_id,
-    index_source_path: data.index_source_path,
-    index_source_sha: data.index_source_sha,
-    publication_fingerprint: data.publication_fingerprint,
-    latest_complete_chapter: data.latest_complete_chapter as number,
-    chapters,
-  };
+function canonicalTitle(row: BookPublicationReadModelRow, number: number): string {
+  const prefix = `${String(number).padStart(2, '0')} — `;
+  return row.title.startsWith(prefix) ? row.title : `${prefix}${row.title}`;
 }
 
 function projectedDocument(
-  chapter: PublicationChapter,
-  bookId: string,
+  row: BookPublicationReadModelRow,
+  number: number,
   existing?: WcmReleaseDocument,
 ): WcmReleaseDocument {
-  const sameSource = existing?.source_sha === chapter.source_sha;
+  const sourceSha = row.source_sha ?? '';
+  const sameSource = Boolean(existing && existing.source_sha === sourceSha);
 
   return {
-    document_id: `wcm-process-memory-book-ch${String(chapter.number).padStart(2, '0')}`,
+    document_id: row.document_id,
     document_kind: 'book_chapter',
-    book_id: bookId,
-    chapter_number: chapter.number,
+    book_id: BOOK_PUBLICATION_BOOK_ID,
+    chapter_number: number,
     scope: 'wcm',
     project_id: null,
     project_label: null,
-    title: `${String(chapter.number).padStart(2, '0')} — ${chapter.title}`,
+    title: canonicalTitle(row, number),
     audience: existing?.audience ?? 'Lettori tecnici e non tecnici del WCM Process & Memory Book',
     description:
       existing?.description ??
-      'Capitolo FROZEN pubblicato direttamente dalla source of truth WCM-LAB tramite projection deterministica.',
-    version: `FROZEN-${String(chapter.number).padStart(2, '0')}`,
-    master_date: chapter.master_date,
+      'Capitolo FROZEN proiettato deterministicamente dalla source of truth WCM-LAB.',
+    version: row.version ?? `FROZEN-${String(number).padStart(2, '0')}`,
+    master_date: masterDate(row.content_markdown) ?? existing?.master_date ?? null,
     status: 'FROZEN',
-    source_path: chapter.source_path,
-    source_sha: chapter.source_sha,
-    source_sha_short: chapter.source_sha.slice(0, 7),
-    released_at: chapter.released_at,
-    markdown_path: chapter.markdown_url,
-    // Binary release paths are reusable only when they were generated from the
-    // exact same source blob. A newer source never inherits stale downloads.
+    source_path: sourcePathFromUrl(row.source_url) || existing?.source_path || '',
+    source_sha: sourceSha,
+    source_sha_short: sourceSha.slice(0, 7),
+    released_at: row.updated_at,
+    markdown_path: `${BOOK_LIVE_SCHEME}${encodeURIComponent(row.document_id)}`,
+    // Binary artifacts remain bound to the static release only when its source
+    // blob is exactly the same. A live update never inherits stale downloads.
     docx_path: sameSource ? existing?.docx_path ?? null : null,
     pdf_path: sameSource ? existing?.pdf_path ?? null : null,
     download_filename_docx: sameSource ? existing?.download_filename_docx ?? null : null,
     download_filename_pdf: sameSource ? existing?.download_filename_pdf ?? null : null,
-    qa_status: sameSource ? existing?.qa_status ?? 'BUILD_PASS' : 'BUILD_PASS',
+    qa_status: 'BUILD_PASS',
     visual_qa_status: 'PASS',
-    docx_page_count: chapter.docx_page_count ?? (sameSource ? existing?.docx_page_count ?? null : null),
+    docx_page_count: sameSource ? existing?.docx_page_count ?? null : null,
     pdf_page_count: sameSource ? existing?.pdf_page_count ?? null : null,
   };
 }
 
-export function mergeBookPublicationOverlay(
+export function mergeBookPublicationRows(
   base: WcmReleaseManifest,
-  overlay: BookPublicationOverlay,
+  rows: BookPublicationReadModelRow[],
 ): WcmReleaseManifest {
+  const valid = rows
+    .filter((row) => {
+      const number = chapterNumber(row);
+      return (
+        number !== null &&
+        row.category === 'BOOK_CHAPTER' &&
+        row.status === 'FROZEN' &&
+        row.distribution_ready === true &&
+        typeof row.content_markdown === 'string' &&
+        row.content_markdown.trim().length > 0 &&
+        typeof row.source_sha === 'string' &&
+        SHA_RE.test(row.source_sha)
+      );
+    })
+    .sort((a, b) => (chapterNumber(a) ?? 0) - (chapterNumber(b) ?? 0));
+
+  if (valid.length === 0) return base;
+
   const documents = [...base.documents];
   const byId = new Map(documents.map((doc, index) => [doc.document_id, index]));
 
-  for (const chapter of overlay.chapters) {
-    const id = `wcm-process-memory-book-ch${String(chapter.number).padStart(2, '0')}`;
-    const existingIndex = byId.get(id);
+  for (const row of valid) {
+    const number = chapterNumber(row) as number;
+    const existingIndex = byId.get(row.document_id);
     const existing = existingIndex === undefined ? undefined : documents[existingIndex];
-    const projected = projectedDocument(chapter, overlay.book_id, existing);
+    const projected = projectedDocument(row, number, existing);
 
     if (existingIndex === undefined) {
-      byId.set(id, documents.length);
+      byId.set(row.document_id, documents.length);
       documents.push(projected);
     } else {
       documents[existingIndex] = projected;
     }
   }
 
-  const books = base.books.map((book) => {
-    if (book.book_id !== overlay.book_id) return book;
+  const publishedByNumber = new Map(
+    valid.map((row) => [String(chapterNumber(row)), row.document_id]),
+  );
 
-    const available = new Map(
-      overlay.chapters.map((chapter) => [
-        String(chapter.number),
-        `wcm-process-memory-book-ch${String(chapter.number).padStart(2, '0')}`,
-      ]),
-    );
+  const books = base.books.map((book) => {
+    if (book.book_id !== BOOK_PUBLICATION_BOOK_ID) return book;
 
     const sections = book.sections.map((section) => ({
       ...section,
       chapters: section.chapters.map((chapter) => {
-        const documentId = available.get(String(chapter.number));
+        const documentId = publishedByNumber.get(String(chapter.number));
         if (!documentId) return chapter;
-        const published = overlay.chapters.find((item) => String(item.number) === String(chapter.number));
+        const row = valid.find((candidate) => candidate.document_id === documentId);
+        const number = chapterNumber(row as BookPublicationReadModelRow) as number;
         return {
           ...chapter,
-          title: published?.title ?? chapter.title,
+          title: (row as BookPublicationReadModelRow).title.replace(
+            new RegExp(`^${String(number).padStart(2, '0')}\\s*[—-]\\s*`),
+            '',
+          ),
           status: 'FROZEN',
           document_id: documentId,
         };
@@ -194,17 +163,17 @@ export function mergeBookPublicationOverlay(
 
     return {
       ...book,
-      index_source_path: overlay.index_source_path,
-      index_source_sha: overlay.index_source_sha,
-      frozen_chapters: Math.max(frozenChapters, overlay.latest_complete_chapter),
+      frozen_chapters: frozenChapters,
       sections,
     };
   });
 
+  const newest = valid[valid.length - 1];
   return {
     ...base,
-    source_of_truth: 'GitHub WCM-LAB/main — static release + deterministic live book projection',
-    generated_at: overlay.publication_fingerprint,
+    source_of_truth:
+      'GitHub WCM-LAB/main → deterministic OIDC projection → Control Panel read-model',
+    generated_at: newest.updated_at,
     documents,
     books,
   };
