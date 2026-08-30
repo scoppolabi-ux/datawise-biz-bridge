@@ -5,8 +5,17 @@ import {
   parseManifest,
   type WcmReleaseManifest,
 } from '@/components/wcm/wcmDocumentation';
+import {
+  BOOK_PUBLICATION_OVERLAY_URL,
+  mergeBookPublicationOverlay,
+  parseBookPublicationOverlay,
+} from '@/lib/wcmArtifacts/bookPublication';
 
-/** Static build-time release manifest (read-only, no backend involved). */
+/**
+ * Static build-time release manifest plus a deterministic live overlay for the
+ * Process & Memory Book. The overlay is read directly from WCM-LAB/main, so a
+ * newly completed chapter does not require an application edit or Lovable run.
+ */
 export const useWcmDocumentationManifest = () =>
   useQuery<WcmReleaseManifest>({
     queryKey: ['wcm-documentation-manifest'],
@@ -17,7 +26,17 @@ export const useWcmDocumentationManifest = () =>
       if (!response.ok) throw new Error(`Manifest non disponibile (${response.status})`);
       const manifest = parseManifest(await response.json());
       if (!manifest) throw new Error('Manifest della documentazione non valido');
-      return manifest;
+
+      try {
+        const overlayResponse = await fetch(BOOK_PUBLICATION_OVERLAY_URL, { cache: 'no-cache' });
+        if (!overlayResponse.ok) return manifest;
+        const overlay = parseBookPublicationOverlay(await overlayResponse.json());
+        return overlay ? mergeBookPublicationOverlay(manifest, overlay) : manifest;
+      } catch {
+        // Fail-safe: the last coherent static release remains readable if the
+        // live WCM-LAB projection is temporarily unavailable.
+        return manifest;
+      }
     },
   });
 
