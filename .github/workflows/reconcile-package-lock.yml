@@ -1,0 +1,57 @@
+name: Reconcile npm lockfile once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/reconcile-package-lock.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reconcile-package-lock
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Reconcile package-lock with package.json
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
+      - name: Validate and persist
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          if git diff --quiet -- package-lock.json; then
+            echo "package-lock.json already aligned."
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package-lock.json
+          git commit -m 'build: reconcile npm lockfile for deterministic CI'
+
+          for attempt in 1 2 3 4; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            git fetch origin main
+            git rebase origin/main
+          done
+
+          echo "Unable to persist reconciled package-lock.json" >&2
+          exit 1
