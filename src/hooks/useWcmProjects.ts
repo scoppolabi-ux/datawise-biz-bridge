@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { BOOK_PUBLICATION_PROJECT_ID } from '@/lib/wcmArtifacts/bookPublication';
 
 export type WcmProjectStatus = {
   id: string;
@@ -135,6 +136,7 @@ export const useWcmProjects = (enabled = true) =>
       const { data, error } = await supabase
         .from('wcm_project_status')
         .select('*')
+        .neq('project_id', BOOK_PUBLICATION_PROJECT_ID)
         .order('needs_stefano', { ascending: false })
         .order('project_name', { ascending: true });
 
