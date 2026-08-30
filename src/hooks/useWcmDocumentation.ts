@@ -5,21 +5,27 @@ import {
   parseManifest,
   type WcmReleaseManifest,
 } from '@/components/wcm/wcmDocumentation';
+import { supabase } from '@/integrations/supabase/client';
 import {
-  BOOK_PUBLICATION_OVERLAY_URL,
-  mergeBookPublicationOverlay,
-  parseBookPublicationOverlay,
+  BOOK_LIVE_SCHEME,
+  BOOK_PUBLICATION_PROJECT_ID,
+  mergeBookPublicationRows,
+  type BookPublicationReadModelRow,
 } from '@/lib/wcmArtifacts/bookPublication';
 
 /**
- * Static build-time release manifest plus a deterministic live overlay for the
- * Process & Memory Book. The overlay is read directly from WCM-LAB/main, so a
- * newly completed chapter does not require an application edit or Lovable run.
+ * Static release + deterministic book projection.
+ *
+ * Manuals and historical binary artifacts remain static build artifacts.
+ * Completed book chapters are overlaid from the Supabase read-model written
+ * directly by WCM-LAB GitHub Actions through the existing OIDC projector.
+ * No Lovable edit is required for ordinary chapter publication.
  */
 export const useWcmDocumentationManifest = () =>
   useQuery<WcmReleaseManifest>({
     queryKey: ['wcm-documentation-manifest'],
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30_000,
+    refetchInterval: 30_000,
     retry: false,
     queryFn: async () => {
       const response = await fetch(assetUrl(MANIFEST_PATH), { cache: 'no-cache' });
@@ -27,27 +33,46 @@ export const useWcmDocumentationManifest = () =>
       const manifest = parseManifest(await response.json());
       if (!manifest) throw new Error('Manifest della documentazione non valido');
 
-      try {
-        const overlayResponse = await fetch(BOOK_PUBLICATION_OVERLAY_URL, { cache: 'no-cache' });
-        if (!overlayResponse.ok) return manifest;
-        const overlay = parseBookPublicationOverlay(await overlayResponse.json());
-        return overlay ? mergeBookPublicationOverlay(manifest, overlay) : manifest;
-      } catch {
-        // Fail-safe: the last coherent static release remains readable if the
-        // live WCM-LAB projection is temporarily unavailable.
-        return manifest;
-      }
+      const { data, error } = await supabase
+        .from('wcm_project_documents')
+        .select(
+          'document_id,title,category,status,version,source_url,source_sha,content_markdown,distribution_ready,sort_order,updated_at',
+        )
+        .eq('project_id', BOOK_PUBLICATION_PROJECT_ID)
+        .order('sort_order', { ascending: true });
+
+      if (error) return manifest;
+      return mergeBookPublicationRows(
+        manifest,
+        (data ?? []) as unknown as BookPublicationReadModelRow[],
+      );
     },
   });
 
-/** Markdown snapshot of the same release the downloads come from. */
+/** Markdown snapshot from either a static release asset or the live book read-model. */
 export const useWcmDocumentationSnapshot = (markdownPath: string | null) =>
   useQuery<string>({
     queryKey: ['wcm-documentation-snapshot', markdownPath],
     enabled: Boolean(markdownPath),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30_000,
+    refetchInterval: markdownPath?.startsWith(BOOK_LIVE_SCHEME) ? 30_000 : false,
     retry: false,
     queryFn: async () => {
+      if ((markdownPath as string).startsWith(BOOK_LIVE_SCHEME)) {
+        const documentId = decodeURIComponent((markdownPath as string).slice(BOOK_LIVE_SCHEME.length));
+        const { data, error } = await supabase
+          .from('wcm_project_documents')
+          .select('content_markdown')
+          .eq('project_id', BOOK_PUBLICATION_PROJECT_ID)
+          .eq('document_id', documentId)
+          .maybeSingle();
+
+        if (error || !data?.content_markdown?.trim()) {
+          throw new Error('Snapshot live del capitolo non disponibile');
+        }
+        return data.content_markdown;
+      }
+
       const response = await fetch(assetUrl(markdownPath as string), { cache: 'no-cache' });
       if (!response.ok) throw new Error(`Snapshot non disponibile (${response.status})`);
       const text = await response.text();
