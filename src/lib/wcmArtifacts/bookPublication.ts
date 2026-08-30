@@ -178,3 +178,83 @@ export function mergeBookPublicationRows(
     books,
   };
 }
+
+
+export type BookPublicationReadModelRow = {
+  document_id: string;
+  title: string;
+  category: string | null;
+  status: string | null;
+  version: string | null;
+  source_url: string | null;
+  source_sha: string | null;
+  content_markdown: string | null;
+  distribution_ready: boolean;
+  sort_order: number;
+  updated_at: string;
+};
+
+const liveChapterId = /^wcm-process-memory-book-ch(\d{2})$/;
+
+function sourcePathFromReadModelUrl(value: string | null): string {
+  if (!value) return '';
+  const marker = '/WCM-LAB/blob/';
+  const markerIndex = value.indexOf(marker);
+  if (markerIndex < 0) return '';
+  const afterRef = value.slice(markerIndex + marker.length);
+  const slash = afterRef.indexOf('/');
+  return slash < 0 ? '' : decodeURIComponent(afterRef.slice(slash + 1));
+}
+
+function masterDateFromMarkdown(value: string | null): string | null {
+  if (!value) return null;
+  const match = value.match(/\*\*Data:\*\*\s*(\d{4}-\d{2}-\d{2})/i);
+  return match?.[1] ?? null;
+}
+
+export function publicationOverlayFromReadModel(
+  rows: BookPublicationReadModelRow[],
+  indexSourcePath: string,
+  indexSourceSha: string,
+): BookPublicationOverlay | null {
+  const chapters: PublicationChapter[] = rows
+    .filter((row) =>
+      row.category === 'BOOK_CHAPTER' &&
+      row.status === 'FROZEN' &&
+      row.distribution_ready === true &&
+      typeof row.content_markdown === 'string' &&
+      row.content_markdown.trim().length > 0 &&
+      typeof row.source_sha === 'string' &&
+      /^[0-9a-f]{40}$/.test(row.source_sha) &&
+      liveChapterId.test(row.document_id),
+    )
+    .map((row) => {
+      const number = Number(liveChapterId.exec(row.document_id)?.[1] ?? 0);
+      return {
+        number,
+        title: row.title.replace(/^\d{2}\s*[—-]\s*/, ''),
+        master_date: masterDateFromMarkdown(row.content_markdown),
+        source_path: sourcePathFromReadModelUrl(row.source_url),
+        source_sha: row.source_sha as string,
+        released_at: row.updated_at,
+        markdown_url: `${BOOK_LIVE_SCHEME}${encodeURIComponent(row.document_id)}`,
+        reader_qa: 'PASS' as const,
+        docx_page_count: null,
+        release_complete: true as const,
+      };
+    })
+    .sort((a, b) => a.number - b.number);
+
+  if (chapters.length === 0) return null;
+  const fingerprint = chapters.map((row) => `${row.number}:${row.source_sha}`).join('|');
+
+  return {
+    schema_version: '1.0',
+    book_id: 'wcm-process-memory-book',
+    index_source_path: indexSourcePath,
+    index_source_sha: indexSourceSha,
+    publication_fingerprint: fingerprint,
+    latest_complete_chapter: chapters[chapters.length - 1].number,
+    chapters,
+  };
+}
