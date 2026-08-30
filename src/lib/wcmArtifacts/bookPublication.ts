@@ -1,4 +1,7 @@
-import type { WcmReleaseDocument, WcmReleaseManifest } from '@/components/wcm/wcmDocumentation';
+import type {
+  WcmReleaseDocument,
+  WcmReleaseManifest,
+} from '@/components/wcm/wcmDocumentation';
 
 export const BOOK_PUBLICATION_PROJECT_ID = 'wcm-documentation-system';
 export const BOOK_PUBLICATION_BOOK_ID = 'wcm-process-memory-book';
@@ -44,9 +47,11 @@ function masterDate(markdown: string | null): string | null {
   return match?.[1] ?? null;
 }
 
-function canonicalTitle(row: BookPublicationReadModelRow, number: number): string {
-  const prefix = `${String(number).padStart(2, '0')} — `;
-  return row.title.startsWith(prefix) ? row.title : `${prefix}${row.title}`;
+function titleWithoutNumber(row: BookPublicationReadModelRow, number: number): string {
+  return row.title.replace(
+    new RegExp(`^${String(number).padStart(2, '0')}\\s*[—-]\\s*`),
+    '',
+  );
 }
 
 function projectedDocument(
@@ -54,7 +59,7 @@ function projectedDocument(
   number: number,
   existing?: WcmReleaseDocument,
 ): WcmReleaseDocument {
-  const sourceSha = row.source_sha ?? '';
+  const sourceSha = row.source_sha as string;
   const sameSource = Boolean(existing && existing.source_sha === sourceSha);
 
   return {
@@ -65,8 +70,10 @@ function projectedDocument(
     scope: 'wcm',
     project_id: null,
     project_label: null,
-    title: canonicalTitle(row, number),
-    audience: existing?.audience ?? 'Lettori tecnici e non tecnici del WCM Process & Memory Book',
+    title: `${String(number).padStart(2, '0')} — ${titleWithoutNumber(row, number)}`,
+    audience:
+      existing?.audience ??
+      'Lettori tecnici e non tecnici del WCM Process & Memory Book',
     description:
       existing?.description ??
       'Capitolo FROZEN proiettato deterministicamente dalla source of truth WCM-LAB.',
@@ -78,16 +85,19 @@ function projectedDocument(
     source_sha_short: sourceSha.slice(0, 7),
     released_at: row.updated_at,
     markdown_path: `${BOOK_LIVE_SCHEME}${encodeURIComponent(row.document_id)}`,
-    // Binary artifacts remain bound to the static release only when its source
-    // blob is exactly the same. A live update never inherits stale downloads.
+    // Binary artifacts remain valid only when bound to the exact same source.
     docx_path: sameSource ? existing?.docx_path ?? null : null,
     pdf_path: sameSource ? existing?.pdf_path ?? null : null,
-    download_filename_docx: sameSource ? existing?.download_filename_docx ?? null : null,
-    download_filename_pdf: sameSource ? existing?.download_filename_pdf ?? null : null,
+    download_filename_docx:
+      sameSource ? existing?.download_filename_docx ?? null : null,
+    download_filename_pdf:
+      sameSource ? existing?.download_filename_pdf ?? null : null,
     qa_status: 'BUILD_PASS',
     visual_qa_status: 'PASS',
-    docx_page_count: sameSource ? existing?.docx_page_count ?? null : null,
-    pdf_page_count: sameSource ? existing?.pdf_page_count ?? null : null,
+    docx_page_count:
+      sameSource ? existing?.docx_page_count ?? null : null,
+    pdf_page_count:
+      sameSource ? existing?.pdf_page_count ?? null : null,
   };
 }
 
@@ -119,7 +129,8 @@ export function mergeBookPublicationRows(
   for (const row of valid) {
     const number = chapterNumber(row) as number;
     const existingIndex = byId.get(row.document_id);
-    const existing = existingIndex === undefined ? undefined : documents[existingIndex];
+    const existing =
+      existingIndex === undefined ? undefined : documents[existingIndex];
     const projected = projectedDocument(row, number, existing);
 
     if (existingIndex === undefined) {
@@ -131,7 +142,7 @@ export function mergeBookPublicationRows(
   }
 
   const publishedByNumber = new Map(
-    valid.map((row) => [String(chapterNumber(row)), row.document_id]),
+    valid.map((row) => [String(chapterNumber(row)), row]),
   );
 
   const books = base.books.map((book) => {
@@ -140,24 +151,22 @@ export function mergeBookPublicationRows(
     const sections = book.sections.map((section) => ({
       ...section,
       chapters: section.chapters.map((chapter) => {
-        const documentId = publishedByNumber.get(String(chapter.number));
-        if (!documentId) return chapter;
-        const row = valid.find((candidate) => candidate.document_id === documentId);
-        const number = chapterNumber(row as BookPublicationReadModelRow) as number;
+        const row = publishedByNumber.get(String(chapter.number));
+        if (!row) return chapter;
+        const number = chapterNumber(row) as number;
         return {
           ...chapter,
-          title: (row as BookPublicationReadModelRow).title.replace(
-            new RegExp(`^${String(number).padStart(2, '0')}\\s*[—-]\\s*`),
-            '',
-          ),
+          title: titleWithoutNumber(row, number),
           status: 'FROZEN',
-          document_id: documentId,
+          document_id: row.document_id,
         };
       }),
     }));
 
     const frozenChapters = sections.reduce(
-      (count, section) => count + section.chapters.filter((chapter) => chapter.status === 'FROZEN').length,
+      (count, section) =>
+        count +
+        section.chapters.filter((chapter) => chapter.status === 'FROZEN').length,
       0,
     );
 
@@ -169,6 +178,7 @@ export function mergeBookPublicationRows(
   });
 
   const newest = valid[valid.length - 1];
+
   return {
     ...base,
     source_of_truth:
@@ -176,85 +186,5 @@ export function mergeBookPublicationRows(
     generated_at: newest.updated_at,
     documents,
     books,
-  };
-}
-
-
-export type BookPublicationReadModelRow = {
-  document_id: string;
-  title: string;
-  category: string | null;
-  status: string | null;
-  version: string | null;
-  source_url: string | null;
-  source_sha: string | null;
-  content_markdown: string | null;
-  distribution_ready: boolean;
-  sort_order: number;
-  updated_at: string;
-};
-
-const liveChapterId = /^wcm-process-memory-book-ch(\d{2})$/;
-
-function sourcePathFromReadModelUrl(value: string | null): string {
-  if (!value) return '';
-  const marker = '/WCM-LAB/blob/';
-  const markerIndex = value.indexOf(marker);
-  if (markerIndex < 0) return '';
-  const afterRef = value.slice(markerIndex + marker.length);
-  const slash = afterRef.indexOf('/');
-  return slash < 0 ? '' : decodeURIComponent(afterRef.slice(slash + 1));
-}
-
-function masterDateFromMarkdown(value: string | null): string | null {
-  if (!value) return null;
-  const match = value.match(/\*\*Data:\*\*\s*(\d{4}-\d{2}-\d{2})/i);
-  return match?.[1] ?? null;
-}
-
-export function publicationOverlayFromReadModel(
-  rows: BookPublicationReadModelRow[],
-  indexSourcePath: string,
-  indexSourceSha: string,
-): BookPublicationOverlay | null {
-  const chapters: PublicationChapter[] = rows
-    .filter((row) =>
-      row.category === 'BOOK_CHAPTER' &&
-      row.status === 'FROZEN' &&
-      row.distribution_ready === true &&
-      typeof row.content_markdown === 'string' &&
-      row.content_markdown.trim().length > 0 &&
-      typeof row.source_sha === 'string' &&
-      /^[0-9a-f]{40}$/.test(row.source_sha) &&
-      liveChapterId.test(row.document_id),
-    )
-    .map((row) => {
-      const number = Number(liveChapterId.exec(row.document_id)?.[1] ?? 0);
-      return {
-        number,
-        title: row.title.replace(/^\d{2}\s*[—-]\s*/, ''),
-        master_date: masterDateFromMarkdown(row.content_markdown),
-        source_path: sourcePathFromReadModelUrl(row.source_url),
-        source_sha: row.source_sha as string,
-        released_at: row.updated_at,
-        markdown_url: `${BOOK_LIVE_SCHEME}${encodeURIComponent(row.document_id)}`,
-        reader_qa: 'PASS' as const,
-        docx_page_count: null,
-        release_complete: true as const,
-      };
-    })
-    .sort((a, b) => a.number - b.number);
-
-  if (chapters.length === 0) return null;
-  const fingerprint = chapters.map((row) => `${row.number}:${row.source_sha}`).join('|');
-
-  return {
-    schema_version: '1.0',
-    book_id: 'wcm-process-memory-book',
-    index_source_path: indexSourcePath,
-    index_source_sha: indexSourceSha,
-    publication_fingerprint: fingerprint,
-    latest_complete_chapter: chapters[chapters.length - 1].number,
-    chapters,
   };
 }
