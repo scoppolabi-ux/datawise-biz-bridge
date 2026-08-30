@@ -9,7 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import {
   BOOK_LIVE_SCHEME,
   BOOK_PUBLICATION_PROJECT_ID,
-  mergeBookPublicationRows,
+  mergeBookPublicationOverlay,
+  publicationOverlayFromReadModel,
   type BookPublicationReadModelRow,
 } from '@/lib/wcmArtifacts/bookPublication';
 
@@ -42,10 +43,14 @@ export const useWcmDocumentationManifest = () =>
         .order('sort_order', { ascending: true });
 
       if (error) return manifest;
-      return mergeBookPublicationRows(
-        manifest,
+      const book = manifest.books.find((item) => item.book_id === 'wcm-process-memory-book');
+      if (!book) return manifest;
+      const overlay = publicationOverlayFromReadModel(
         (data ?? []) as unknown as BookPublicationReadModelRow[],
+        book.index_source_path,
+        book.index_source_sha,
       );
+      return overlay ? mergeBookPublicationOverlay(manifest, overlay) : manifest;
     },
   });
 
