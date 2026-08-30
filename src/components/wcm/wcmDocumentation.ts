@@ -1,9 +1,8 @@
 /**
  * WCM Documentation Center — presentation helpers.
  *
- * Read-only: manuals may use static build-time artifacts while the Process &
- * Memory Book can be projected live from WCM-LAB/main. Nothing here writes to
- * GitHub or to the backend.
+ * Read-only: manifest and release assets are static build-time artifacts.
+ * Nothing here writes to GitHub or to the backend.
  */
 
 export type WcmDocumentScope = 'wcm' | 'project';
@@ -79,7 +78,6 @@ export const SOURCE_OF_TRUTH_NOTE =
   'GitHub main è la source of truth. Word e PDF sono release derivate: il download non equivale ad approvazione né ad autorità.';
 
 export function assetUrl(releasePath: string): string {
-  if (/^https?:\/\//i.test(releasePath)) return releasePath;
   const base = (import.meta.env?.BASE_URL ?? '/').replace(/\/+$/, '');
   return `${base}/${releasePath.replace(/^\/+/, '')}`;
 }
