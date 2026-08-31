@@ -1105,7 +1105,7 @@ export const BOOKS = [
     index_status: 'APPROVED',
     index_source_path: 'wcm/documentation/process-memory-book/BOOK_INDEX.md',
     index_source_sha: '7af9a6a5dea33df4df512fd3bd89b51346a6cc65',
-    frozen_chapters: 40,
+    frozen_chapters: 43,
     sections: [
       { title: 'PARTE I — Capire WCM partendo da zero', chapters: [
         chapter(1, 'Perché esiste WCM', 'FROZEN', 'wcm-process-memory-book-ch01'),
@@ -1159,9 +1159,9 @@ export const BOOKS = [
         chapter(38, 'PROT-009 — Contiguous Workflow Execution', 'FROZEN', 'wcm-process-memory-book-ch38'),
         chapter(39, 'PROT-010 — Mission Control Authenticated Authority Command', 'FROZEN', 'wcm-process-memory-book-ch39'),
         chapter(40, 'PROT-011 — Capability Evidence Check Before Block', 'FROZEN', 'wcm-process-memory-book-ch40'),
-        chapter(41, 'PROT-012 — Verified Email Delivery & Idempotency'),
-        chapter(42, 'PROT-013 — Knowledge Synapse & Health Standard'),
-        chapter(43, 'PROT-014 — Method Experience Memory Standard'),
+        chapter(41, 'PROT-012 — Verified Email Delivery & Idempotency', 'FROZEN', 'wcm-process-memory-book-ch41'),
+        chapter(42, 'PROT-013 — Knowledge Synapse & Health Standard', 'FROZEN', 'wcm-process-memory-book-ch42'),
+        chapter(43, 'PROT-014 — Method Experience Memory Standard', 'FROZEN', 'wcm-process-memory-book-ch43'),
         chapter(44, 'PROT-015 — Documentation Impact & Publication Standard'),
         chapter(45, 'PROT-016 — Deterministic State & Projection Contract'),
         chapter(46, 'PROT-017 — Persistent Mutation Safety'),
