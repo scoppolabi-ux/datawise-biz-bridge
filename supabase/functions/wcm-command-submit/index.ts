@@ -8,6 +8,7 @@ import { requestWorkerWake } from '../_shared/wcmWorkerWake.ts'
 
 const COMMAND_TYPES = ['APPROVE_FREEZE', 'REQUEST_CHANGES'] as const
 const ALLOWED_ROLES = ['owner', 'admin']
+const MAX_NOTE_LENGTH = 12_000
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -71,7 +72,7 @@ Deno.serve(async (req) => {
   if (commandType === 'REQUEST_CHANGES' && !note) {
     return json({ error: 'REQUEST_CHANGES requires a non-empty note', code: 'NOTE_REQUIRED' }, 400)
   }
-  if (note && note.length > 4000) return json({ error: 'note is too long' }, 400)
+  if (note && note.length > MAX_NOTE_LENGTH) return json({ error: 'note is too long' }, 400)
 
   // --- Current read-model state (service role) ---
   const { data: project, error: projectError } = await admin
