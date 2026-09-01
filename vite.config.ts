@@ -29,9 +29,11 @@ export default defineConfig(({ mode }) => ({
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
-      // Deno-native edge function tests (https: imports) run via the Supabase
+// Deno-native edge function tests (https: imports) run via the Supabase
       // edge function test runner, not vitest.
       'supabase/functions/wcm-method-projector/normalize.test.ts',
+      'supabase/functions/_shared/wcmWorkerWake.test.ts',
+      'supabase/functions/wcm-technical-issue-projector/normalize.test.ts',
     ],
   },
 }));
