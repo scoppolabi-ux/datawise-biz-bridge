@@ -3,6 +3,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 import { isOpenNeed, needFingerprint } from '../_shared/wcmGovernance.ts'
 import { isBoardCandidateCategory } from '../_shared/wcmBoardGate.ts'
 import { requestWorkerWake } from '../_shared/wcmWorkerWake.ts'
+import { validateCommandNote } from './noteLimit.ts'
 
 
 
@@ -68,10 +69,15 @@ Deno.serve(async (req) => {
   if (!(COMMAND_TYPES as readonly string[]).includes(commandType)) {
     return json({ error: 'Unsupported command_type' }, 400)
   }
-  if (commandType === 'REQUEST_CHANGES' && !note) {
-    return json({ error: 'REQUEST_CHANGES requires a non-empty note', code: 'NOTE_REQUIRED' }, 400)
+const noteValidation = validateCommandNote(commandType, note)
+  if (!noteValidation.ok) {
+    return json(
+      noteValidation.code
+        ? { error: noteValidation.error, code: noteValidation.code }
+        : { error: noteValidation.error },
+      400,
+    )
   }
-  if (note && note.length > 4000) return json({ error: 'note is too long' }, 400)
 
   // --- Current read-model state (service role) ---
   const { data: project, error: projectError } = await admin
