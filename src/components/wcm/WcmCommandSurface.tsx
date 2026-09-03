@@ -23,6 +23,12 @@ import {
   type WcmCommandRequest,
 } from '@/hooks/useWcmCommands';
 import { useWcmProject, type WcmProjectDocument, type WcmProjectNeed } from '@/hooks/useWcmProjects';
+import {
+  commandSurfaceLabels,
+  commandSurfaceMode,
+  WRITER_MEMORY_AUTHORITY_COMMAND,
+} from './wcmCommandSurfaceMode';
+
 
 type CommandType = 'APPROVE_FREEZE' | 'REQUEST_CHANGES';
 
