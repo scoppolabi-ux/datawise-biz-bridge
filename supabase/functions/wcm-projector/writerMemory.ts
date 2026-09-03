@@ -120,3 +120,33 @@ export const parseWriterMemory = (
   }
   return rows
 }
+
+/**
+ * Confine non-fatale: writer_memory è osservativa e opzionale, quindi una sua
+ * validation failure non abortisce la projection core — viene solo saltata e
+ * riportata come warning strutturato.
+ */
+export type WriterMemoryResolution =
+  | { payload: { rows: Record<string, unknown>[]; snapshot: boolean } }
+  | { warning: Record<string, unknown> }
+
+export const resolveWriterMemoryCollection = (
+  raw: unknown,
+  projectId: string,
+  partial = false,
+): WriterMemoryResolution => {
+  if (!Array.isArray(raw)) {
+    return {
+      warning: {
+        collection: 'writer_memory',
+        skipped: true,
+        error: 'writer_memory must be an array',
+      },
+    }
+  }
+  const parsed = parseWriterMemory(raw, projectId)
+  if (!Array.isArray(parsed)) {
+    return { warning: { collection: 'writer_memory', skipped: true, ...parsed } }
+  }
+  return { payload: { rows: parsed, snapshot: !partial } }
+}
