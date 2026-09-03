@@ -9,12 +9,20 @@ export type WcmCommandStatus =
   | 'REJECTED'
   | 'FAILED';
 
+export const WCM_COMMAND_TYPES = [
+  'APPROVE_FREEZE',
+  'REQUEST_CHANGES',
+  'APPROVE_WRITER_MEMORY_AUTHORITY_ITEM',
+] as const;
+
+export type WcmCommandType = (typeof WCM_COMMAND_TYPES)[number];
+
 export type WcmCommandRequest = {
   id: string;
   command_id: string;
   project_id: string;
   need_id: string;
-  command_type: 'APPROVE_FREEZE' | 'REQUEST_CHANGES';
+  command_type: WcmCommandType;
   target_document_id: string | null;
   target_version: string | null;
   expected_state_sha: string | null;
@@ -91,7 +99,7 @@ export type SubmitCommandInput = {
 
   project_id: string;
   need_id: string;
-  command_type: 'APPROVE_FREEZE' | 'REQUEST_CHANGES';
+  command_type: WcmCommandType;
   target_document_id?: string | null;
   target_version?: string | null;
   note?: string | null;
