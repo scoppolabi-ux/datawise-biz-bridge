@@ -7,6 +7,7 @@ import {
   normalize,
 } from './knowledge.ts'
 import { parseExecutionWorkflows } from './execution.ts'
+import { WRITER_MEMORY_FIELDS, parseWriterMemory } from './writerMemory.ts'
 import { rowNeedsUpsert, selectChangedCheckpoints } from './knowledgeDiff.ts'
 import { validateBoardGateTargets, type BoardGateDoc } from '../_shared/wcmBoardGate.ts'
 import {
@@ -180,6 +181,13 @@ const COLLECTIONS = {
     key: 'workflow_instance_id',
     fields: EXECUTION_WORKFLOW_FIELDS as readonly string[],
     required: ['workflow_instance_id', 'workflow', 'status', 'true_stop_condition'],
+  },
+  // Writer Memory — current-facing snapshot, sola osservazione.
+  writer_memory: {
+    table: 'wcm_project_writer_memory',
+    key: 'memory_id',
+    fields: WRITER_MEMORY_FIELDS as readonly string[],
+    required: ['memory_id', 'scope', 'guidance', 'status'],
   },
 } as const
 
