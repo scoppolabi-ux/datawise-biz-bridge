@@ -290,8 +290,10 @@ Deno.serve(async (req) => {
     const partition = partitionBoardBlock(board as Record<string, unknown>, BOARD_FIELDS)
     if ('error' in partition) return json(partition, 400)
     boardMetadata = partition.metadata
-    // Board block wins over stale projection snapshot values.
-    Object.assign(incoming, partition.fields)
+    // Board block wins over stale projection snapshot values — except
+    // needs_stefano, which stays the projection-wide owner flag and can only
+    // be reinforced (never cleared) by the board block.
+    mergeBoardFields(incoming, partition.fields)
   }
 
 
