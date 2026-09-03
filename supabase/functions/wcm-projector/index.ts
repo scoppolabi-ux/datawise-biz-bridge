@@ -7,7 +7,7 @@ import {
   normalize,
 } from './knowledge.ts'
 import { parseExecutionWorkflows } from './execution.ts'
-import { WRITER_MEMORY_FIELDS, parseWriterMemory } from './writerMemory.ts'
+import { WRITER_MEMORY_FIELDS, resolveWriterMemoryCollection } from './writerMemory.ts'
 import { rowNeedsUpsert, selectChangedCheckpoints } from './knowledgeDiff.ts'
 import { validateBoardGateTargets, type BoardGateDoc } from '../_shared/wcmBoardGate.ts'
 import {
