@@ -937,6 +937,9 @@ export type Database = {
           status: string
           summary: string | null
           updated_at: string
+          writer_memory_processing_status: string | null
+          writer_memory_review_open_count: number | null
+          writer_memory_review_status: string | null
         }
         Insert: {
           blocker?: string | null
@@ -969,6 +972,9 @@ export type Database = {
           status: string
           summary?: string | null
           updated_at?: string
+          writer_memory_processing_status?: string | null
+          writer_memory_review_open_count?: number | null
+          writer_memory_review_status?: string | null
         }
         Update: {
           blocker?: string | null
@@ -1001,6 +1007,9 @@ export type Database = {
           status?: string
           summary?: string | null
           updated_at?: string
+          writer_memory_processing_status?: string | null
+          writer_memory_review_open_count?: number | null
+          writer_memory_review_status?: string | null
         }
         Relationships: []
       }
