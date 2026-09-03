@@ -7,6 +7,7 @@ import {
   normalize,
 } from './knowledge.ts'
 import { parseExecutionWorkflows } from './execution.ts'
+import { WRITER_MEMORY_FIELDS, parseWriterMemory } from './writerMemory.ts'
 import { rowNeedsUpsert, selectChangedCheckpoints } from './knowledgeDiff.ts'
 import { validateBoardGateTargets, type BoardGateDoc } from '../_shared/wcmBoardGate.ts'
 import {
@@ -181,6 +182,13 @@ const COLLECTIONS = {
     fields: EXECUTION_WORKFLOW_FIELDS as readonly string[],
     required: ['workflow_instance_id', 'workflow', 'status', 'true_stop_condition'],
   },
+  // Writer Memory — current-facing snapshot, sola osservazione.
+  writer_memory: {
+    table: 'wcm_project_writer_memory',
+    key: 'memory_id',
+    fields: WRITER_MEMORY_FIELDS as readonly string[],
+    required: ['memory_id', 'scope', 'guidance', 'status'],
+  },
 } as const
 
 type CollectionName = keyof typeof COLLECTIONS
@@ -316,6 +324,16 @@ Deno.serve(async (req) => {
       const parsed = parseExecutionWorkflows(raw, projectId)
       if (!Array.isArray(parsed)) return json(parsed, 400)
       collectionPayloads[name] = { rows: parsed, snapshot: false }
+      continue
+    }
+
+    // Writer Memory: validazione esatta (enum status, whitelist, source_path).
+    // Snapshot current-facing: gli item SUPERSEDED restano finché la source li mantiene.
+    if (name === 'writer_memory') {
+      const parsed = parseWriterMemory(raw, projectId)
+      if (!Array.isArray(parsed)) return json(parsed, 400)
+      const partialFlag = (body.writer_memory_partial ?? body.partial) === true
+      collectionPayloads[name] = { rows: parsed, snapshot: !partialFlag }
       continue
     }
 
