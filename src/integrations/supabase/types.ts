@@ -1070,6 +1070,60 @@ export type Database = {
         }
         Relationships: []
       }
+      wcm_project_writer_memory: {
+        Row: {
+          category: string | null
+          created_at: string
+          guidance: string
+          id: string
+          memory_id: string
+          origin_context: string | null
+          origin_ref: string | null
+          origin_type: string | null
+          project_id: string
+          scope: string
+          sort_order: number
+          source_path: string | null
+          source_sha: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          guidance: string
+          id?: string
+          memory_id: string
+          origin_context?: string | null
+          origin_ref?: string | null
+          origin_type?: string | null
+          project_id: string
+          scope: string
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          guidance?: string
+          id?: string
+          memory_id?: string
+          origin_context?: string | null
+          origin_ref?: string | null
+          origin_type?: string | null
+          project_id?: string
+          scope?: string
+          sort_order?: number
+          source_path?: string | null
+          source_sha?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wcm_state_mappings: {
         Row: {
           canonical_state: string | null
