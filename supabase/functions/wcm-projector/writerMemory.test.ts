@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { parseWriterMemory, parseWriterMemoryItem } from './writerMemory.ts';
+import {
+  parseWriterMemory,
+  parseWriterMemoryItem,
+  resolveWriterMemoryCollection,
+} from './writerMemory.ts';
 
 const base = {
   memory_id: 'WM-001',
