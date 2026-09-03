@@ -23,7 +23,13 @@ export const WRITER_MEMORY_FIELDS = [
   'sort_order',
   // accettato ma ignorato: il project_id è sempre imposto server-side
   'project_id',
+  // accettato ma ignorato: metadata di lineage dalla source WCM,
+  // non persistito nel read-model attuale (GitHub resta source of truth)
+  'lineage',
 ] as const
+
+/** Campi accettati al confine ma mai scritti nel read-model. */
+export const WRITER_MEMORY_IGNORED_FIELDS = ['project_id', 'lineage'] as const
 
 const REQUIRED = ['memory_id', 'scope', 'guidance', 'status'] as const
 
