@@ -413,4 +413,141 @@ const WcmCommandSurface = ({
   );
 };
 
-export default WcmCommandSurface;
+/**
+ * Writer Memory Authority surface: exactly one command (Approva).
+ * No note, no target document. Mission Control only records the authority;
+ * GitHub consumes the command and closes the review.
+ */
+const WcmWriterMemoryAuthoritySurface = ({ need }: { need: WcmProjectNeed }) => {
+  const { data: commands } = useWcmProjectCommands(need.project_id);
+  const submit = useSubmitWcmCommand();
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<1 | 2>(1);
+
+  const needCommands = (commands ?? []).filter((c) => c.need_id === need.need_id);
+  const latest = needCommands[0] ?? null;
+  const active = needCommands.find((c) => ACTIVE_COMMAND_STATUSES.includes(c.status)) ?? null;
+
+  const close = () => {
+    setOpen(false);
+    setStep(1);
+  };
+
+  const confirm = async () => {
+    try {
+      const result = await submit.mutateAsync({
+        project_id: need.project_id,
+        need_id: need.need_id,
+        command_type: WRITER_MEMORY_AUTHORITY_COMMAND,
+        target_document_id: null,
+        target_version: null,
+        note: null,
+      });
+      toast({
+        title: 'Comando inviato',
+        description: result?.delivery?.wake_requested
+          ? 'Stato: SUBMITTED · worker GitHub notificato'
+          : `Stato: SUBMITTED · worker non notificato (${result?.delivery?.reason ?? 'motivo sconosciuto'}); il comando resta in coda durevole`,
+      });
+      close();
+    } catch (e) {
+      toast({
+        title: 'Comando non inviato',
+        description: e instanceof Error ? e.message : 'Errore sconosciuto',
+      });
+    }
+  };
+
+  return (
+    <div className="mt-4 rounded-lg border border-wcm-line-strong bg-wcm-bg/40 p-3 sm:p-4">
+      <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-wcm-muted">
+        <ShieldCheck className="h-3.5 w-3.5" />
+        {commandSurfaceLabels('WRITER_MEMORY_AUTHORITY').surface}
+      </div>
+
+      {latest && (
+        <div className="mt-3">
+          <CommandState command={latest} />
+        </div>
+      )}
+
+      <div className="mt-3">
+        <Button
+          size="sm"
+          disabled={Boolean(active)}
+          onClick={() => setOpen(true)}
+          className="w-full sm:w-auto"
+        >
+          <CheckCircle2 className="mr-2 h-3.5 w-3.5" />
+          {commandSurfaceLabels('WRITER_MEMORY_AUTHORITY').approve}
+        </Button>
+      </div>
+
+      <p className="mt-2 text-xs text-wcm-dim">
+        Mission Control registra soltanto l’autorità autenticata: il comando viene consumato dal
+        Command Executor su GitHub, che resta l’unica sede in cui la Writer Memory Review viene
+        chiusa. Nessuna nota e nessun documento target sono richiesti.
+      </p>
+
+      {active && (
+        <p className="mt-2 text-xs text-wcm-dim">
+          Un comando è già attivo per questo need: nuovi comandi sono disabilitati finché non viene
+          risolto.
+        </p>
+      )}
+
+      <Dialog open={open} onOpenChange={(v) => (v ? null : close())}>
+        <DialogContent className="max-w-md border-wcm-line bg-wcm-surface text-wcm-text">
+          <DialogHeader>
+            <DialogTitle className="text-wcm-strong">Approva</DialogTitle>
+            <DialogDescription className="text-wcm-dim">
+              {need.project_id} · {need.title}
+            </DialogDescription>
+          </DialogHeader>
+
+          {step === 2 && (
+            <p className="rounded-md border border-wcm-alert/40 bg-wcm-alert/10 p-3 text-xs leading-relaxed text-wcm-alert-fg">
+              Conferma definitiva. Mission Control registra soltanto l’autorità autenticata su
+              questo elemento di Writer Memory: la review verrà chiusa da GitHub quando il comando
+              sarà consumato. Il browser non modifica GitHub né il read-model.
+            </p>
+          )}
+
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              variant="outline"
+              onClick={close}
+              className="border-wcm-line-strong bg-transparent text-wcm-text"
+            >
+              Annulla
+            </Button>
+            {step === 1 ? (
+              <Button onClick={() => setStep(2)}>Continua</Button>
+            ) : (
+              <Button onClick={confirm} disabled={submit.isPending}>
+                {submit.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Conferma e invia
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+/** Routes a need to its dedicated command surface, or to none. */
+const WcmCommandSurfaceRoot = (props: {
+  need: WcmProjectNeed;
+  documents: WcmProjectDocument[];
+}) => {
+  const mode = commandSurfaceMode(props.need);
+  if (mode === 'WRITER_MEMORY_AUTHORITY') {
+    return <WcmWriterMemoryAuthoritySurface need={props.need} />;
+  }
+  if (mode !== 'BOARD_GATE') return null;
+  return <WcmCommandSurface {...props} />;
+};
+
+export default WcmCommandSurfaceRoot;
+
