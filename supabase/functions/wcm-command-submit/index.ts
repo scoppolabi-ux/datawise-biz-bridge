@@ -70,9 +70,10 @@ Deno.serve(async (req) => {
   const note = str(body.note) || null
 
   if (!projectId || !needId) return json({ error: 'project_id and need_id are required' }, 400)
-  if (!(COMMAND_TYPES as readonly string[]).includes(commandType)) {
+  if (!isWcmCommandType(commandType)) {
     return json({ error: 'Unsupported command_type' }, 400)
   }
+
   if (commandType === 'REQUEST_CHANGES' && !note) {
     return json({ error: 'REQUEST_CHANGES requires a non-empty note', code: 'NOTE_REQUIRED' }, 400)
   }
