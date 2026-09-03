@@ -7,6 +7,7 @@ import type { WcmExecutionWorkflow } from '@/hooks/useWcmExecutionWorkflows';
 import WcmKnowledgeHealthBadge from './WcmKnowledgeHealthBadge';
 import WcmExecutionSignal from './WcmExecutionSignal';
 import WcmHealthSummary from './WcmHealthSummary';
+import WcmWriterMemoryStatusBadge from './WcmWriterMemoryStatusBadge';
 
 
 
@@ -59,6 +60,7 @@ const WcmOverviewTab = ({
         projectId={project.project_id}
         asLink
       />
+      <WcmWriterMemoryStatusBadge project={project} />
     </div>
 
     <WcmHealthSummary
