@@ -3,6 +3,7 @@ import {
   BOARD_METADATA_KEYS,
   parseDerivedExecutionState,
   partitionBoardBlock,
+  mergeBoardFields,
   NEED_METADATA_KEYS,
   partitionCollectionItem,
 } from './derivedExecutionState.ts';
@@ -105,6 +106,33 @@ describe('DEC-014 · board block partition', () => {
       error: 'Unsupported board fields',
       fields: ['mistero'],
     });
+  });
+});
+
+describe('Writer Memory Authority · mergeBoardFields needs_stefano', () => {
+  it('board.needs_stefano=false non azzera projection.needs_stefano=true', () => {
+    const incoming: Record<string, unknown> = { needs_stefano: true };
+    mergeBoardFields(incoming, { needs_stefano: false, board_gate_reason: null });
+    expect(incoming.needs_stefano).toBe(true);
+    expect(incoming.board_gate_reason).toBeNull();
+  });
+
+  it('Board Gate aperto: board.needs_stefano=true resta true', () => {
+    const incoming: Record<string, unknown> = { needs_stefano: true };
+    mergeBoardFields(incoming, { needs_stefano: true });
+    expect(incoming.needs_stefano).toBe(true);
+  });
+
+  it('board.needs_stefano=true può rinforzare una projection senza flag', () => {
+    const incoming: Record<string, unknown> = {};
+    mergeBoardFields(incoming, { needs_stefano: true });
+    expect(incoming.needs_stefano).toBe(true);
+  });
+
+  it('gli altri campi board continuano a sovrascrivere la projection', () => {
+    const incoming: Record<string, unknown> = { board_verdict: 'stale' };
+    mergeBoardFields(incoming, { board_verdict: 'APPROVED' });
+    expect(incoming.board_verdict).toBe('APPROVED');
   });
 });
 

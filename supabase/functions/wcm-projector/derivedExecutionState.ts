@@ -103,3 +103,21 @@ export function partitionBoardBlock(
   }
   return { fields, metadata }
 }
+
+/**
+ * Folds the persisted board fields into the status projection.
+ *
+ * `needs_stefano` is special: it is the projection-wide owner flag computed
+ * by the deterministic projector over ALL open Needs (Board Gate, Writer
+ * Memory Authority, ...). A board block may only REINFORCE it (Board Gate
+ * open => true); it can never clear a projection-level `true`, otherwise
+ * non-board open Needs would silently disappear from Mission Control.
+ */
+export function mergeBoardFields(
+  incoming: Record<string, unknown>,
+  boardFields: Record<string, unknown>,
+): void {
+  const { needs_stefano: boardNeedsStefano, ...rest } = boardFields
+  Object.assign(incoming, rest)
+  if (boardNeedsStefano === true) incoming.needs_stefano = true
+}
