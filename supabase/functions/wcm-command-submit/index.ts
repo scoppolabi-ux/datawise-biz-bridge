@@ -3,12 +3,16 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 import { isOpenNeed, needFingerprint } from '../_shared/wcmGovernance.ts'
 import { isBoardCandidateCategory } from '../_shared/wcmBoardGate.ts'
 import { requestWorkerWake } from '../_shared/wcmWorkerWake.ts'
+import {
+  isWcmCommandType,
+  validateWriterMemoryAuthorityCommand,
+} from '../_shared/wcmCommandTypes.ts'
 
 
 
-const COMMAND_TYPES = ['APPROVE_FREEZE', 'REQUEST_CHANGES'] as const
 const ALLOWED_ROLES = ['owner', 'admin']
 const MAX_NOTE_LENGTH = 12_000
+
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
