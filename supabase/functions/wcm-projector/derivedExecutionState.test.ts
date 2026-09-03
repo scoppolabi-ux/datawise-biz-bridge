@@ -3,6 +3,7 @@ import {
   BOARD_METADATA_KEYS,
   parseDerivedExecutionState,
   partitionBoardBlock,
+  mergeBoardFields,
   NEED_METADATA_KEYS,
   partitionCollectionItem,
 } from './derivedExecutionState.ts';
