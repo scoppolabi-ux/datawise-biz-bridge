@@ -14,6 +14,7 @@ import {
   NEED_METADATA_KEYS,
   parseDerivedExecutionState,
   partitionBoardBlock,
+  mergeBoardFields,
   partitionCollectionItem,
 } from './derivedExecutionState.ts'
 
