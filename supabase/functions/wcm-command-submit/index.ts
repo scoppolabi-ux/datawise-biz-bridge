@@ -108,7 +108,18 @@ Deno.serve(async (req) => {
   if (!need) return json({ error: 'Need not found', code: 'NEED_NOT_FOUND' }, 404)
   if (!isOpenNeed(need)) return json({ error: 'Need is not open', code: 'NEED_NOT_OPEN' }, 409)
 
+  // Writer Memory authority: single-command surface, no note, no target.
+  const wmError = validateWriterMemoryAuthorityCommand({
+    commandType,
+    needType: need.need_type,
+    targetDocumentId,
+    targetVersion,
+    note,
+  })
+  if (wmError) return json({ error: wmError.error, code: wmError.code }, wmError.status)
+
   if (commandType === 'APPROVE_FREEZE') {
+
     const type = String(need.need_type ?? '').toUpperCase()
     if (type !== 'BOARD_GATE') {
       return json(
