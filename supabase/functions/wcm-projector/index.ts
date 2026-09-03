@@ -54,6 +54,10 @@ const STATUS_FIELDS = [
   'last_material_activity',
   'notes',
   'source',
+  // Writer Memory Review — observation-only transport (no command surface).
+  'writer_memory_processing_status',
+  'writer_memory_review_status',
+  'writer_memory_review_open_count',
 ] as const
 
 // Concurrency baseline persisted from the top-level body (not projection keys).
