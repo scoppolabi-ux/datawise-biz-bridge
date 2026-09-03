@@ -1,67 +1,34 @@
-# Diagnosi card PRIMA DI NOI (sola lettura)
+# Diagnostica read-only: writer_memory / lineage in wcm-projector
 
-Nessun file di progetto è stato modificato. Di seguito i tre punti, con dati reali letti dal read-model.
+## Domanda 1 — `lineage` è accettato/storicizzato?
 
-## Dato reale attuale (wcm_project_status · prima-di-noi)
+**No.** La validazione è una whitelist esatta e `lineage` non è inclusa.
 
-```text
-status                 = active_resume_required
-heartbeat_last_run_at  = 2026-08-20 02:44:38Z      (ora: 2026-08-23 ~06:20Z)
-heartbeat_last_outcome = chapter_7_v0_1_narrative_mass_control_completed_
-                         editorial_synthesis_revision_resume_required
-heartbeat_cadence      = hourly
-updated_at             = 2026-08-23 04:11:26Z
-```
+- `supabase/functions/wcm-projector/writerMemory.ts`
+  - `WRITER_MEMORY_FIELDS` (righe 12–26): `memory_id, scope, category, guidance, origin_type, origin_ref, origin_context, status, source_path, source_sha, sort_order, project_id` — nessun `lineage`.
+  - `parseWriterMemoryItem` (righe 50–55): ogni campo fuori whitelist produce `{ error: 'Unsupported writer_memory fields', fields: [...] }`.
+- `supabase/functions/wcm-projector/index.ts` (righe 332–338): il risultato non-array di `parseWriterMemory` viene restituito come **HTTP 400**, interrompendo la richiesta.
+- Anche la tabella `wcm_project_writer_memory` non ha colonna `lineage` (vedi schema read-model): quindi il campo non è né accettato né persistito.
 
-Il record del progetto è stato aggiornato stanotte, ma `heartbeat_last_run_at` è fermo al 20 agosto: è il payload del Projector a non aggiornarlo, non la UI.
+## Domanda 2 — Un errore writer_memory abortisce le tabelle core?
 
----
+**Sì, per errori di validazione.** La struttura del projector è fail-fast *pre-write*:
 
-## 1) Heartbeat "3 giorni fa"
+1. Tutta la validazione (projection, board, derived_execution_state, tutte le collections inclusa `writer_memory` a righe 332–338, board-gate cross-check, knowledge_health/checkpoints) avviene nelle righe 260–418, **prima di qualsiasi scrittura DB**.
+2. La prima operazione DB è la read di `wcm_project_status` alla riga 429; insert/update status alle righe 465–492; upsert/delete delle collections (needs, execution_workflows, writer_memory, ecc.) alle righe 502–550.
 
-- **Dove**: `src/components/wcm/WcmProjectCard.tsx` (righe 117–126) usa `relativeTime(project.heartbeat_last_run_at)` da `src/components/wcm/wcmFormat.ts`. Stesso valore in `wcmHealthPlanes.ts` (Execution plane) e `WcmOverviewTab.tsx`.
-- **Origine dati**: colonna `heartbeat_last_run_at`, scritta solo da `supabase/functions/wcm-projector` tramite `STATUS_FIELDS`.
-- **Causa precisa**: dato a monte stale. `relativeTime` è corretta (`> 48h` → giorni) e mostra fedelmente 2026-08-20. Le ultime proiezioni hanno aggiornato status/summary/workflows ma hanno riproposto lo stesso `heartbeat_last_run_at`. La cadenza dichiarata è `hourly`, quindi la card è nel vero: non c'è heartbeat recente proiettato.
-- **Fix minimo**: **a monte** — il generatore payload su GitHub deve valorizzare `heartbeat_last_run_at`/`heartbeat_last_outcome` con l'esecuzione corrente ad ogni dispatch. Nessuna modifica UI necessaria. Opzionale (UI, separato): quando `heartbeat_last_run_at` supera N volte la cadenza dichiarata, mostrare un marcatore "stale" invece di un tempo relativo nudo.
-- **Rischi**: se si "aggiusta" lato UI (es. usare `updated_at` come proxy) si crea un verde falso e si viola l'invariante "nessuno stato dedotto dall'assenza di evidenza". Da evitare.
+Quindi un 400 da `parseWriterMemory` esce prima della riga 429: **nessuna scrittura** su `wcm_project_status`, `wcm_project_needs`, `wcm_project_execution_workflows`. Non è una transazione DB, ma il confine validazione/scrittura rende il fallimento di validazione atomicamente sicuro.
 
-## 2) Titolo e project_id troncati ("PRI…", "prima...")
+**Caveat (fuori scope ma rilevante):** gli errori *runtime* DB (500 durante upsert/delete, righe 502–550) NON sono transazionali — lo status può essere già aggiornato quando una collection fallisce. Vale solo per errori DB, non per validazione.
 
-- **Dove**: `WcmProjectCard.tsx` righe 64–72: `h2` e `p` hanno entrambi `truncate`, dentro `div.min-w-0`, in un header `flex … justify-between gap-3`. Il blocco badge a destra (`flex-wrap` con status + phase) è `shrink-0`. Analogo `truncate` in `WcmProjectsPage.tsx` (lì solo su niente, ma il layout è identico) e nel titolo di `WcmMissionControl.tsx`.
-- **Origine dati**: `project_name = "PRIMA DI NOI"`, `project_id = "prima-di-noi"` — stringhe corte, quindi non è un problema di dato.
-- **Causa precisa**: è di layout. Il badge di destra è `shrink-0` e il valore `status` non mappato (`active_resume_required`, vedi punto 3) viene renderizzato per intero come testo lungo: occupa quasi tutta la riga e comprime la colonna sinistra `min-w-0`, dove `truncate` taglia già a poche lettere. Sulle griglie strette (`lg:grid-cols-2`, mobile) l'effetto è massimo.
-- **Fix minimo**: **UI** — nel solo header della card, far andare a capo il blocco badge invece di comprimere il titolo: mettere la colonna sinistra su una riga propria (header in colonna su viewport stretti) oppure togliere `truncate` dal titolo e usare `break-words`/`line-clamp-2`, lasciando `truncate` solo sul `project_id`. Il fix del punto 3 riduce comunque la larghezza del badge e mitiga da solo il problema.
-- **Rischi**: bassi e puramente visivi. Rimuovendo `truncate` su nomi progetto molto lunghi la card può crescere in altezza; `line-clamp-2` limita il rischio. Va tenuto l'allineamento con la card compatta di `/wcm/projects` per non creare due stili diversi.
+## Opzioni di fix (dalla più stretta), tutte backward-compatible
 
-## 3) Enum grezzi in UI
+- **Opzione A — accept-and-ignore (nessuna migration):** aggiungere `lineage` a una lista di chiavi accettate-ma-ignorate in `writerMemory.ts` (stesso pattern di `project_id` o di `NEED_METADATA_KEYS` per needs). La source GitHub può inviarlo, il read-model non lo storicizza. Zero cambi DB/UI.
+- **Opzione B — persistenza (migration + whitelist):** migration che aggiunge colonna `lineage` (jsonb se strutturato, text altrimenti, nullable) a `wcm_project_writer_memory`; aggiungere `lineage` a `WRITER_MEMORY_FIELDS` e al mapping della riga in `parseWriterMemoryItem`; test di accettazione. La UI resta invariata salvo esplicita richiesta di visualizzazione.
+- **Opzione C — ibrida:** accettare `lineage` ora (Opzione A) e aggiungere la persistenza in una fase successiva se serve esporla in Mission Control.
 
-### 3a) `active_resume_required`
+In tutti i casi i payload esistenti senza `lineage` restano validi (campo opzionale), e il fail-fast pre-write resta invariato.
 
-- **Dove**: `WcmProjectCard.tsx` riga 81 e `WcmProjectsPage.tsx` riga 64: `STATUS_LABELS[project.status] ?? project.status`. La mappa in `wcmFormat.ts` copre solo `working, waiting, waiting_board, blocked, paused`.
-- **Origine dati**: `wcm_project_status.status`, valore libero scritto dal Projector.
-- **Causa precisa**: valore non presente in `STATUS_LABELS`, quindi scatta il fallback che stampa l'enum grezzo; `statusClasses` cade sul `default` ambra, quindi anche il colore non riflette lo stato reale.
-- **Fix minimo**: **UI** — aggiungere in `wcmFormat.ts` il mapping `active_resume_required → "Attivo · ripresa necessaria"` (+ classe di tono coerente con `RESUME_REQUIRED` di `wcmExecution.ts`), e normalizzare la chiave (`trim().toLowerCase()`) prima del lookup. Il fallback resta come rete di sicurezza per stati mai visti.
-- **Rischi**: se in futuro il Projector introduce altri stati, ricompare l'enum grezzo. Contromisura coerente col metodo: mantenere il fallback visibile (non inventare un'etichetta) e trattarlo come segnale "da classificare", come già fatto per i canonical states dei documenti. Da NON fare: derivare l'etichetta con euristiche su sottostringhe.
+## Nota
 
-### 3b) `CHAPTER_7_V0_1_..._EDITORIAL_SYNTHESIS_REVISION_RESUME`
-
-- **Dove**: `WcmProjectCard.tsx` righe 120–125, riquadro Heartbeat: dopo il tempo relativo stampa `· {project.heartbeat_last_outcome}` senza mappatura. Stesso valore grezzo in `WcmOverviewTab.tsx` riga 146 (`font-mono`) e in `wcmHealthPlanes.ts` come "Ultimo esito registrato".
-- **Origine dati**: `heartbeat_last_outcome`, oggi una frase-enum di 96 caratteri prodotta dal generatore payload upstream (non è un valore dell'insieme atteso `ok/failed/blocked_board/...`).
-- **Causa precisa**: doppia. **A monte**: il campo "esito" viene usato come descrizione dello stato del workflow anziché come esito dell'heartbeat, fuori dal vocabolario riconosciuto (per questo `executionPlane` lo classifica `DEGRADED` con "Esito heartbeat non riconosciuto"). **In UI**: viene renderizzato tale e quale, senza normalizzazione né troncamento controllato.
-- **Fix minimo**:
-  - a monte (corretto): `heartbeat_last_outcome` deve tornare a un esito breve del vocabolario (`ok`, `failed`, `blocked_board`, `resume_required`); la narrazione del capitolo appartiene già a `summary`/`current_focus` e a `execution_workflows`.
-  - in UI (cosmetico, indipendente): nel riquadro Heartbeat mostrare l'esito con `truncate` + `title` completo, e per gli esiti non riconosciuti presentarli come tali invece che come testo di stato.
-- **Rischi**: mappare lato UI questa stringa specifica sarebbe un'euristica su sottostringhe — esattamente il pattern rimosso con i Canonical States. Va evitato. Toccare il vocabolario a monte cambia il piano Execution Health (da `DEGRADED` a valore riconosciuto): la variazione è attesa e va verificata contro `wcmHealthV061.test.ts`.
-
----
-
-## Riepilogo attribuzione
-
-| Sintomo | Dato a monte | UI |
-| --- | --- | --- |
-| Heartbeat "3 giorni fa" | Sì (causa unica) | No |
-| Titolo/ID troncati | No | Sì (layout header) |
-| `active_resume_required` | No | Sì (mapping mancante) |
-| Esito heartbeat verboso | Sì (causa primaria) | Sì (rendering non troncato) |
-
-Nessun edit eseguito. Dimmi se vuoi che prepari il piano di intervento per la sola parte UI (punti 2, 3a e il rendering di 3b), lasciando invariati Projector, DB e command surface.
+Questa diagnostica non richiede modifiche. Approva il piano solo se vuoi che implementi una delle opzioni (indica quale); altrimenti ignora/rifiuta.
