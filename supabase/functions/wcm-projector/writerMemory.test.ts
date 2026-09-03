@@ -95,3 +95,45 @@ describe('writer_memory · contratto esatto', () => {
     expect(rows[1].sort_order).toBe(1);
   });
 });
+
+describe('writer_memory · confine non-fatale nel projector', () => {
+  it('writer_memory valida produce payload snapshot invariato', () => {
+    const resolved = resolveWriterMemoryCollection([base], 'prima-di-noi');
+    expect('payload' in resolved).toBe(true);
+    if (!('payload' in resolved)) return;
+    expect(resolved.payload.snapshot).toBe(true);
+    expect(resolved.payload.rows).toHaveLength(1);
+    expect(resolved.payload.rows[0].memory_id).toBe('WM-001');
+  });
+
+  it('flag partial disattiva la semantica snapshot', () => {
+    const resolved = resolveWriterMemoryCollection([base], 'prima-di-noi', true);
+    expect('payload' in resolved && resolved.payload.snapshot).toBe(false);
+  });
+
+  it('writer_memory con lineage resta valida e proiettabile', () => {
+    const resolved = resolveWriterMemoryCollection(
+      [{ ...base, lineage: ['CH07-BOARD'] }],
+      'prima-di-noi',
+    );
+    expect('payload' in resolved).toBe(true);
+    if (!('payload' in resolved)) return;
+    expect('lineage' in resolved.payload.rows[0]).toBe(false);
+  });
+
+  it('writer_memory invalida produce solo un warning: nessun abort della projection core', () => {
+    const resolved = resolveWriterMemoryCollection([{ ...base, bogus: 1 }], 'prima-di-noi');
+    expect('warning' in resolved).toBe(true);
+    if (!('warning' in resolved)) return;
+    expect(resolved.warning.collection).toBe('writer_memory');
+    expect(resolved.warning.skipped).toBe(true);
+    expect(resolved.warning.error).toBe('Unsupported writer_memory fields');
+  });
+
+  it('writer_memory non-array produce warning invece di errore fatale', () => {
+    const resolved = resolveWriterMemoryCollection('nope', 'prima-di-noi');
+    expect('warning' in resolved).toBe(true);
+    if (!('warning' in resolved)) return;
+    expect(resolved.warning.error).toBe('writer_memory must be an array');
+  });
+});
