@@ -327,6 +327,16 @@ Deno.serve(async (req) => {
       continue
     }
 
+    // Writer Memory: validazione esatta (enum status, whitelist, source_path).
+    // Snapshot current-facing: gli item SUPERSEDED restano finché la source li mantiene.
+    if (name === 'writer_memory') {
+      const parsed = parseWriterMemory(raw, projectId)
+      if (!Array.isArray(parsed)) return json(parsed, 400)
+      const partialFlag = (body.writer_memory_partial ?? body.partial) === true
+      collectionPayloads[name] = { rows: parsed, snapshot: !partialFlag }
+      continue
+    }
+
 
     const rows: Record<string, unknown>[] = []
 
