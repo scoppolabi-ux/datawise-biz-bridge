@@ -635,6 +635,9 @@ Deno.serve(async (req) => {
 
 
     collections: collectionResults,
+    // Evidence non-fatale: collection osservative saltate per validation failure.
+    warnings,
+    writer_memory_skipped: warnings.some((w) => w.collection === 'writer_memory'),
     // DEC-012 — explicit observation stats for the execution read-model.
     execution_workflows: collectionResults.execution_workflows ?? null,
 
