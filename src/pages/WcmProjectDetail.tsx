@@ -28,8 +28,19 @@ import {
   useWcmKnowledgeHealth,
 } from '@/hooks/useWcmKnowledgeHealth';
 import { useWcmExecutionWorkflows } from '@/hooks/useWcmExecutionWorkflows';
+import { useWcmWriterMemory } from '@/hooks/useWcmWriterMemory';
+import WcmWriterMemoryTab from '@/components/wcm/WcmWriterMemoryTab';
 
-const TABS = ['overview', 'documents', 'board', 'activity', 'roadmap', 'knowledge', 'execution'];
+const TABS = [
+  'overview',
+  'documents',
+  'board',
+  'activity',
+  'roadmap',
+  'knowledge',
+  'execution',
+  'writer-memory',
+];
 
 
 
@@ -79,6 +90,7 @@ const WcmProjectDetail = () => {
   const knowledgeHealthQuery = useWcmKnowledgeHealth(projectId);
   const knowledgeCheckpointsQuery = useWcmKnowledgeCheckpoints(projectId);
   const executionQuery = useWcmExecutionWorkflows(projectId);
+  const writerMemoryQuery = useWcmWriterMemory(projectId);
 
 
 
@@ -92,7 +104,8 @@ const WcmProjectDetail = () => {
     needsQuery.isFetching ||
     commandsQuery.isFetching ||
     knowledgeHealthQuery.isFetching ||
-    executionQuery.isFetching;
+    executionQuery.isFetching ||
+    writerMemoryQuery.isFetching;
 
 
   const refetchAll = () => {
@@ -105,6 +118,7 @@ const WcmProjectDetail = () => {
     knowledgeHealthQuery.refetch();
     knowledgeCheckpointsQuery.refetch();
     executionQuery.refetch();
+    writerMemoryQuery.refetch();
 
   };
 
@@ -240,6 +254,7 @@ const WcmProjectDetail = () => {
                 ['roadmap', 'Roadmap'],
                 ['knowledge', 'Knowledge'],
                 ['execution', 'Esecuzione'],
+                ['writer-memory', 'Writer Memory'],
 
               ].map(([value, label]) => (
 
@@ -273,6 +288,14 @@ const WcmProjectDetail = () => {
             </TabsContent>
 
 
+
+            <TabsContent value="writer-memory" className="mt-4">
+              <WcmWriterMemoryTab
+                items={writerMemoryQuery.data ?? []}
+                isLoading={writerMemoryQuery.isLoading}
+                hasError={Boolean(writerMemoryQuery.error)}
+              />
+            </TabsContent>
 
             <TabsContent value="knowledge" className="mt-4">
               <WcmKnowledgeHealthTab
