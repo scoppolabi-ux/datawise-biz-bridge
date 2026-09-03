@@ -32,6 +32,14 @@ export type WcmProjectStatus = {
   source_state_sha: string | null;
   semantic_fingerprint: string | null;
   updated_at: string;
+  /**
+   * Writer Memory Review (osservabilità opzionale).
+   * Presenti solo quando il deterministic projector li espone nel read-model;
+   * il frontend li rende visibili senza mai inventarli e senza command surface.
+   */
+  writer_memory_processing_status?: string | null;
+  writer_memory_review_status?: string | null;
+  writer_memory_review_open_count?: number | null;
 };
 
 export type WcmProjectDocument = {
