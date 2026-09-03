@@ -68,6 +68,24 @@ describe('writer_memory · contratto esatto', () => {
     expect(Array.isArray(dup)).toBe(false);
   });
 
+  it('accetta lineage come metadata opzionale ma non lo persiste', () => {
+    const parsed = parseWriterMemoryItem(
+      { ...base, lineage: { from: 'CH07', chain: ['a', 'b'] } },
+      'prima-di-noi',
+    );
+    expect('row' in parsed).toBe(true);
+    if (!('row' in parsed)) return;
+    expect('lineage' in parsed.row).toBe(false);
+    expect(parsed.row.memory_id).toBe('WM-001');
+  });
+
+  it('rifiuta comunque campi sconosciuti diversi da lineage', () => {
+    const parsed = parseWriterMemoryItem({ ...base, lineage: 'x', bogus: 1 }, 'prima-di-noi');
+    expect('error' in parsed).toBe(true);
+    if (!('error' in parsed)) return;
+    expect(parsed.fields).toEqual(['bogus']);
+  });
+
   it('assegna sort_order posizionale quando assente', () => {
     const item: Record<string, unknown> = { ...base };
     delete item.sort_order;
