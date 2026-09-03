@@ -309,10 +309,37 @@ Deno.serve(async (req) => {
     Record<CollectionName, { rows: Record<string, unknown>[]; snapshot: boolean }>
   > = {}
 
+  // Writer Memory è un'estensione osservativa opzionale: una sua validation
+  // failure non deve mai bloccare la projection operativa core. Viene solo
+  // saltata e riportata come warning strutturato nella response.
+  const warnings: Record<string, unknown>[] = []
+
   for (const name of Object.keys(COLLECTIONS) as CollectionName[]) {
     // Absence of the key must never fail projection (legacy projects stay valid).
     if (body[name] === undefined || body[name] === null) continue
     const raw = body[name]
+
+    // Writer Memory: validazione esatta (enum status, whitelist, source_path).
+    // Snapshot current-facing: gli item SUPERSEDED restano finché la source li mantiene.
+    if (name === 'writer_memory') {
+      if (!Array.isArray(raw)) {
+        warnings.push({
+          collection: 'writer_memory',
+          skipped: true,
+          error: 'writer_memory must be an array',
+        })
+        continue
+      }
+      const parsed = parseWriterMemory(raw, projectId)
+      if (!Array.isArray(parsed)) {
+        warnings.push({ collection: 'writer_memory', skipped: true, ...parsed })
+        continue
+      }
+      const partialFlag = (body.writer_memory_partial ?? body.partial) === true
+      collectionPayloads[name] = { rows: parsed, snapshot: !partialFlag }
+      continue
+    }
+
     if (!Array.isArray(raw)) return json({ error: `${name} must be an array` }, 400)
 
     const cfg = COLLECTIONS[name]
@@ -324,16 +351,6 @@ Deno.serve(async (req) => {
       const parsed = parseExecutionWorkflows(raw, projectId)
       if (!Array.isArray(parsed)) return json(parsed, 400)
       collectionPayloads[name] = { rows: parsed, snapshot: false }
-      continue
-    }
-
-    // Writer Memory: validazione esatta (enum status, whitelist, source_path).
-    // Snapshot current-facing: gli item SUPERSEDED restano finché la source li mantiene.
-    if (name === 'writer_memory') {
-      const parsed = parseWriterMemory(raw, projectId)
-      if (!Array.isArray(parsed)) return json(parsed, 400)
-      const partialFlag = (body.writer_memory_partial ?? body.partial) === true
-      collectionPayloads[name] = { rows: parsed, snapshot: !partialFlag }
       continue
     }
 
