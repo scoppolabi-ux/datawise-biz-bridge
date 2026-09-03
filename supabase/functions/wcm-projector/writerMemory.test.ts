@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { parseWriterMemory, parseWriterMemoryItem } from './writerMemory.ts';
+import {
+  parseWriterMemory,
+  parseWriterMemoryItem,
+  resolveWriterMemoryCollection,
+} from './writerMemory.ts';
 
 const base = {
   memory_id: 'WM-001',
@@ -64,6 +68,24 @@ describe('writer_memory · contratto esatto', () => {
     expect(Array.isArray(dup)).toBe(false);
   });
 
+  it('accetta lineage come metadata opzionale ma non lo persiste', () => {
+    const parsed = parseWriterMemoryItem(
+      { ...base, lineage: { from: 'CH07', chain: ['a', 'b'] } },
+      'prima-di-noi',
+    );
+    expect('row' in parsed).toBe(true);
+    if (!('row' in parsed)) return;
+    expect('lineage' in parsed.row).toBe(false);
+    expect(parsed.row.memory_id).toBe('WM-001');
+  });
+
+  it('rifiuta comunque campi sconosciuti diversi da lineage', () => {
+    const parsed = parseWriterMemoryItem({ ...base, lineage: 'x', bogus: 1 }, 'prima-di-noi');
+    expect('error' in parsed).toBe(true);
+    if (!('error' in parsed)) return;
+    expect(parsed.fields).toEqual(['bogus']);
+  });
+
   it('assegna sort_order posizionale quando assente', () => {
     const item: Record<string, unknown> = { ...base };
     delete item.sort_order;
@@ -71,5 +93,47 @@ describe('writer_memory · contratto esatto', () => {
     expect(Array.isArray(rows)).toBe(true);
     if (!Array.isArray(rows)) return;
     expect(rows[1].sort_order).toBe(1);
+  });
+});
+
+describe('writer_memory · confine non-fatale nel projector', () => {
+  it('writer_memory valida produce payload snapshot invariato', () => {
+    const resolved = resolveWriterMemoryCollection([base], 'prima-di-noi');
+    expect('payload' in resolved).toBe(true);
+    if (!('payload' in resolved)) return;
+    expect(resolved.payload.snapshot).toBe(true);
+    expect(resolved.payload.rows).toHaveLength(1);
+    expect(resolved.payload.rows[0].memory_id).toBe('WM-001');
+  });
+
+  it('flag partial disattiva la semantica snapshot', () => {
+    const resolved = resolveWriterMemoryCollection([base], 'prima-di-noi', true);
+    expect('payload' in resolved && resolved.payload.snapshot).toBe(false);
+  });
+
+  it('writer_memory con lineage resta valida e proiettabile', () => {
+    const resolved = resolveWriterMemoryCollection(
+      [{ ...base, lineage: ['CH07-BOARD'] }],
+      'prima-di-noi',
+    );
+    expect('payload' in resolved).toBe(true);
+    if (!('payload' in resolved)) return;
+    expect('lineage' in resolved.payload.rows[0]).toBe(false);
+  });
+
+  it('writer_memory invalida produce solo un warning: nessun abort della projection core', () => {
+    const resolved = resolveWriterMemoryCollection([{ ...base, bogus: 1 }], 'prima-di-noi');
+    expect('warning' in resolved).toBe(true);
+    if (!('warning' in resolved)) return;
+    expect(resolved.warning.collection).toBe('writer_memory');
+    expect(resolved.warning.skipped).toBe(true);
+    expect(resolved.warning.error).toBe('Unsupported writer_memory fields');
+  });
+
+  it('writer_memory non-array produce warning invece di errore fatale', () => {
+    const resolved = resolveWriterMemoryCollection('nope', 'prima-di-noi');
+    expect('warning' in resolved).toBe(true);
+    if (!('warning' in resolved)) return;
+    expect(resolved.warning.error).toBe('writer_memory must be an array');
   });
 });

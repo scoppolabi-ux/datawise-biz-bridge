@@ -7,7 +7,7 @@ import {
   normalize,
 } from './knowledge.ts'
 import { parseExecutionWorkflows } from './execution.ts'
-import { WRITER_MEMORY_FIELDS, parseWriterMemory } from './writerMemory.ts'
+import { WRITER_MEMORY_FIELDS, resolveWriterMemoryCollection } from './writerMemory.ts'
 import { rowNeedsUpsert, selectChangedCheckpoints } from './knowledgeDiff.ts'
 import { validateBoardGateTargets, type BoardGateDoc } from '../_shared/wcmBoardGate.ts'
 import {
@@ -309,10 +309,29 @@ Deno.serve(async (req) => {
     Record<CollectionName, { rows: Record<string, unknown>[]; snapshot: boolean }>
   > = {}
 
+  // Writer Memory è un'estensione osservativa opzionale: una sua validation
+  // failure non deve mai bloccare la projection operativa core. Viene solo
+  // saltata e riportata come warning strutturato nella response.
+  const warnings: Record<string, unknown>[] = []
+
   for (const name of Object.keys(COLLECTIONS) as CollectionName[]) {
     // Absence of the key must never fail projection (legacy projects stay valid).
     if (body[name] === undefined || body[name] === null) continue
     const raw = body[name]
+
+    // Writer Memory: validazione esatta (enum status, whitelist, source_path).
+    // Snapshot current-facing: gli item SUPERSEDED restano finché la source li mantiene.
+    if (name === 'writer_memory') {
+      const partialFlag = (body.writer_memory_partial ?? body.partial) === true
+      const resolved = resolveWriterMemoryCollection(raw, projectId, partialFlag)
+      if ('warning' in resolved) {
+        warnings.push(resolved.warning)
+        continue
+      }
+      collectionPayloads[name] = resolved.payload
+      continue
+    }
+
     if (!Array.isArray(raw)) return json({ error: `${name} must be an array` }, 400)
 
     const cfg = COLLECTIONS[name]
@@ -324,16 +343,6 @@ Deno.serve(async (req) => {
       const parsed = parseExecutionWorkflows(raw, projectId)
       if (!Array.isArray(parsed)) return json(parsed, 400)
       collectionPayloads[name] = { rows: parsed, snapshot: false }
-      continue
-    }
-
-    // Writer Memory: validazione esatta (enum status, whitelist, source_path).
-    // Snapshot current-facing: gli item SUPERSEDED restano finché la source li mantiene.
-    if (name === 'writer_memory') {
-      const parsed = parseWriterMemory(raw, projectId)
-      if (!Array.isArray(parsed)) return json(parsed, 400)
-      const partialFlag = (body.writer_memory_partial ?? body.partial) === true
-      collectionPayloads[name] = { rows: parsed, snapshot: !partialFlag }
       continue
     }
 
@@ -618,6 +627,9 @@ Deno.serve(async (req) => {
 
 
     collections: collectionResults,
+    // Evidence non-fatale: collection osservative saltate per validation failure.
+    warnings,
+    writer_memory_skipped: warnings.some((w) => w.collection === 'writer_memory'),
     // DEC-012 — explicit observation stats for the execution read-model.
     execution_workflows: collectionResults.execution_workflows ?? null,
 
