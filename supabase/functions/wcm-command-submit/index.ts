@@ -3,12 +3,16 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 import { isOpenNeed, needFingerprint } from '../_shared/wcmGovernance.ts'
 import { isBoardCandidateCategory } from '../_shared/wcmBoardGate.ts'
 import { requestWorkerWake } from '../_shared/wcmWorkerWake.ts'
+import {
+  isWcmCommandType,
+  validateWriterMemoryAuthorityCommand,
+} from '../_shared/wcmCommandTypes.ts'
 
 
 
-const COMMAND_TYPES = ['APPROVE_FREEZE', 'REQUEST_CHANGES'] as const
 const ALLOWED_ROLES = ['owner', 'admin']
 const MAX_NOTE_LENGTH = 12_000
+
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -66,9 +70,10 @@ Deno.serve(async (req) => {
   const note = str(body.note) || null
 
   if (!projectId || !needId) return json({ error: 'project_id and need_id are required' }, 400)
-  if (!(COMMAND_TYPES as readonly string[]).includes(commandType)) {
+  if (!isWcmCommandType(commandType)) {
     return json({ error: 'Unsupported command_type' }, 400)
   }
+
   if (commandType === 'REQUEST_CHANGES' && !note) {
     return json({ error: 'REQUEST_CHANGES requires a non-empty note', code: 'NOTE_REQUIRED' }, 400)
   }
@@ -103,7 +108,18 @@ Deno.serve(async (req) => {
   if (!need) return json({ error: 'Need not found', code: 'NEED_NOT_FOUND' }, 404)
   if (!isOpenNeed(need)) return json({ error: 'Need is not open', code: 'NEED_NOT_OPEN' }, 409)
 
+  // Writer Memory authority: single-command surface, no note, no target.
+  const wmError = validateWriterMemoryAuthorityCommand({
+    commandType,
+    needType: need.need_type,
+    targetDocumentId,
+    targetVersion,
+    note,
+  })
+  if (wmError) return json({ error: wmError.error, code: wmError.code }, wmError.status)
+
   if (commandType === 'APPROVE_FREEZE') {
+
     const type = String(need.need_type ?? '').toUpperCase()
     if (type !== 'BOARD_GATE') {
       return json(
