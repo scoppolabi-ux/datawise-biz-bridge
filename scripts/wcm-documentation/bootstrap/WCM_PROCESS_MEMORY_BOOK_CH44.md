@@ -137,6 +137,7 @@ Il protocollo rende questa valutazione esplicita e tracciabile.
 Una delle idee centrali del protocollo è la separazione tra **master** e **projection**.
 
 Il master è il contenuto autorevole da cui una release documentale viene derivata secondo il sistema documentale corrente.
+
 Una projection è una rappresentazione destinata a un uso: può essere una pagina web, un PDF, un DOCX, un reader o un altro formato autorizzato.
 
 Una metafora quotidiana aiuta.
@@ -397,6 +398,7 @@ A seconda del caso, PROT-015 può produrre o richiedere:
 - evidenza di verification o QA quando prevista;
 - un'indicazione esplicita di documentation drift;
 - elementi del Change Impact Manifest necessari alla closure di un WCM CHANGE.
+
 L'output corretto non è quindi semplicemente “un documento nuovo”. È **una rappresentazione documentale riallineata, verificabile e coerente con la fonte che descrive**.
 
 ---
