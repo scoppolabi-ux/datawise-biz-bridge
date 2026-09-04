@@ -398,6 +398,7 @@ A seconda del caso, PROT-015 può produrre o richiedere:
 - evidenza di verification o QA quando prevista;
 - un'indicazione esplicita di documentation drift;
 - elementi del Change Impact Manifest necessari alla closure di un WCM CHANGE.
+
 L'output corretto non è quindi semplicemente “un documento nuovo”. È **una rappresentazione documentale riallineata, verificabile e coerente con la fonte che descrive**.
 
 ---
