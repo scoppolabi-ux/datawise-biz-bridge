@@ -103,6 +103,19 @@ describe('canonical state resolution', () => {
     expect(governanceBadgeOf({ distribution_ready: true }, state)).toBe('NONE');
     expect(bucketOf({ requires_stefano: false, ...doc }, state)).not.toBe('UNCLASSIFIED');
   });
+
+  it('raggruppa FROZEN_CHAPTER|FROZEN nel Manoscritto approvato, non nelle baseline', () => {
+    const doc = { category: 'FROZEN_CHAPTER', status: 'FROZEN' };
+    const state = resolveCanonicalState(doc, index);
+    expect(state).toBe('APPROVED_FROZEN');
+    expect(bucketOf({ requires_stefano: false, ...doc }, state)).toBe('MANUSCRIPT_APPROVED');
+    expect(
+      bucketOf(
+        { requires_stefano: false, category: 'MANUSCRIPT_APPROVED', status: 'APPROVED_FROZEN_CURRENT' },
+        resolveCanonicalState({ category: 'MANUSCRIPT_APPROVED', status: 'APPROVED_FROZEN_CURRENT' }, index),
+      ),
+    ).toBe('MANUSCRIPT_APPROVED');
+  });
 });
 
 describe('canonical state suggestion', () => {
