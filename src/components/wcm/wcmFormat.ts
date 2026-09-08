@@ -161,6 +161,17 @@ export const isOpenBoardSupportingDocument = (doc: BoardPackageInput): boolean =
   exact(doc.status) === BOARD_OPEN_SUPPORTING_STATUS;
 
 /**
+ * Capitolo approvato del manoscritto: match ESATTO category+status.
+ * FROZEN_CHAPTER/FROZEN è un capitolo congelato, non una baseline narrativa.
+ */
+export const isManuscriptChapterDocument = (doc: {
+  category: string | null;
+  status?: string | null;
+}): boolean =>
+  exact(doc.category) === 'MANUSCRIPT_APPROVED' ||
+  (exact(doc.category) === 'FROZEN_CHAPTER' && exact(doc.status) === 'FROZEN');
+
+/**
  * Bucket = funzione del canonical state (match esatto category+status) e del
  * flag esplicito `requires_stefano`. Nessuna euristica su stringhe.
  */
@@ -172,9 +183,7 @@ export const bucketOf = (
   if (isOpenBoardSupportingDocument(doc)) return 'TO_READ';
   if (state === 'UNKNOWN') return 'UNCLASSIFIED';
   if (state === 'APPROVED_FROZEN') {
-    return exact(doc.category) === 'MANUSCRIPT_APPROVED'
-      ? 'MANUSCRIPT_APPROVED'
-      : 'APPROVED_BASELINE';
+    return isManuscriptChapterDocument(doc) ? 'MANUSCRIPT_APPROVED' : 'APPROVED_BASELINE';
   }
   if (state === 'WAITING_AUTHORITY') return 'WAITING_AUTHORITY';
   if (state === 'WORKING') return 'WORKING_EDITORIAL';
