@@ -43,6 +43,12 @@ const mappings: WcmStateMapping[] = [
     mapping_status: 'ACTIVE',
   },
   {
+    category: 'FROZEN_CHAPTER',
+    status: 'FROZEN',
+    canonical_state: 'APPROVED_FROZEN',
+    mapping_status: 'ACTIVE',
+  },
+  {
     category: 'MANUSCRIPT_INDEX',
     status: 'APPROVED_FROZEN_CURRENT',
     canonical_state: 'APPROVED_FROZEN',
