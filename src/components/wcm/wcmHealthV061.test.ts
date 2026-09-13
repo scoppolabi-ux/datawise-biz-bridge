@@ -85,3 +85,59 @@ describe('V0.6.1 Knowledge readability', () => {
     expect(resolvedIssues).toHaveLength(2);
   });
 });
+
+// SRC-044 — G3 Clean Start: Governance Health considers only commands
+// linked to CURRENT open needs; historical commands stay in audit but must
+// not degrade the current plane.
+describe('SRC-044 Governance Health current-scope commands', () => {
+  const governanceOf = (
+    p: WcmProjectStatus,
+    needs?: Parameters<typeof buildHealthPlanes>[0]['needs'],
+    commands?: Parameters<typeof buildHealthPlanes>[0]['commands'],
+  ) => buildHealthPlanes({ project: p, needs, commands }).find((pl) => pl.key === 'governance')!;
+
+  const need = (need_id: string, status: string) =>
+    ({ project_id: 'prima-di-noi', need_id, status }) as never;
+  const command = (need_id: string, status: string) =>
+    ({ project_id: 'prima-di-noi', need_id, status }) as never;
+
+  it('51 comandi storici con 0 need aperti => HEALTHY, pending corrente 0', () => {
+    const historical = Array.from({ length: 51 }, (_, i) =>
+      command(`OLD-${i}`, i % 2 === 0 ? 'RECORDED' : 'FAILED'),
+    );
+    const plane = governanceOf(project({ needs_stefano: false }), [], historical);
+    expect(plane.status).toBe('HEALTHY');
+    expect(plane.headline).toBe('Nessun gate aperto');
+    expect(plane.lines.find((l) => l.label === 'Comandi correnti pending')?.value).toBe('0');
+    expect(plane.lines.find((l) => l.label === 'Comandi correnti stale/falliti')?.value).toBe('0');
+  });
+
+  it('un comando SUBMITTED su un need OPEN corrente => DEGRADED', () => {
+    const plane = governanceOf(
+      project({ needs_stefano: false }),
+      [need('N-1', 'open')],
+      [command('N-1', 'SUBMITTED')],
+    );
+    expect(plane.status).toBe('DEGRADED');
+    expect(plane.headline).toContain('in attesa di esecuzione');
+  });
+
+  it('un comando FAILED/STALE su un need OPEN corrente => CRITICAL', () => {
+    const plane = governanceOf(
+      project({ needs_stefano: false }),
+      [need('N-1', 'open')],
+      [command('N-1', 'FAILED')],
+    );
+    expect(plane.status).toBe('CRITICAL');
+  });
+
+  it('un comando FAILED/STALE su un need non più aperto non degrada la governance', () => {
+    const plane = governanceOf(
+      project({ needs_stefano: false }),
+      [need('N-1', 'closed')],
+      [command('N-1', 'FAILED')],
+    );
+    expect(plane.status).toBe('HEALTHY');
+    expect(plane.headline).toBe('Nessun gate aperto');
+  });
+});

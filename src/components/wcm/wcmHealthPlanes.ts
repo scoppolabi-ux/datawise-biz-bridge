@@ -201,25 +201,39 @@ const executionPlane = (
 };
 
 
-/** GOVERNANCE HEALTH — board gate, open needs, command queue evidence. */
+/**
+ * GOVERNANCE HEALTH — board gate, open needs, command queue evidence.
+ *
+ * Only commands linked to the CURRENT open needs affect current governance
+ * health: historical commands (audit trail) stay visible in Board/audit but
+ * must not degrade the current plane once their need is no longer open.
+ */
 const governancePlane = (
   project: WcmProjectStatus,
   needs: WcmProjectNeed[] | undefined,
   commands: WcmCommandRequest[] | undefined,
 ): HealthPlane => {
   const openNeeds = needs ? needs.filter(isOpenNeed) : null;
-  const pending = commands
-    ? commands.filter((c) => ACTIVE_COMMAND_STATUSES.includes(c.status))
+  const openNeedIds = openNeeds ? new Set(openNeeds.map((n) => n.need_id)) : null;
+  // Commands tied to currently open needs only; historical commands excluded.
+  const currentCommands =
+    commands && openNeedIds
+      ? commands.filter((c) => openNeedIds.has(c.need_id))
+      : commands && openNeedIds === null
+        ? commands
+        : null;
+  const pending = currentCommands
+    ? currentCommands.filter((c) => ACTIVE_COMMAND_STATUSES.includes(c.status))
     : null;
-  const broken = commands
-    ? commands.filter((c) => c.status === 'STALE' || c.status === 'FAILED' || c.status === 'REJECTED')
+  const broken = currentCommands
+    ? currentCommands.filter((c) => c.status === 'STALE' || c.status === 'FAILED' || c.status === 'REJECTED')
     : null;
   // Only the latest command per need matters for "currently broken authority".
   const latestBroken =
-    commands && commands.length > 0
+    currentCommands && currentCommands.length > 0
       ? (() => {
           const seen = new Set<string>();
-          return commands.filter((c) => {
+          return currentCommands.filter((c) => {
             const key = `${c.project_id}::${c.need_id}`;
             if (seen.has(key)) return false;
             seen.add(key);
@@ -264,11 +278,11 @@ const governancePlane = (
       },
       { label: 'Needs aperti', value: openNeeds === null ? UNKNOWN_HINT : String(openNeeds.length) },
       {
-        label: 'Comandi pending',
+        label: 'Comandi correnti pending',
         value: pending === null ? UNKNOWN_HINT : String(pending.length),
       },
       {
-        label: 'Comandi stale/falliti',
+        label: 'Comandi correnti stale/falliti',
         value: broken === null ? UNKNOWN_HINT : String(broken.length),
       },
       { label: 'Verdetto board', value: txt(project.board_verdict) ?? UNKNOWN_HINT },

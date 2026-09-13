@@ -205,7 +205,7 @@ export const BUCKET_LABELS: Record<DocBucket, string> = {
   TO_READ: 'Da leggere / Board',
   UNCLASSIFIED: 'Da classificare',
   MANUSCRIPT_APPROVED: 'Manoscritto approvato',
-  APPROVED_BASELINE: 'Baseline approvate',
+  APPROVED_BASELINE: 'Baseline narrativa approvata',
   WAITING_AUTHORITY: 'In attesa di autorità',
   WORKING_EDITORIAL: 'Working / Editorial',
   CLOSED_SUPPORTING: 'Chiusi / Materiale di supporto',
