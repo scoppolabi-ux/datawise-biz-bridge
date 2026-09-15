@@ -1,34 +1,53 @@
-# Diagnostica read-only: writer_memory / lineage in wcm-projector
+# Diagnosi — /wcm/prima-di-noi mostra una fotografia vecchia
 
-## Domanda 1 — `lineage` è accettato/storicizzato?
+Solo analisi: nessun file modificato, nessun comando di scrittura eseguito.
 
-**No.** La validazione è una whitelist esatta e `lineage` non è inclusa.
+## 1) Da dove arrivano i dati di Board e Documents
 
-- `supabase/functions/wcm-projector/writerMemory.ts`
-  - `WRITER_MEMORY_FIELDS` (righe 12–26): `memory_id, scope, category, guidance, origin_type, origin_ref, origin_context, status, source_path, source_sha, sort_order, project_id` — nessun `lineage`.
-  - `parseWriterMemoryItem` (righe 50–55): ogni campo fuori whitelist produce `{ error: 'Unsupported writer_memory fields', fields: [...] }`.
-- `supabase/functions/wcm-projector/index.ts` (righe 332–338): il risultato non-array di `parseWriterMemory` viene restituito come **HTTP 400**, interrompendo la richiesta.
-- Anche la tabella `wcm_project_writer_memory` non ha colonna `lineage` (vedi schema read-model): quindi il campo non è né accettato né persistito.
+Tutta la pagina legge **esclusivamente dal read-model nel database Lovable Cloud**, mai da GitHub.
 
-## Domanda 2 — Un errore writer_memory abortisce le tabelle core?
+- `src/pages/WcmProjectDetail.tsx` monta i tab e chiama gli hook.
+- `src/hooks/useWcmProjects.ts`:
+  - `useWcmProject` → tabella `wcm_project_status` (campi Board: `needs_stefano`, `board_gate_reason`, `board_gate_action_requested`, `board_verdict`, …)
+  - `useWcmProjectNeeds` → tabella `wcm_project_needs` (il Board Gate visibile)
+  - `useWcmDocuments` → tabella `wcm_project_documents` (elenco Documents)
+- `src/components/wcm/WcmBoardTab.tsx` rende i Need aperti (`isOpenNeed`) + il blocco Board dallo status.
+- `src/components/wcm/WcmDocumentsTab.tsx` + `wcmFormat.ts` (`bucketOf`) raggruppano i documenti nei bucket, incluso "Manoscritto approvato".
 
-**Sì, per errori di validazione.** La struttura del projector è fail-fast *pre-write*:
+L'unico scrittore di queste tabelle è la funzione server `supabase/functions/wcm-projector/index.ts`, che accetta solo chiamate firmate da GitHub Actions del repo `scoppolabi-ux/WCM-LAB` su `main` (OIDC, audience `wcm-projector`).
 
-1. Tutta la validazione (projection, board, derived_execution_state, tutte le collections inclusa `writer_memory` a righe 332–338, board-gate cross-check, knowledge_health/checkpoints) avviene nelle righe 260–418, **prima di qualsiasi scrittura DB**.
-2. La prima operazione DB è la read di `wcm_project_status` alla riga 429; insert/update status alle righe 465–492; upsert/delete delle collections (needs, execution_workflows, writer_memory, ecc.) alle righe 502–550.
+## 2) Perché resta fermo su CH2 / PRIMA + Chapter 1
 
-Quindi un 400 da `parseWriterMemory` esce prima della riga 429: **nessuna scrittura** su `wcm_project_status`, `wcm_project_needs`, `wcm_project_execution_workflows`. Non è una transazione DB, ma il confine validazione/scrittura rende il fallimento di validazione atomicamente sicuro.
+Il read-model non è stato aggiornato: nessuna projection nuova è arrivata dopo l'ultimo invio.
 
-**Caveat (fuori scope ma rilevante):** gli errori *runtime* DB (500 durante upsert/delete, righe 502–550) NON sono transazionali — lo status può essere già aggiornato quando una collection fallisce. Vale solo per errori DB, non per validazione.
+Stato attuale letto dal database:
 
-## Opzioni di fix (dalla più stretta), tutte backward-compatible
+- `wcm_project_status.prima-di-noi`: `status = waiting_board`, `phase = BOARD_DECISION`, `needs_stefano = true`, `source_state_sha = fb78d4c6…`, ultimo aggiornamento **14/09/2026 21:50 UTC**.
+- `wcm_project_needs`: esiste **un solo** need, `…g3-new-chapter-02-…-board-gate`, ancora `OPEN` (aggiornato 14/09 13:09). Nessun need per "Chapter 3 — ORIGINE".
+- `wcm_project_documents`: i soli documenti `MANUSCRIPT_APPROVED` sono `prima` e `g3-new-chapter-01-03-17-v0-2`. Nessun documento di CH2 approvato/frozen.
 
-- **Opzione A — accept-and-ignore (nessuna migration):** aggiungere `lineage` a una lista di chiavi accettate-ma-ignorate in `writerMemory.ts` (stesso pattern di `project_id` o di `NEED_METADATA_KEYS` per needs). La source GitHub può inviarlo, il read-model non lo storicizza. Zero cambi DB/UI.
-- **Opzione B — persistenza (migration + whitelist):** migration che aggiunge colonna `lineage` (jsonb se strutturato, text altrimenti, nullable) a `wcm_project_writer_memory`; aggiungere `lineage` a `WRITER_MEMORY_FIELDS` e al mapping della riga in `parseWriterMemoryItem`; test di accettazione. La UI resta invariata salvo esplicita richiesta di visualizzazione.
-- **Opzione C — ibrida:** accettare `lineage` ora (Opzione A) e aggiungere la persistenza in una fase successiva se serve esporla in Mission Control.
+Quindi non è un bug di classificazione o di UI: la fotografia nel database è letteralmente la situazione precedente. Il canon GitHub è avanzato (CH2 APPROVED/FROZEN, nuovo gate su Chapter 3) ma quella nuova projection non è mai stata consegnata al Mission Control — o il workflow che la invia non è partito, o è fallito, o non ha raggiunto la funzione.
 
-In tutti i casi i payload esistenti senza `lineage` restano validi (campo opzionale), e il fail-fast pre-write resta invariato.
+## 3) Il pulsante "Aggiorna" chiama GitHub?
 
-## Nota
+No. `refetchAll()` in `WcmProjectDetail.tsx` (righe ~111-123) si limita a rieseguire le query verso il database. Stesso discorso per il refresh automatico ogni 30 secondi (`REFETCH = 30_000`). Se la projection nel database è vecchia, "Aggiorna" ricarica all'infinito la stessa fotografia vecchia.
 
-Questa diagnostica non richiede modifiche. Approva il piano solo se vuoi che implementi una delle opzioni (indica quale); altrimenti ignora/rifiuta.
+## 4) Modifica minima e corretta per riallineare, senza seconda source of truth
+
+GitHub deve restare l'unica verità; il database resta solo la proiezione. La correzione giusta è **rendere possibile richiedere una nuova proiezione**, non leggere GitHub dal browser.
+
+Intervento minimo consigliato, in ordine di priorità:
+
+1. **Verifica operativa prima di ogni codice**: controllare nel repo WCM-LAB se il workflow che chiama `wcm-projector` è girato dopo il 14/09 21:50 e con quale esito. Se è semplicemente fallito, non serve alcuna modifica al sito: basta ri-eseguirlo e la UI si allinea da sola entro 30 secondi.
+2. **Refresh reale su richiesta** (se serve un pulsante che "tiri" davvero): riusare il meccanismo di wake già esistente in `supabase/functions/_shared/wcmWorkerWake.ts` (`requestWorkerWake`, già usato da `wcm-command-submit`) dentro una nuova funzione server minimale, protetta come `wcm-command-submit` (sessione utente + ruolo `owner`/`admin`). Il pulsante "Aggiorna" chiamerebbe quella funzione e poi rifarebbe le query. La proiezione continuerebbe ad arrivare solo da GitHub Actions via `wcm-projector`: nessuna seconda fonte, nessun token nel browser.
+3. **Rendere visibile la staleness**: mostrare nell'intestazione del progetto `updated_at` e `source_state_sha` della projection, così una fotografia vecchia è evidente invece di sembrare corrente. È un cambiamento puramente di presentazione.
+
+Da evitare esplicitamente: leggere il repository GitHub dal frontend, o scrivere a mano nel read-model per "sistemare" CH2/CH3 — creerebbe esattamente la seconda source of truth da escludere.
+
+## File coinvolti nella diagnosi
+
+- `src/pages/WcmProjectDetail.tsx` (`refetchAll`)
+- `src/hooks/useWcmProjects.ts` (`useWcmProject`, `useWcmProjectNeeds`, `useWcmDocuments`, `REFETCH`)
+- `src/components/wcm/WcmBoardTab.tsx`, `src/components/wcm/WcmDocumentsTab.tsx`, `src/components/wcm/wcmFormat.ts`
+- `supabase/functions/wcm-projector/index.ts` (unico scrittore)
+- `supabase/functions/_shared/wcmWorkerWake.ts` (meccanismo di wake già esistente)
