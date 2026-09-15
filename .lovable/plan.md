@@ -1,53 +1,70 @@
-# Diagnosi — /wcm/prima-di-noi mostra una fotografia vecchia
+# Diagnosi — perché la Mission Control di PRIMA DI NOI è ferma su CH2
 
-Solo analisi: nessun file modificato, nessun comando di scrittura eseguito.
+Solo lettura e analisi: nessun file dell'app modificato, nessun comando di scrittura eseguito.
 
-## 1) Da dove arrivano i dati di Board e Documents
+## Risposta sintetica
 
-Tutta la pagina legge **esclusivamente dal read-model nel database Lovable Cloud**, mai da GitHub.
+L'autorità di CH2 è stata registrata correttamente su GitHub, ma **nessuno ha generato la nuova fotografia dopo**. Il sito non è rotto e non va cambiata l'architettura: manca solo l'ultimo passaggio, che oggi non è automatico.
 
-- `src/pages/WcmProjectDetail.tsx` monta i tab e chiama gli hook.
-- `src/hooks/useWcmProjects.ts`:
-  - `useWcmProject` → tabella `wcm_project_status` (campi Board: `needs_stefano`, `board_gate_reason`, `board_gate_action_requested`, `board_verdict`, …)
-  - `useWcmProjectNeeds` → tabella `wcm_project_needs` (il Board Gate visibile)
-  - `useWcmDocuments` → tabella `wcm_project_documents` (elenco Documents)
-- `src/components/wcm/WcmBoardTab.tsx` rende i Need aperti (`isOpenNeed`) + il blocco Board dallo status.
-- `src/components/wcm/WcmDocumentsTab.tsx` + `wcmFormat.ts` (`bucketOf`) raggruppano i documenti nei bucket, incluso "Manoscritto approvato".
+## 1) Esiste già qualcosa che apre una issue `[WCM-PROJECTOR]` o costruisce l'envelope?
 
-L'unico scrittore di queste tabelle è la funzione server `supabase/functions/wcm-projector/index.ts`, che accetta solo chiamate firmate da GitHub Actions del repo `scoppolabi-ux/WCM-LAB` su `main` (OIDC, audience `wcm-projector`).
+**No.** Ricerca su tutto il codice del sito (`supabase/functions`, `src/hooks`, `src/components/wcm`): nessun riferimento a `[WCM-PROJECTOR]`, nessuna creazione di issue, nessuna costruzione di envelope.
 
-## 2) Perché resta fermo su CH2 / PRIMA + Chapter 1
+L'unico punto in cui il sito parla con GitHub in scrittura è `supabase/functions/_shared/wcmWorkerWake.ts` (`requestWorkerWake`), che sveglia **solo** il workflow `wcm-command-executor.yml` tramite `workflow_dispatch` / `repository_dispatch`. Non tocca `wcm-projector-dispatch.yml` e non apre issue.
 
-Il read-model non è stato aggiornato: nessuna projection nuova è arrivata dopo l'ultimo invio.
+## 2) Come viene generato oggi l'envelope di projection
 
-Stato attuale letto dal database:
+Non viene generato dal sito. L'envelope (`project_id`, `projection`, `source_state_sha`, `semantic_fingerprint`, documenti, runtime) nasce interamente dentro WCM-LAB, nel workflow `.github/workflows/wcm-projector-dispatch.yml`, innescato dall'apertura di una issue `[WCM-PROJECTOR]`.
 
-- `wcm_project_status.prima-di-noi`: `status = waiting_board`, `phase = BOARD_DECISION`, `needs_stefano = true`, `source_state_sha = fb78d4c6…`, ultimo aggiornamento **14/09/2026 21:50 UTC**.
-- `wcm_project_needs`: esiste **un solo** need, `…g3-new-chapter-02-…-board-gate`, ancora `OPEN` (aggiornato 14/09 13:09). Nessun need per "Chapter 3 — ORIGINE".
-- `wcm_project_documents`: i soli documenti `MANUSCRIPT_APPROVED` sono `prima` e `g3-new-chapter-01-03-17-v0-2`. Nessun documento di CH2 approvato/frozen.
+Il sito ne è solo il destinatario: `supabase/functions/wcm-projector/index.ts` riceve il POST, verifica l'identità GitHub (OIDC, audience `wcm-projector`, repo `scoppolabi-ux/WCM-LAB`, ref `main`) e scrive nelle tabelle `wcm_project_status`, `wcm_project_documents`, `wcm_project_needs`, `wcm_project_roadmap`, `wcm_project_activity`.
 
-Quindi non è un bug di classificazione o di UI: la fotografia nel database è letteralmente la situazione precedente. Il canon GitHub è avanzato (CH2 APPROVED/FROZEN, nuovo gate su Chapter 3) ma quella nuova projection non è mai stata consegnata al Mission Control — o il workflow che la invia non è partito, o è fallito, o non ha raggiunto la funzione.
+## 3) Cosa succede dopo un `APPROVE_FREEZE` — e perché CH2 è stale
 
-## 3) Il pulsante "Aggiorna" chiama GitHub?
+Catena attuale, verificata nel codice:
 
-No. `refetchAll()` in `WcmProjectDetail.tsx` (righe ~111-123) si limita a rieseguire le query verso il database. Stesso discorso per il refresh automatico ogni 30 secondi (`REFETCH = 30_000`). Se la projection nel database è vecchia, "Aggiorna" ricarica all'infinito la stessa fotografia vecchia.
+```text
+UI (WcmCommandSurface) -> wcm-command-submit  -> riga SUBMITTED + wake del worker
+worker GitHub           -> wcm-command-pull   -> CLAIMED (rivalida sha + fingerprint)
+worker GitHub scrive l'autorità su WCM-LAB
+worker GitHub           -> wcm-command-complete -> RECORDED
+[ qui la catena FINISCE ]
+```
 
-## 4) Modifica minima e corretta per riallineare, senza seconda source of truth
+`supabase/functions/wcm-command-complete/index.ts` aggiorna solo la riga del comando (`status`, `recorded_at`, `receipt_path`, `receipt_sha`). **Non esiste nessun passo che richieda una nuova projection.** La riproiezione dipende da una issue `[WCM-PROJECTOR]` aperta a mano, o da un passo equivalente dentro il worker in WCM-LAB.
 
-GitHub deve restare l'unica verità; il database resta solo la proiezione. La correzione giusta è **rendere possibile richiedere una nuova proiezione**, non leggere GitHub dal browser.
+Evidenza sui dati reali:
 
-Intervento minimo consigliato, in ordine di priorità:
+- comando `c1513907-…`, `APPROVE_FREEZE`, need `…g3-new-chapter-02-…-board-gate`, `expected_state_sha = fb78d4c6…`, creato 14/09 22:03:50, **RECORDED** (autorità su GitHub eseguita);
+- `wcm_project_status.prima-di-noi`: `source_state_sha = fb78d4c6…`, `updated_at = 14/09 21:50:26`, cioè **13 minuti prima** della registrazione dell'autorità;
+- `wcm_project_needs`: il gate CH2 è ancora l'unico, `OPEN`; nessun need per "Chapter 3 — ORIGINE";
+- `wcm_project_documents`: `MANUSCRIPT_APPROVED` contiene solo `prima` e `g3-new-chapter-01-03-17-v0-2`.
 
-1. **Verifica operativa prima di ogni codice**: controllare nel repo WCM-LAB se il workflow che chiama `wcm-projector` è girato dopo il 14/09 21:50 e con quale esito. Se è semplicemente fallito, non serve alcuna modifica al sito: basta ri-eseguirlo e la UI si allinea da sola entro 30 secondi.
-2. **Refresh reale su richiesta** (se serve un pulsante che "tiri" davvero): riusare il meccanismo di wake già esistente in `supabase/functions/_shared/wcmWorkerWake.ts` (`requestWorkerWake`, già usato da `wcm-command-submit`) dentro una nuova funzione server minimale, protetta come `wcm-command-submit` (sessione utente + ruolo `owner`/`admin`). Il pulsante "Aggiorna" chiamerebbe quella funzione e poi rifarebbe le query. La proiezione continuerebbe ad arrivare solo da GitHub Actions via `wcm-projector`: nessuna seconda fonte, nessun token nel browser.
-3. **Rendere visibile la staleness**: mostrare nell'intestazione del progetto `updated_at` e `source_state_sha` della projection, così una fotografia vecchia è evidente invece di sembrare corrente. È un cambiamento puramente di presentazione.
+Quindi: la fotografia nel database è precedente all'approvazione. Non è un bug di classificazione, di bucket o di UI.
 
-Da evitare esplicitamente: leggere il repository GitHub dal frontend, o scrivere a mano nel read-model per "sistemare" CH2/CH3 — creerebbe esattamente la seconda source of truth da escludere.
+Lo stesso schema si vede negli approve precedenti (tutti `RECORDED`): finora l'allineamento è arrivato da una riproiezione lanciata a parte, che stavolta non è partita.
 
-## File coinvolti nella diagnosi
+## 4) Azione operativa già disponibile senza toccare codice
 
-- `src/pages/WcmProjectDetail.tsx` (`refetchAll`)
-- `src/hooks/useWcmProjects.ts` (`useWcmProject`, `useWcmProjectNeeds`, `useWcmDocuments`, `REFETCH`)
-- `src/components/wcm/WcmBoardTab.tsx`, `src/components/wcm/WcmDocumentsTab.tsx`, `src/components/wcm/wcmFormat.ts`
-- `supabase/functions/wcm-projector/index.ts` (unico scrittore)
-- `supabase/functions/_shared/wcmWorkerWake.ts` (meccanismo di wake già esistente)
+**Sì — ed è il percorso più conservativo.** Aprire su `scoppolabi-ux/WCM-LAB` una issue con titolo `[WCM-PROJECTOR]` per `prima-di-noi`, esattamente come previsto da `wcm-projector-dispatch.yml`. Il workflow idrata i documenti e il runtime da `main` (che ora contiene CH2 FROZEN e il gate su Chapter 3 — ORIGINE) e POSTa l'envelope completo a `wcm-projector`.
+
+Effetto atteso, senza alcuna modifica al sito:
+
+- `wcm_project_status` aggiornato con il nuovo `source_state_sha`;
+- il gate CH2 chiuso e sostituito dal gate Chapter 3 nel tab Board;
+- CH2 visibile in "Manoscritto approvato" nel tab Documents.
+
+La UI si riallinea entro 30 secondi grazie al refetch automatico, oppure subito con "Aggiorna".
+
+Nota: `wcm-command-pull` rivalida `expected_state_sha` contro la projection. Finché la fotografia resta vecchia, un eventuale nuovo comando Board sul gate sbagliato verrebbe marcato `STALE`. La riproiezione va quindi fatta prima di qualunque nuova decisione.
+
+## Miglioramento successivo possibile (non ora, solo per completezza)
+
+Per non dipendere più da un passo manuale, la modifica minima e coerente sarebbe far sì che il worker in WCM-LAB, subito dopo `wcm-command-complete`, inneschi da solo la riproiezione. È lavoro lato WCM-LAB, non lato sito, e non introduce una seconda fonte di verità.
+
+## File e funzioni citati
+
+- `supabase/functions/wcm-projector/index.ts` — unico scrittore del read-model
+- `supabase/functions/wcm-command-submit/index.ts`, `wcm-command-pull/index.ts`, `wcm-command-complete/index.ts` — ciclo di vita del comando Board
+- `supabase/functions/_shared/wcmWorkerWake.ts` (`requestWorkerWake`) — sveglia solo l'executor, non il projector
+- `src/hooks/useWcmProjects.ts`, `src/pages/WcmProjectDetail.tsx` (`refetchAll`) — lettura e refresh, entrambi solo sul database
+- `src/components/wcm/WcmBoardTab.tsx`, `WcmDocumentsTab.tsx`, `wcmFormat.ts` — presentazione
