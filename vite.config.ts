@@ -1,37 +1,15 @@
-/// <reference types="vitest/config" />
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
-import { componentTagger } from "lovable-tagger";
+// @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
+// or the app will break with duplicate plugins:
+//   - TanStack devtools (dev-only, first), tanstackStart, viteReact, tailwindcss, tsConfigPaths,
+//     VITE_* env injection, @ path alias, React/TanStack dedupe, error logger plugins,
+//     and sandbox detection (port/host/strictPort).
+// Production is a fully static GitHub Pages site: no server runtime (nitro disabled),
+// every public route is prerendered to static HTML by scripts/prerender-static.mjs.
+import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
+export default defineConfig({
+  nitro: false,
+  tanstackStart: {
+    server: { entry: "server" },
   },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
-  ].filter(Boolean),
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      // Shared WCM document engine, reused by the Node release pipeline and
-      // by the in-app Word/PDF distribution artifacts.
-      "wcm-doc-engine/markdown": path.resolve(__dirname, "./scripts/wcm-documentation/markdown.mjs"),
-      "wcm-doc-engine/docx": path.resolve(__dirname, "./scripts/wcm-documentation/docx.mjs"),
-      "wcm-doc-engine/pdf-render": path.resolve(__dirname, "./scripts/wcm-documentation/pdfRender.mjs"),
-    },
-  },
-  test: {
-    exclude: [
-      '**/node_modules/**',
-      '**/dist/**',
-      // Deno-native edge function tests (https: imports) run via the Supabase
-      // edge function test runner, not vitest.
-      'supabase/functions/wcm-method-projector/normalize.test.ts',
-    ],
-  },
-}));
+});

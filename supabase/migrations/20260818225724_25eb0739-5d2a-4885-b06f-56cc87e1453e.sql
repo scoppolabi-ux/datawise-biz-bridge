@@ -1,1 +1,0 @@
-REVOKE ALL ON public.wcm_command_requests FROM anon;

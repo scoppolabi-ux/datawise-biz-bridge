@@ -32,12 +32,12 @@ jobs:
 
       - name: Build
         run: npm run build
-        # Se la build produce una cartella diversa da "dist", cambia qui e nel passo upload.
+        # Static prerendered site (scripts/prerender-static.mjs) is emitted to dist/client.
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: dist/client
 
   deploy:
     needs: build

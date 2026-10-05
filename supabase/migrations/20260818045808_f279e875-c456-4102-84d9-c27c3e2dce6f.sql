@@ -1,1 +1,0 @@
-ALTER TABLE public.wcm_project_status ADD COLUMN IF NOT EXISTS short_description text;
