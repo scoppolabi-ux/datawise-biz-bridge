@@ -55,7 +55,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "DataWisePartners" },
       { property: "og:image", content: "https://www.datawisepartners.it/dwp-social-v5.png" },
       { property: "og:image:width", content: "1731" },
-      { property: "og:image:height", content: "1731" },
+      { property: "og:image:height", content: "909" },
       { property: "og:image:type", content: "image/png" },
       { property: "og:image:secure_url", content: "https://www.datawisepartners.it/dwp-social-v5.png" },
       { property: "og:image:alt", content: "DataWisePartners — Dati intelligenti per decisioni sagge" },
